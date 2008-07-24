@@ -119,6 +119,39 @@ string StringReplace(const string& s, const string& oldsub,
 }
 
 // ----------------------------------------------------------------------
+// GlobalReplaceSubstring()
+//    Replaces all instances of a substring in a string.  Returns the
+//    number of replacements.
+//
+//    NOTE: The string pieces must not overlap s.
+// ----------------------------------------------------------------------
+
+int GlobalReplaceSubstring(const string& substring,
+                           const string& replacement,
+                           string* s) {
+  GOOGLE_CHECK(s != NULL);
+  if (s->empty())
+    return 0;
+  string tmp;
+  int num_replacements = 0;
+  int pos = 0;
+  for (int match_pos = s->find(substring.data(), pos, substring.length());
+       match_pos != string::npos;
+       pos = match_pos + substring.length(),
+         match_pos = s->find(substring.data(), pos, substring.length())) {
+    ++num_replacements;
+    // Append the original content before the match.
+    tmp.append(*s, pos, match_pos - pos);
+    // Append the replacement for the match.
+    tmp.append(replacement.begin(), replacement.end());
+  }
+  // Append the content after the last match.
+  tmp.append(*s, pos, s->length() - pos);
+  s->swap(tmp);
+  return num_replacements;
+}
+
+// ----------------------------------------------------------------------
 // SplitStringUsing()
 //    Split a string using a character delimiter. Append the components
 //    to 'result'.

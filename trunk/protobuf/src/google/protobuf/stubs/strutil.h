@@ -141,6 +141,21 @@ LIBPROTOBUF_EXPORT string StringReplace(const string& s, const string& oldsub,
                                         const string& newsub, bool replace_all);
 
 // ----------------------------------------------------------------------
+// GlobalReplaceSubstring()
+//    Replaces all instances of 'substring' in 's' with 'replacement'.
+//    Returns the number of instances replaced.  Replacements are not
+//    subject to re-matching.
+//
+//    NOTE: The string pieces must not overlap 's'.
+//
+//    If speed does not matter, you might instead use RE::GlobalReplace.
+// ----------------------------------------------------------------------
+
+LIBPROTOBUF_EXPORT int GlobalReplaceSubstring(const string& substring,
+                                              const string& replacement,
+                                              string* s);
+
+// ----------------------------------------------------------------------
 // SplitStringUsing()
 //    Split a string using a character delimiter. Append the components
 //    to 'result'.  If there are consecutive delimiters, this function skips
