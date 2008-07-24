@@ -81,7 +81,8 @@ am_libprotoc_la_OBJECTS = code_generator.lo command_line_interface.lo \
 	cpp_string_field.lo java_enum.lo java_enum_field.lo \
 	java_extension.lo java_field.lo java_file.lo java_generator.lo \
 	java_helpers.lo java_message.lo java_message_field.lo \
-	java_primitive_field.lo java_service.lo python_generator.lo
+	java_primitive_field.lo java_service.lo python_generator.lo \
+	perl_generator.lo
 libprotoc_la_OBJECTS = $(am_libprotoc_la_OBJECTS)
 binPROGRAMS_INSTALL = $(INSTALL_PROGRAM)
 PROGRAMS = $(bin_PROGRAMS) $(noinst_PROGRAMS)
@@ -181,6 +182,7 @@ F77 = @F77@
 FFLAGS = @FFLAGS@
 GCC_FALSE = @GCC_FALSE@
 GCC_TRUE = @GCC_TRUE@
+GREP = @GREP@
 INSTALL_DATA = @INSTALL_DATA@
 INSTALL_PROGRAM = @INSTALL_PROGRAM@
 INSTALL_SCRIPT = @INSTALL_SCRIPT@
@@ -209,12 +211,9 @@ SET_MAKE = @SET_MAKE@
 SHELL = @SHELL@
 STRIP = @STRIP@
 VERSION = @VERSION@
-ac_ct_AR = @ac_ct_AR@
 ac_ct_CC = @ac_ct_CC@
 ac_ct_CXX = @ac_ct_CXX@
 ac_ct_F77 = @ac_ct_F77@
-ac_ct_RANLIB = @ac_ct_RANLIB@
-ac_ct_STRIP = @ac_ct_STRIP@
 acx_pthread_config = @acx_pthread_config@
 am__fastdepCC_FALSE = @am__fastdepCC_FALSE@
 am__fastdepCC_TRUE = @am__fastdepCC_TRUE@
@@ -232,23 +231,30 @@ build_cpu = @build_cpu@
 build_os = @build_os@
 build_vendor = @build_vendor@
 datadir = @datadir@
+datarootdir = @datarootdir@
+docdir = @docdir@
+dvidir = @dvidir@
 exec_prefix = @exec_prefix@
 host = @host@
 host_alias = @host_alias@
 host_cpu = @host_cpu@
 host_os = @host_os@
 host_vendor = @host_vendor@
+htmldir = @htmldir@
 includedir = @includedir@
 infodir = @infodir@
 install_sh = @install_sh@
 libdir = @libdir@
 libexecdir = @libexecdir@
+localedir = @localedir@
 localstatedir = @localstatedir@
 mandir = @mandir@
 mkdir_p = @mkdir_p@
 oldincludedir = @oldincludedir@
+pdfdir = @pdfdir@
 prefix = @prefix@
 program_transform_name = @program_transform_name@
+psdir = @psdir@
 sbindir = @sbindir@
 sharedstatedir = @sharedstatedir@
 sysconfdir = @sysconfdir@
@@ -294,7 +300,8 @@ nobase_include_HEADERS = \
   google/protobuf/compiler/parser.h                            \
   google/protobuf/compiler/cpp/cpp_generator.h                 \
   google/protobuf/compiler/java/java_generator.h               \
-  google/protobuf/compiler/python/python_generator.h
+  google/protobuf/compiler/python/python_generator.h           \
+  google/protobuf/compiler/perl/perl_generator.h
 
 lib_LTLIBRARIES = libprotobuf.la libprotoc.la
 libprotobuf_la_LIBADD = $(PTHREAD_LIBS)
@@ -381,7 +388,8 @@ libprotoc_la_SOURCES = \
   google/protobuf/compiler/java/java_primitive_field.h         \
   google/protobuf/compiler/java/java_service.cc                \
   google/protobuf/compiler/java/java_service.h                 \
-  google/protobuf/compiler/python/python_generator.cc
+  google/protobuf/compiler/python/python_generator.cc          \
+  google/protobuf/compiler/perl/perl_generator.cc
 
 protoc_LDADD = $(PTHREAD_LIBS) libprotobuf.la libprotoc.la
 protoc_SOURCES = google/protobuf/compiler/main.cc
@@ -640,6 +648,7 @@ distclean-compile:
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/message_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/parser_unittest.Po@am__quote@
+@AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/perl_generator.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printer.Plo@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/printer_unittest.Po@am__quote@
 @AMDEP_TRUE@@am__include@ @am__quote@./$(DEPDIR)/python_generator.Plo@am__quote@
@@ -1054,6 +1063,13 @@ python_generator.lo: google/protobuf/compiler/python/python_generator.cc
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='google/protobuf/compiler/python/python_generator.cc' object='python_generator.lo' libtool=yes @AMDEPBACKSLASH@
 @AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
 @am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o python_generator.lo `test -f 'google/protobuf/compiler/python/python_generator.cc' || echo '$(srcdir)/'`google/protobuf/compiler/python/python_generator.cc
+
+perl_generator.lo: google/protobuf/compiler/perl/perl_generator.cc
+@am__fastdepCXX_TRUE@	if $(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT perl_generator.lo -MD -MP -MF "$(DEPDIR)/perl_generator.Tpo" -c -o perl_generator.lo `test -f 'google/protobuf/compiler/perl/perl_generator.cc' || echo '$(srcdir)/'`google/protobuf/compiler/perl/perl_generator.cc; \
+@am__fastdepCXX_TRUE@	then mv -f "$(DEPDIR)/perl_generator.Tpo" "$(DEPDIR)/perl_generator.Plo"; else rm -f "$(DEPDIR)/perl_generator.Tpo"; exit 1; fi
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	source='google/protobuf/compiler/perl/perl_generator.cc' object='perl_generator.lo' libtool=yes @AMDEPBACKSLASH@
+@AMDEP_TRUE@@am__fastdepCXX_FALSE@	DEPDIR=$(DEPDIR) $(CXXDEPMODE) $(depcomp) @AMDEPBACKSLASH@
+@am__fastdepCXX_FALSE@	$(LIBTOOL) --tag=CXX --mode=compile $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -c -o perl_generator.lo `test -f 'google/protobuf/compiler/perl/perl_generator.cc' || echo '$(srcdir)/'`google/protobuf/compiler/perl/perl_generator.cc
 
 common_unittest.o: google/protobuf/stubs/common_unittest.cc
 @am__fastdepCXX_TRUE@	if $(CXX) $(DEFS) $(DEFAULT_INCLUDES) $(INCLUDES) $(AM_CPPFLAGS) $(CPPFLAGS) $(AM_CXXFLAGS) $(CXXFLAGS) -MT common_unittest.o -MD -MP -MF "$(DEPDIR)/common_unittest.Tpo" -c -o common_unittest.o `test -f 'google/protobuf/stubs/common_unittest.cc' || echo '$(srcdir)/'`google/protobuf/stubs/common_unittest.cc; \
@@ -1743,7 +1759,7 @@ check-TESTS: $(TESTS)
 	else :; fi
 
 distdir: $(DISTFILES)
-	$(mkdir_p) $(distdir)/google/protobuf $(distdir)/google/protobuf/compiler $(distdir)/google/protobuf/compiler/cpp $(distdir)/google/protobuf/compiler/java $(distdir)/google/protobuf/compiler/python $(distdir)/google/protobuf/io $(distdir)/google/protobuf/stubs $(distdir)/google/protobuf/testdata $(distdir)/solaris
+	$(mkdir_p) $(distdir)/google/protobuf $(distdir)/google/protobuf/compiler $(distdir)/google/protobuf/compiler/cpp $(distdir)/google/protobuf/compiler/java $(distdir)/google/protobuf/compiler/perl $(distdir)/google/protobuf/compiler/python $(distdir)/google/protobuf/io $(distdir)/google/protobuf/stubs $(distdir)/google/protobuf/testdata $(distdir)/solaris
 	@srcdirstrip=`echo "$(srcdir)" | sed 's|.|.|g'`; \
 	topsrcdirstrip=`echo "$(top_srcdir)" | sed 's|.|.|g'`; \
 	list='$(DISTFILES)'; for file in $$list; do \
