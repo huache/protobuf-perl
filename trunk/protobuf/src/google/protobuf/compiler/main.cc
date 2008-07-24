@@ -20,6 +20,7 @@
 #include <google/protobuf/compiler/cpp/cpp_generator.h>
 #include <google/protobuf/compiler/python/python_generator.h>
 #include <google/protobuf/compiler/java/java_generator.h>
+#include <google/protobuf/compiler/perl/perl_generator.h>
 
 
 int main(int argc, char* argv[]) {
@@ -41,6 +42,12 @@ int main(int argc, char* argv[]) {
   google::protobuf::compiler::python::Generator py_generator;
   cli.RegisterGenerator("--python_out", &py_generator,
                         "Generate Python source file.");
+
+
+  // Proto2 Perl
+  google::protobuf::compiler::perl::Generator perl_generator;
+  cli.RegisterGenerator("--perl_out", &perl_generator,
+                        "Generate Perl source file.");
 
   return cli.Run(argc, argv);
 }
