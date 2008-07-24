@@ -1,7 +1,0 @@
-Directory layout:
-
- * protobuf:
-
-     Clone of:
-     http://protobuf.googlecode.com/files/protobuf-2.0.0beta.tar.gz
-     (with Perl support added)
