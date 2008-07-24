@@ -81,11 +81,12 @@ void PrintTopBoilerplate(io::Printer* printer) {
       "use strict;\n"
       "use warnings;\n"
       "use 5.6.1;\n"
-      "use Google::Net::Proto2::Descriptor;\n"
-      "use Google::Net::Proto2::EnumDescriptor;\n"
-      "use Google::Net::Proto2::EnumValueDescriptor;\n"
-      "use Google::Net::Proto2::FieldDescriptor;\n"
-      "use Google::Net::Proto2::Message;\n"
+      "use Protobuf::Descriptor;\n"
+      "use Protobuf::EnumDescriptor;\n"
+      "use Protobuf::EnumValueDescriptor;\n"
+      "use Protobuf::FieldDescriptor;\n"
+      "use Protobuf::Message;\n"
+      "use Protobuf::MessageOptions;\n"
       "\n");
 }
 
@@ -95,7 +96,7 @@ string EnumValueDescriptorExpression(
     const EnumValueDescriptor& descriptor) {
   // TODO(bradfitz): Fix up EnumValueDescriptor "type" fields.
   // More circular references.  ::sigh::
-  return strings::Substitute("EnumValueDescriptor->new("
+  return strings::Substitute("Protobuf::EnumValueDescriptor->new("
                              "name => '$0', "
                              "index => $1, "
                              "number => $2, "
@@ -161,7 +162,7 @@ void PrintFieldDescriptor(const FieldDescriptor& field, bool is_extension,
   // these fields in correctly after all referenced descriptors have been
   // defined and/or imported (see FixForeignFieldsInDescriptors()).
   const char field_descriptor_decl[] =
-      "FieldDescriptor->new(\n"
+      "Protobuf::FieldDescriptor->new(\n"
       "  name => '`name`', index => `index`, number => `number`,\n"
       "  type => `type`, cpp_type => `cpp_type`, label => `label`,\n"
       "  default_value => `default_value`,\n"
@@ -221,7 +222,7 @@ void PrintOptionsInDescriptor(
       message_descriptor.options().GetReflection();
   reflection->ListFields(&fields);
 
-  printer->Print("options => MessageOptions->new(\n");
+  printer->Print("options => Protobuf::MessageOptions->new(\n");
   vector<const FieldDescriptor*>::iterator iter;
   for (iter = fields.begin(); iter != fields.end(); ++iter) {
     if ((*iter)->label() == FieldDescriptor::LABEL_REPEATED) {
@@ -293,16 +294,6 @@ bool Generator::Generate(const FileDescriptor* file,
   PrintTopBoilerplate(printer_);
   printer_->Print("package `package_name`;\n\n",
                   "package_name", package_name);
-  printer_->Print(
-      "use constant Message => \"Google::Net::Proto2::Message\";\n"
-      "use constant Descriptor => \"Google::Net::Proto2::Descriptor\";\n"
-      "use constant EnumDescriptor => "
-      "\"Google::Net::Proto2::EnumDescriptor\";\n"
-      "use constant EnumValueDescriptor => "
-      "\"Google::Net::Proto2::EnumValueDescriptor\";\n"
-      "use constant FieldDescriptor => "
-      "\"Google::Net::Proto2::FieldDescriptor\";\n"
-      "\n");
 
   printer_->Print("## Top-level enums:\n");
   PrintTopLevelEnums();
@@ -382,7 +373,7 @@ void Generator::PrintEnum(const EnumDescriptor& enum_descriptor) const {
   m["full_name"] = enum_descriptor.full_name();
   m["filename"] = enum_descriptor.name();
   const char enum_descriptor_template[] =
-      "our $`descriptor_name` = EnumDescriptor->new(\n"
+      "our $`descriptor_name` = Protobuf::EnumDescriptor->new(\n"
       "  name => '`name`',\n"
       "  full_name => '`full_name`',\n"
       "  filename => '`filename`',\n"
@@ -442,7 +433,7 @@ void Generator::PrintDescriptor(const Descriptor& message_descriptor) const {
 
   printer_->Print("\n");
   printer_->Print(
-      "our $`descriptor_name` = Google::Net::Proto2::Descriptor->new(\n",
+      "our $`descriptor_name` = Protobuf::Descriptor->new(\n",
       "descriptor_name",
       ModuleLevelDescriptorName(message_descriptor));
   printer_->Indent();
@@ -506,7 +497,7 @@ void Generator::PrintMessages() const {
 void Generator::PrintMessage(
     const string& class_prefix,
     const Descriptor& message_descriptor) const {
-  printer_->Print("Message->GenerateClass('`name`', ", "name",
+  printer_->Print("Protobuf::Message->GenerateClass('`name`', ", "name",
                   class_prefix + message_descriptor.name());
   printer_->Print("$`descriptor_name`);\n",
                   "descriptor_name",
