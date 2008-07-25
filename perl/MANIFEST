@@ -3,4 +3,7 @@ lib/Protobuf/AccessorNamingPolicy.pm
 Makefile.PL
 MANIFEST			This list of files
 README
+t/autogen/Memcache.pm
+t/autogen/Memcache.pm.orig
 t/descriptors.t
+t/memcache-service.t
