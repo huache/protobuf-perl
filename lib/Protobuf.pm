@@ -1,4 +1,7 @@
+package Protobuf;
 use strict;
+
+our $VERSION = '0.01';
 
 package Protobuf::EnumDescriptor;
 
