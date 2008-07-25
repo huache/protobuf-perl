@@ -1,0 +1,183 @@
+// Copyright 2008 Google Inc. 
+// All Rights Reserved. 
+// 
+// The memcache API provides a memcached-alike API to App Engine applications. 
+// 
+// If anything in this document is unclear, refer to the official 
+// memcached protocol specs: 
+//   http://code.sixapart.com/svn/memcached/tags/1.2.4/doc/protocol.txt 
+
+syntax = "proto2"; 
+package appengine_api; 
+
+message MemcacheServiceError { 
+  enum ErrorCode { 
+    OK = 0; 
+    UNSPECIFIED_ERROR = 1; 
+  } 
+} 
+
+message MemcacheGetRequest { 
+  repeated bytes key = 1; 
+} 
+
+message MemcacheGetResponse { 
+  repeated group Item = 1 { 
+    required bytes key = 2; 
+    required bytes value = 3; 
+    optional fixed32 flags = 4;  // server-opaque (app-owned) flags 
+  } 
+} 
+
+message MemcacheSetRequest { 
+  enum SetPolicy { 
+    SET = 1;  // set value in memcached, unconditionally 
+    ADD = 2;  // add to memcached, if it doesn't already exist 
+    REPLACE = 3;  // put it in memcached, but only if it's already in there 
+  } 
+  repeated group Item = 1 { 
+    required bytes key = 2;  // max 250 bytes, per upstream spec 
+    required bytes value = 3; 
+    // From the docs above: 
+    // <flags> is an arbitrary 32-bit unsigned integer that the server 
+    // stores along with the data and sends back when the item is 
+    // retrieved. Clients may use this as a bit field to store 
+    // data-specific information; this field is opaque to the server. 
+    optional fixed32 flags = 4; 
+    optional SetPolicy set_policy = 5 [default = SET]; 
+    // unixtime to expire key. 0 or unset means "no expiration" 
+    // From the memcached documentation: 
+    // <exptime> is expiration time. If it's 0, the item never expires 
+    // (although it may be deleted from the cache to make place for 
+    // other items). If it's non-zero (either Unix time or offset in 
+    // seconds from current time), it is guaranteed that clients will 
+    // not be able to retrieve this item after the expiration time 
+    // arrives (measured by server time). 
+    optional fixed32 expiration_time = 6 [default = 0]; 
+  } 
+} 
+
+message MemcacheSetResponse { 
+  enum SetStatusCode { 
+    STORED = 1; 
+    NOT_STORED = 2;  // for policy reasons, not error reasons 
+    ERROR = 3;       // not set due to some server error 
+  } 
+  // one set_status will be returned for each set key, in the same 
+  // order that the requests were in. 
+  repeated SetStatusCode set_status = 1; 
+} 
+
+message MemcacheDeleteRequest { 
+  repeated group Item = 1 { 
+    required bytes key = 2; // max 250 bytes, per upstream spec 
+    // From the upstream memcached protocol docs on delete time: 
+    // 
+    //  - <time> is the amount of time in seconds (or Unix time until which) 
+    //    the client wishes the server to refuse "add" and "replace" commands 
+    //    with this key. For this amount of item, the item is put into a 
+    //    delete queue, which means that it won't possible to retrieve it by 
+    //    the "get" command, but "add" and "replace" command with this key 
+    //    will also fail (the "set" command will succeed, however). After the 
+    //    time passes, the item is finally deleted from server memory. 
+    // 
+    //    The parameter <time> is optional, and, if absent, defaults to 0 
+    //    (which means that the item will be deleted immediately and further 
+    //    storage commands with this key will succeed). 
+    // There's no limit to what this value may be, outside of the limit of 
+    // it being a 32-bit int. 
+    optional fixed32 delete_time = 3 [default = 0]; 
+  } 
+} 
+
+message MemcacheDeleteResponse { 
+  enum DeleteStatusCode { 
+    DELETED = 1; 
+    NOT_FOUND = 2; 
+  } 
+  // one set_status will be returned for each set key, matching the 
+  // order of the requested items to delete. 
+  repeated DeleteStatusCode delete_status = 1; 
+} 
+
+// The memcached protocol spec defines the deltas for both "incr" 
+// and "decr" as uint64 values.  Since we're lumping these together 
+// as one RPC, we also need the optional direction to specify decrementing. 
+// By default the delta is '1' and direction is increment (the common use case).
+message MemcacheIncrementRequest { 
+  enum Direction { 
+    INCREMENT = 1; 
+    DECREMENT = 2; 
+  }; 
+  required bytes key = 1;  // max 250 bytes, per upstream spec 
+  // The amount to increment/decrement the value by, if it already 
+  // exists in the cache.  Note that this does not implicitly create a 
+  // new counter starting at the specified delta.  To initialize a new 
+  // counter, the client must Set an initial value.  (which they send 
+  // as a decimal string, just like memcached). 
+  optional uint64 delta = 2 [default = 1]; 
+  optional Direction direction = 3 [default = INCREMENT]; 
+} 
+
+message MemcacheIncrementResponse { 
+  // The new value, only set if the item was found.  Per the spec, 
+  // underflow is capped at zero, but overflow wraps around. 
+  optional uint64 new_value = 1; 
+} 
+
+message MemcacheFlushRequest { 
+  // This space intentionally left blank.  Reserved for future 
+  // expansion. 
+  // Note: we don't support upstream's flush_all 'time' parameter 
+} 
+
+message MemcacheFlushResponse { 
+  // This space intentionally left blank.  Reserved for future 
+  // expansion. 
+} 
+
+message MemcacheStatsRequest { 
+  // This space intentionally left blank.  Reserved for future 
+  // expansion. 
+} 
+
+// This is a merge of all the NamespaceStats for each of the namespaces owned by 
+// the requesting application. 
+message MergedNamespaceStats { 
+  // All these stats may reset at various times. 
+  // Counters:  (only increase, except when stats reset) 
+  required uint64 hits = 1; 
+  required uint64 misses = 2; 
+  required uint64 byte_hits = 3;  // bytes transferred on gets 
+  // Not counters: 
+  required uint64 items = 4; 
+  required uint64 bytes = 5; 
+  // How long (in seconds) it's been since the oldest item in the 
+  // namespace's LRU chain has been accessed.  This is how long a new 
+  // item can currently be put in the cache and survive without being 
+  // accessed.  This is _not_ about the time since the item was 
+  // created, but how long it's been since it was accessed. 
+  required fixed32 oldest_item_age = 6; 
+} 
+
+message MemcacheStatsResponse { 
+  // This is set if the namespace was found: 
+  optional MergedNamespaceStats stats = 1; 
+} 
+
+// Interface for memcache service 
+service MemcacheService { 
+  // Get item(s) from memcache. 
+  rpc Get(MemcacheGetRequest) returns (MemcacheGetResponse) {}; 
+  // Set/add/replace item(s) in memcache. 
+  rpc Set(MemcacheSetRequest) returns (MemcacheSetResponse) {}; 
+  // Delete items from memcache. 
+  rpc Delete(MemcacheDeleteRequest) returns (MemcacheDeleteResponse) {}; 
+  // Atomic increment/decrement. 
+  rpc Increment(MemcacheIncrementRequest) returns (MemcacheIncrementResponse) {}; 
+  // Wipe. 
+  rpc FlushAll(MemcacheFlushRequest) returns (MemcacheFlushResponse) {}; 
+  // Get stats. 
+  rpc Stats(MemcacheStatsRequest) returns (MemcacheStatsResponse) {}; 
+}
+
