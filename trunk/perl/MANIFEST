@@ -1,0 +1,6 @@
+lib/Protobuf.pm
+lib/Protobuf/AccessorNamingPolicy.pm
+Makefile.PL
+MANIFEST			This list of files
+README
+t/descriptors.t
