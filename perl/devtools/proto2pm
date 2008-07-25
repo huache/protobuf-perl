@@ -1,0 +1,9 @@
+#!/bin/sh
+
+cd ../protobuf/src
+make -j2 protoc
+cd ../../perl
+../protobuf/src/protoc --perl_out=t/autogen t/autogen/memcache.proto
+cp t/autogen/ProtoBuf/t/autogen/memcache.pm t/autogen/Memcache.pm
+mv t/autogen/ProtoBuf/t/autogen/memcache.pm t/autogen/Memcache.pm.orig
+
