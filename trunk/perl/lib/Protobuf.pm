@@ -97,6 +97,12 @@ sub GenerateClass {
         return $class->meta->new_object(%param);
     };
 
+    $methods{serialize_to_string} = sub {
+        my $self = shift;
+        my $fields_ref = $descriptor->fields;
+        return Protobuf::Message::serialize_to_string($self, $fields_ref);
+    };
+
     foreach my $field_des (@{ $descriptor->fields }) {
         my $name = $field_des->name;
         warn "# in $name, field: $name\n";
@@ -149,9 +155,17 @@ sub GenerateClass {
         ));
 }
 
+# each auto-generated class overrides serialize_to_string just to
+# capture its field list and pass it to us here.
 sub serialize_to_string {
-    my ($self) = @_;
-    return "XXX NOT DONE";
+    my ($self, $fieldsref) = @_;
+    my $buf;
+
+    foreach my $field (@$fieldsref) {
+        my $name = $field->name;
+        $buf .= "[$name]";
+    }
+    return $buf;
 }
 
 1;
