@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 19;
+use Test::More tests => 24;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
@@ -30,7 +30,11 @@ is($events->[1]{fieldnum}, 1);
 
 # memcache get request
 ok($events = Protobuf::Decoder->decode("\n\x03foo\n\x03bar"));
-diag(escaped(Dumper($events)));
+is(scalar @$events, 2);
+is($events->[0]{value}, "foo");
+is($events->[0]{fieldnum}, 1);
+is($events->[1]{value}, "bar");
+is($events->[1]{fieldnum}, 1);
 
 # groups.  memcache get response.  (deprecated, but used in app engine
 # because they're from proto1 originally)
