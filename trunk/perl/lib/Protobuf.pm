@@ -54,6 +54,10 @@ sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
     my @attributes;
     my %methods;
+    $methods{new} = sub {
+        my ($class, %param) = @_;
+        $class->meta->new_object(%param);
+    };
     Class::MOP::Class->create(
         $name => (
             attributes => \@attributes,
