@@ -105,21 +105,23 @@ sub GenerateClass {
             # otherwise it adds a simple type (string, int, etc)
             $methods{"add_$name"} = sub {
                 my $self = shift;
+                my $list = ($self->{$name} ||= []);
 
                 if ($field_des->is_aggregate) {
                     die "not expecting any arguments" if scalar @_;
                     my $message_type = $field_des->message_type;
                     my $instance = $message_type->class_name->new;
-                    # TODO(bradfitz): append this instance to arrayref of items
+                    push @$list, $instance;
                     return $instance;
                 }
 
                 my $value = shift;
-                # TODO(bradfitz): implement. :)
+                push @$list, $value;
+                return;
             };
             $methods{"${name}s"} = sub {
-                # TODO(bradfitz): return an arrayref.
-                return [];
+                my $self = shift;
+                return $self->{$name} || [];  # or empty list
             };
             $methods{"${name}_size"} = sub {
                 my $self = shift;
