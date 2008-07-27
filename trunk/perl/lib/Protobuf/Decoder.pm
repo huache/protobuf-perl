@@ -3,11 +3,14 @@ use strict;
 
 sub decode {
     my ($class, $data) = @_;
+
+    # array of events to return
     my @evt;
-    pos($data) = 0;  # just to make sure.
-    my $done = sub {
-        return pos($data) == length($data);
-    };
+
+    # reset where \G will match, just in case it's not zero already.
+    pos($data) = 0;
+
+    # consumes a varint from the front of the stream
     my $get_varint = sub {
         die "Expected varint at position " . pos($data) unless
             $data =~ /\G([\x80-\xff]*[\x00-\x7f])/gc;
@@ -20,6 +23,8 @@ sub decode {
         }
         return $num;
     };
+
+    # consumes n bytes from the front of the stream.
     my $consume = sub {
         my $length = shift;
         if (pos($data) + $length > length($data)) {
@@ -29,8 +34,10 @@ sub decode {
         pos($data) += $length;
         return $value;
     };
+
+    # loop while we have still have data to parse.
     my $group_depth = 0;
-    while (!$done->()) {
+    while (pos($data) != length($data)) {
         my $field_and_wire = $get_varint->();
         my $wire_format = $field_and_wire & 7;  # bottom three bits.
         my $field_num = $field_and_wire >> 3;
@@ -68,6 +75,7 @@ sub decode {
             value => $value,
         };
     }
+
     die "Still in a group after encountering the end of the stream." if $group_depth;
     return \@evt;
 }
