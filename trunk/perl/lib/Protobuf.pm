@@ -136,7 +136,7 @@ sub GenerateClass {
             };
 
         } else {
-            my $attr = Class::MOP::Attribute->new(
+            my $attr = Moose::Meta::Attribute->new(
                 $name => (
                     reader => $name,
                     writer => "set_$name",
@@ -147,7 +147,7 @@ sub GenerateClass {
         }
     }
 
-    Class::MOP::Class->create(
+    Moose::Meta::Class->create(
         $name => (
             superclasses => ['Protobuf::Message'],
             attributes => \@attributes,
