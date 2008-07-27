@@ -171,10 +171,20 @@ sub serialize_to_string {
   FIELD:
     foreach my $field (@$fieldsref) {
         my $name = $field->name;
+        my $emit = sub {
+            my ($value) = @_;
+            # TODO(bradfitz): ...
+        };
         if ($field->is_repeated) {
             my $size_method = "${name}_size";
             next FIELD unless $self->$size_method > 0;
-            $buf .= "[$name-repeated!]";
+            $buf .= "[$name-repeated:";
+            my $list_method = "${name}s";
+            for my $value (@{ $self->$list_method }) {
+                $buf .= "[$name-$value]";
+                # TODO(bradfitz): if it's ::isa("Protobuf::Message") emit it
+            }
+            $buf .= "]";
         } else {
             my $has_method = "has_${name}";
             my $has_it = $self->$has_method;
