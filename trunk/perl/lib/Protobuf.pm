@@ -88,11 +88,12 @@ sub is_aggregate {
 package Protobuf::Message;
 use strict;
 
-require Protobuf::Attribute::Field;
+require Protobuf::Attribute::Field::Repeated;
+require Protobuf::Attribute::Field::Scalar;
 
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
-    my @attributes;
+
     my %methods;
     $methods{new} = sub {
         my ($class, %param) = @_;
@@ -105,57 +106,12 @@ sub GenerateClass {
         return Protobuf::Message::serialize_to_string($self, $fields_ref);
     };
 
-    foreach my $field_des (@{ $descriptor->fields }) {
-        my $name = $field_des->name;
-        warn "# in $name, field: $name\n";
-        if ($field_des->is_repeated) {
-            my $getter = "${name}s";
-            # adding a field of an aggregate type creates an item of that type.
-            # otherwise it adds a simple type (string, int, etc)
-            $methods{"add_$name"} = sub {
-                my $self = shift;
-                my $list = $self->$getter;
-
-                if ($field_des->is_aggregate) {
-                    die "not expecting any arguments" if scalar @_;
-                    my $message_type = $field_des->message_type;
-                    my $instance = $message_type->class_name->new;
-                    push @$list, $instance;
-                    return $instance;
-                }
-
-                my $value = shift;
-                push @$list, $value;
-                return;
-            };
-            $methods{"${name}_size"} = sub {
-                my $self = shift;
-                my $method_name = "${name}s";
-                return scalar @{ $self->$method_name };
-            };
-
-            my $attr = Moose::Meta::Attribute->new(
-                $name => (
-					traits => [qw(Protobuf)],
-                    field => $field_des,
-                    reader => $getter,
-                    writer => "set_$name",
-                    default => sub { [] },
-                ));
-            push @attributes, $attr;
-        } else {
-            my $attr = Moose::Meta::Attribute->new(
-                $name => (
-					traits => [qw(Protobuf)],
-                    field => $field_des,
-                    reader => $name,
-                    writer => "set_$name",
-                    predicate => "has_$name",
-                    # default => TODO(bradfitz): get default from fielddescriptor
-                ));
-            push @attributes, $attr;
-        }
-    }
+    my @attributes = map { 
+        Moose::Meta::Attribute->interpolate_class_and_new( $_->name => (
+            traits => [ 'Protobuf::Field::' . ( $_->is_repeated ? 'Repeated' : 'Scalar' ) ],
+            field => $_,
+        ));
+    } @{ $descriptor->fields };
 
     Moose::Meta::Class->create(
         $name => (
