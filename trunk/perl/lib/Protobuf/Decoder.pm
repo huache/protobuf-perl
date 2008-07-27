@@ -42,8 +42,10 @@ sub decode {
             $value = $consume->($length);
         } elsif ($wire_format == 1) {  # 64-bit
             $value = $consume->(8);
+            # TODO(brafitz): decode?  or at later stage?
         } elsif ($wire_format == 5) {  # 32-bit
             $value = $consume->(4);
+            # TODO(brafitz): decode?  or at later stage?
         } elsif ($wire_format == 3) {  # start group
             push @evt, {
                 fieldnum => $field_num,
