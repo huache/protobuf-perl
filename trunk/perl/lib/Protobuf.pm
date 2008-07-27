@@ -40,8 +40,11 @@ sub fields_by_name {
 }
 
 package Protobuf::FieldDescriptor;
+use Moose::Policy 'Protobuf::AccessorNamingPolicy';
 use Moose;
 
 has 'name' => (is => 'rw', isa => 'Str');
+has 'message_type' => (is => 'rw', isa => 'Maybe[Protobuf::Descriptor]');
+has 'enum_type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
 
 1;
