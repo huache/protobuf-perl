@@ -27,7 +27,17 @@ use Moose;
 package Protobuf::Descriptor;
 use Moose;
 
+has 'name' => (is => 'rw', isa => 'Str');
+has 'full_name' => (is => 'rw', isa => 'Str');
 has 'fields' => (is => 'rw', isa => 'ArrayRef[Protobuf::FieldDescriptor]');
+
+sub class_name {
+    my $self = shift;
+    my $name = $self->full_name;
+    $name =~ s/^appengine_api\.//; # TODO(bradfitz): Hack. temporary.
+    $name =~ s/\./::/g;
+    return $name;
+}
 
 sub fields_by_name {
     my ($self, $field_name) = @_;
@@ -91,11 +101,20 @@ sub GenerateClass {
         my $name = $field_des->name;
         warn "# in $name, field: $name\n";
         if ($field_des->is_repeated) {
+            # adding a field of an aggregate type creates an item of that type.
+            # otherwise it adds a simple type (string, int, etc)
             $methods{"add_$name"} = sub {
+                my $self = shift;
+
                 if ($field_des->is_aggregate) {
-                    warn "# adding a repeated aggregate for $name\n";
+                    die "not expecting any arguments" if scalar @_;
+                    my $message_type = $field_des->message_type;
+                    my $instance = $message_type->class_name->new;
+                    # TODO(bradfitz): append this instance to arrayref of items
+                    return $instance;
                 }
-                
+
+                my $value = shift;
                 # TODO(bradfitz): implement. :)
             };
             $methods{"${name}s"} = sub {
