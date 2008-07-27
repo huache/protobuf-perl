@@ -137,7 +137,7 @@ sub GenerateClass {
 
         } else {
             my $attr = Class::MOP::Attribute->new(
-                ('$' . $name) => (
+                $name => (
                     reader => $name,
                     writer => "set_$name",
                     predicate => "has_$name",
