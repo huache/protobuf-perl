@@ -107,11 +107,12 @@ sub GenerateClass {
         my $name = $field_des->name;
         warn "# in $name, field: $name\n";
         if ($field_des->is_repeated) {
+            my $getter = "${name}s";
             # adding a field of an aggregate type creates an item of that type.
             # otherwise it adds a simple type (string, int, etc)
             $methods{"add_$name"} = sub {
                 my $self = shift;
-                my $list = ($self->{$name} ||= []);
+                my $list = $self->$getter;
 
                 if ($field_des->is_aggregate) {
                     die "not expecting any arguments" if scalar @_;
@@ -125,19 +126,25 @@ sub GenerateClass {
                 push @$list, $value;
                 return;
             };
-            $methods{"${name}s"} = sub {
-                my $self = shift;
-                return $self->{$name} || [];  # or empty list
-            };
             $methods{"${name}_size"} = sub {
                 my $self = shift;
                 my $method_name = "${name}s";
                 return scalar @{ $self->$method_name };
             };
 
+            my $attr = Moose::Meta::Attribute->new(
+                $name => (
+                    field => $field_des,
+                    reader => $getter,
+                    writer => "set_$name",
+                    predicate => "has_$name",
+                    default => sub { [] },
+                ));
+            push @attributes, $attr;
         } else {
             my $attr = Moose::Meta::Attribute->new(
                 $name => (
+                    field => $field_des,
                     reader => $name,
                     writer => "set_$name",
                     predicate => "has_$name",
