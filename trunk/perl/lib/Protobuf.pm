@@ -47,4 +47,18 @@ has 'name' => (is => 'rw', isa => 'Str');
 has 'message_type' => (is => 'rw', isa => 'Maybe[Protobuf::Descriptor]');
 has 'enum_type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
 
+package Protobuf::Message;
+use strict;
+
+sub GenerateClass {
+    my ($class, $name, $descriptor) = @_;
+    my @attributes;
+    my %methods;
+    Class::MOP::Class->create(
+        $name => (
+            attributes => \@attributes,
+            methods => \%methods,
+        ));
+}
+
 1;
