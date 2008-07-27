@@ -88,6 +88,8 @@ sub is_aggregate {
 package Protobuf::Message;
 use strict;
 
+require Protobuf::Attribute::Field;
+
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
     my @attributes;
@@ -134,6 +136,7 @@ sub GenerateClass {
 
             my $attr = Moose::Meta::Attribute->new(
                 $name => (
+					traits => [qw(Protobuf)],
                     field => $field_des,
                     reader => $getter,
                     writer => "set_$name",
@@ -143,6 +146,7 @@ sub GenerateClass {
         } else {
             my $attr = Moose::Meta::Attribute->new(
                 $name => (
+					traits => [qw(Protobuf)],
                     field => $field_des,
                     reader => $name,
                     writer => "set_$name",
