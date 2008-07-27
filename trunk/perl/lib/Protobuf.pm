@@ -47,6 +47,24 @@ has 'name' => (is => 'rw', isa => 'Str');
 has 'message_type' => (is => 'rw', isa => 'Maybe[Protobuf::Descriptor]');
 has 'enum_type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
 
+# label can be 1 (optional), 2 (required), 3 (repeated)
+has 'label' => (is => 'rw', isa => 'Int'); # TODO(bradfitz): but only 1, 2, or 3.
+
+sub is_repeated {
+    my $self = shift;
+    return $self->label == 3;
+}
+
+sub is_optional {
+    my $self = shift;
+    return $self->label == 1;
+}
+
+sub is_required {
+    my $self = shift;
+    return $self->label == 2;
+}
+
 package Protobuf::Message;
 use strict;
 
@@ -58,6 +76,17 @@ sub GenerateClass {
         my ($class, %param) = @_;
         $class->meta->new_object(%param);
     };
+
+    foreach my $field_des (@{ $descriptor->fields }) {
+        my $name = $field_des->name;
+        warn "# in $name, field: $name\n";
+        if ($field_des->is_repeated) {
+            
+        } else {
+
+        }
+    }
+
     Class::MOP::Class->create(
         $name => (
             superclasses => ['Protobuf::Message'],
