@@ -137,7 +137,6 @@ sub GenerateClass {
                     field => $field_des,
                     reader => $getter,
                     writer => "set_$name",
-                    predicate => "has_$name",
                     default => sub { [] },
                 ));
             push @attributes, $attr;
