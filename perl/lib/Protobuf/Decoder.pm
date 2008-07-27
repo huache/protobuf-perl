@@ -29,6 +29,7 @@ sub decode {
         pos($data) += $length;
         return $value;
     };
+    my $group_depth = 0;
     while (!$done->()) {
         my $field_and_wire = $get_varint->();
         my $wire_format = $field_and_wire & 7;  # bottom three bits.
@@ -43,14 +44,29 @@ sub decode {
             $value = $consume->(8);
         } elsif ($wire_format == 5) {  # 32-bit
             $value = $consume->(4);
+        } elsif ($wire_format == 3) {  # start group
+            push @evt, {
+                fieldnum => $field_num,
+                type => "start_group",
+            };
+            $group_depth++;
+            next;
+        } elsif ($wire_format == 4) {  # end group
+            push @evt, {
+                fieldnum => $field_num,
+                type => "end_group",
+            };
+            $group_depth--;
+            next;
+        } else {
+            die "Unsupported wire format: $wire_format\n";
         }
-
         push @evt, {
             fieldnum => $field_num,
-            wire_format => $wire_format,
             value => $value,
         };
     }
+    die "Still in a group after encountering the end of the stream." if $group_depth;
     return \@evt;
 }
 
