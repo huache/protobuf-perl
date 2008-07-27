@@ -41,7 +41,6 @@ sub decode {
             value => $value,
         };
     }
-    die "Unexpected data at position " . pos($data) unless $done->();
     return \@evt;
 }
 
