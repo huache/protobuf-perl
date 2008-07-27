@@ -60,9 +60,15 @@ sub GenerateClass {
     };
     Class::MOP::Class->create(
         $name => (
+            superclasses => ['Protobuf::Message'],
             attributes => \@attributes,
             methods => \%methods,
         ));
+}
+
+sub serialize_to_string {
+    my ($self) = @_;
+    return "XXX NOT DONE";
 }
 
 1;

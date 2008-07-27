@@ -9,6 +9,7 @@ use_ok("Memcache");
 
 # build up a get request
 my $get = MemcacheGetRequest->new;
+is($get->serialize_to_string, "");
 $get->add_key("foo");
 $get->add_key("bar");
 is($get->keys->[0], "foo");
