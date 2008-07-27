@@ -161,9 +161,22 @@ sub serialize_to_string {
     my ($self, $fieldsref) = @_;
     my $buf;
 
+  FIELD:
     foreach my $field (@$fieldsref) {
         my $name = $field->name;
-        $buf .= "[$name]";
+        if ($field->is_repeated) {
+            my $size_method = "${name}_size";
+            next FIELD unless $self->$size_method > 0;
+            $buf .= "[$name-repeated!]";
+        } else {
+            my $has_method = "has_${name}";
+            my $has_it = $self->$has_method;
+            if ($field->is_required && !$has_it) {
+                die "Missing required field '$name'\n";
+            }
+            next FIELD unless $has_it;
+            $buf .= "[$name-single]";
+        }
     }
     return $buf;
 }
