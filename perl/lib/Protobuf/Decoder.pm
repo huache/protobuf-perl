@@ -20,6 +20,15 @@ sub decode {
         }
         return $num;
     };
+    my $consume = sub {
+        my $length = shift;
+        if (pos($data) + $length > length($data)) {
+            die "Truncated message in middle of $length byte value.\n";
+        }
+        my $value = substr($data, pos($data), $length);
+        pos($data) += $length;
+        return $value;
+    };
     while (!$done->()) {
         my $field_and_wire = $get_varint->();
         my $wire_format = $field_and_wire & 7;  # bottom three bits.
@@ -29,12 +38,13 @@ sub decode {
             $value = $get_varint->();
         } elsif ($wire_format == 2) { # a varint saying length
             my $length = $get_varint->();
-            if (pos($data) + $length > length($data)) {
-                die "Truncated message in middle of $length byte embedded string/message.\n";
-            }
-            $value = substr($data, pos($data), $length);
-            pos($data) += $length;
+            $value = $consume->($length);
+        } elsif ($wire_format == 1) {  # 64-bit
+            $value = $consume->(8);
+        } elsif ($wire_format == 5) {  # 32-bit
+            $value = $consume->(4);
         }
+
         push @evt, {
             fieldnum => $field_num,
             wire_format => $wire_format,
