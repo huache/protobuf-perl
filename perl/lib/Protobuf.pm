@@ -81,9 +81,15 @@ sub GenerateClass {
         my $name = $field_des->name;
         warn "# in $name, field: $name\n";
         if ($field_des->is_repeated) {
-            
+            $methods{"add_$name"} = sub {
+                # TODO(bradfitz): implement. :)
+            };
+            $methods{"${name}s"} = sub {
+                # TODO(bradfitz): return an arrayref.
+            };
         } else {
-
+            # TODO(bradfitz): implement. :)
+            # do normal ->foo and ->set_foo (and ->has_foo) accessors.
         }
     }
 
