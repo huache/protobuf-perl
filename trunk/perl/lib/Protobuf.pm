@@ -138,33 +138,13 @@ sub GenerateClass {
         return $buf;
     };
 
-
-    my @attributes;
-
-    foreach my $field ( @{ $descriptor->fields } ) {
-        my $type_constraint;
-
-        if ( my $message_desc = $field->message_type ) {
-            $type_constraint = class_type($message_desc->class_name);
-        }
-
-        if ( my $enum = $field->enum_type) {
-            # create FIXME type constraint (range check)
-            foreach my $value ( @{ $enum->values } ) {
-                my $fqname = join("::", $name, $enum->name, $value->name);
-                my $number = $value->number;
-                no strict 'refs';
-                *$fqname = sub () { $number };
-            }
-        }
-
-        push @attributes, Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
+    my @attributes = map {
+        my $field = $_;
+        Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
             traits => [ 'Protobuf::Field::' . ( $field->is_repeated ? 'Repeated' : 'Scalar' ) ],
             field => $field,
-            type_constraint => $type_constraint,
         ));
-
-    }
+    } @{ $descriptor->fields };
 
     my $c = Moose::Meta::Class->create(
         $name => (

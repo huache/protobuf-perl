@@ -16,7 +16,7 @@ before _process_options => sub {
     $options->{predicate} ||= "set_$name";
     $options->{default}   ||= sub { [] };
 
-    my $type_constraint = $options->{type_constraint} || type_constraint($options->{field}->type);
+    my $type_constraint = $options->{type_constraint} || $class->field_to_type_constraint($options->{field});
 
     $options->{type_constraint} = Moose::Meta::TypeConstraint::Parameterized->new(
         name           => 'ArrayRef[' . $type_constraint->name . ']',
