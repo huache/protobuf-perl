@@ -11,6 +11,8 @@ use Moose;
 has 'name' => (is => 'rw', isa => 'Str');
 has 'fullname' => (is => 'rw', isa => 'Str');
 
+has 'values' => (is => 'rw', isa => 'ArrayRef[Protobuf::EnumValueDescriptor]' );
+
 package Protobuf::EnumValueDescriptor;
 
 use Moose::Policy 'Protobuf::AccessorNamingPolicy';
@@ -108,14 +110,25 @@ sub GenerateClass {
         return Protobuf::Message::serialize_to_string($self, $fields_ref);
     };
 
-    my @attributes = map { 
-        Moose::Meta::Attribute->interpolate_class_and_new( $_->name => (
-            traits => [ 'Protobuf::Field::' . ( $_->is_repeated ? 'Repeated' : 'Scalar' ) ],
-            field => $_,
-        ));
-    } @{ $descriptor->fields };
+    my @attributes;
 
-    Moose::Meta::Class->create(
+    foreach my $field ( @{ $descriptor->fields } ) {
+        push @attributes, Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
+            traits => [ 'Protobuf::Field::' . ( $field->is_repeated ? 'Repeated' : 'Scalar' ) ],
+            field => $field,
+        ));
+
+        if ( my $enum = $field->enum_type) {
+            foreach my $value ( @{ $enum->values } ) {
+                my $fqname = join("::", $name, $enum->name, $value->name);
+                my $number = $value->number;
+                no strict 'refs';
+                *$fqname = sub () { $number };
+            }
+        }
+    }
+
+    my $c = Moose::Meta::Class->create(
         $name => (
             superclasses => ['Protobuf::Message'],
             attributes => \@attributes,

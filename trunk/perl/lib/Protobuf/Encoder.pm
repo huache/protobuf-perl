@@ -50,15 +50,15 @@ sub encode_length_delimited {
     # pack("W/a*")
 }
 
-sub encode_wire_fixed_32 {
+sub encode_wire_fixed32 {
     my ( $self, $field, $buf ) = @_;
-    die "value must be a 4 octet bytes" if utf8::is_utf8($buf) || length($buf) != 4;
+    die "value must be a 4 octet byte" if utf8::is_utf8($buf) || length($buf) != 4;
     $self->encode_field_and_wire_type($field, WIRE_FIXED32) . $buf;
 }
 
-sub encode_wire_fixed_64 {
+sub encode_wire_fixed64 {
     my ( $self, $field, $buf ) = @_;
-    die "value must be an 8 octet bytes" if utf8::is_utf8($buf) || length($buf) != 8;
+    die "value must be an 8 octet byte" if utf8::is_utf8($buf) || length($buf) != 8;
     $self->encode_field_and_wire_type($field, WIRE_FIXED64) . $buf;
 }
 
@@ -97,8 +97,35 @@ sub encode_field_string {
 }
 
 sub encode_field_group {
-    my ( $self, $field ) = @_;
-    $self->encode_wire_start_group($field);
+    my ( $self, $field, @items ) = @_;
+
+    join('',
+        $self->encode_wire_start_group($field),
+        ( map { $_->serialize_to_string } @items ),
+        $self->encode_wire_end_group($field),
+    );
+}
+
+sub encode_field_fixed32 {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_fixed32($field, pack("V", $int));
+}
+
+sub encode_field_enum {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_varint($field, $int);
+}
+
+sub encode_field_uint64 {
+    my ( $self, $field, $bigint ) = @_;
+    $self->encode_wire_varint($field, $bigint);
+}
+
+sub encode_field_fixed64 {
+    my ( $self, $field, $bigint ) = @_;
+    my $hex = $bigint->as_hex;
+    my $bin = reverse pack('H16', substr($hex, 2));
+    $self->encode_wire_fixed64( $field, $bin );
 }
 
 __PACKAGE__
