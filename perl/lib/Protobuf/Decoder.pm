@@ -19,7 +19,7 @@ sub decode {
             $data =~ /\G([\x80-\xff]*[\x00-\x7f])/gc;
         my $varint_enc = $1;
         my $num = 0;
-        my $bytes = 0;
+        my $bytes = length($varint_enc) > 4 && !HAS_QUADS ? Math::BigInt->new(0) : 0;
         foreach my $byte (split(//, $varint_enc)) {
             my $byte_value = (ord($byte) & 0x7f) << (7 * $bytes++);
             $num += $byte_value;
