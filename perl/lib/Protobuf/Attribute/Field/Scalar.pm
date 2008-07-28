@@ -65,6 +65,20 @@ sub process_default {
     }
 }
 
+sub protobuf_emit {
+    my ( $self, $instance, $emit ) = @_;
+
+    my $field = $self->field;
+
+    if ( $self->has_value($instance) ) {
+        $emit->( $field, $self->get_value($instance) );
+    } else {
+        if ($field->is_required ) {
+            die sprintf "Missing required field '%s'\n", $self->name;
+        }
+    }
+}
+
 sub Moose::Meta::Attribute::Custom::Trait::Protobuf::Field::Scalar::register_implementation { __PACKAGE__ }
 
 __PACKAGE__
