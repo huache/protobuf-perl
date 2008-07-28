@@ -4,6 +4,7 @@ use Test::More tests => 1;
 use Protobuf;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
+use Math::BigInt lib => 'GMP';
 
 use_ok("Memcache");
 
