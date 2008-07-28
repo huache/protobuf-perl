@@ -83,6 +83,7 @@ BEGIN { use_ok("Memcache") };
 # increment request
 {
     my $p = MemcacheIncrementRequest->new;
+    is($p->delta, 1, "default value");
     $p->set_key("the_key");
     eval { $p->set_delta(-1) };
     ok($@);
