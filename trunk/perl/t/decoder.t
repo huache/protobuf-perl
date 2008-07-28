@@ -1,8 +1,13 @@
 #!/usr/bin/perl
 
+use strict;
+use warnings;
+
 use Test::More tests => 27;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
+
+no utf8;
 
 use_ok("Protobuf::Decoder");
 use Data::Dumper;
@@ -13,10 +18,22 @@ is(scalar @$events, 1);
 is($events->[0]{value}, 150);
 is($events->[0]{fieldnum}, 1);
 
+ok($events = Protobuf::Decoder->decode("\x08\x80\x80\x01"));
+is(scalar @$events, 1);
+is($events->[0]{value}, 16384);
+is($events->[0]{fieldnum}, 1);
+
 ok($events = Protobuf::Decoder->decode("\x12\x07\x74\x65\x73\x74\x69\x6e\x67"));
 is(scalar @$events, 1);
 is($events->[0]{value}, "testing");
 is($events->[0]{fieldnum}, 2);
+
+ok($events = Protobuf::Decoder->decode("\x82\x08\x07\x74\x65\x73\x74\x69\x6e\x67"));
+is(scalar @$events, 1);
+is($events->[0]{value}, "testing");
+is($events->[0]{fieldnum}, 128);
+
+ok( !utf8::is_utf8($events->[0]{value}), "utf8 bit is off" );
 
 # and both tests above, together:
 ok($events = Protobuf::Decoder->decode(
