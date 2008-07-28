@@ -11,7 +11,12 @@ use Protobuf::Types;
 our @EXPORT = qw(escaped bin_is BI);
 
 sub BI {
-    return HAS_QUADS ? eval('no warnings "portable"; ' . $_[0]) : Math::BigInt->new($_[0]);
+    if ( HAS_QUADS ) {
+        my ( $high, $low ) = unpack("NN", pack("H*", substr($_[0],2)));
+        return ( $high << 32 | $low );
+    } else {
+        return Math::BigInt->new($_[0]);
+    }
 }
 
 sub escaped {
