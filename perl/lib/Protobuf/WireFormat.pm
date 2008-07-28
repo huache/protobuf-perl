@@ -7,7 +7,7 @@ sub zigzag_encode {
     if ($v >= 0) {
         return $v << 1;
     }
-    return (($v << 1) ^ (~0)) | 0x1;
+    return (($v << 1) ^ -1) | 0x1;
 }
 
 1;
