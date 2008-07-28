@@ -14,19 +14,19 @@ use Protobuf::Types;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
-BEGIN { use_ok("Memcache") };
+BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
 
 {
-    my $meta = Class::MOP::Class->initialize("MemcacheGetRequest");
+    my $meta = Class::MOP::Class->initialize("AppEngine::Service::MemcacheGetRequest");
     isa_ok( $meta, "Class::MOP::Class" );
     isa_ok( $meta, "Protobuf::Meta::Message" );
     isa_ok( $meta->descriptor, "Protobuf::Descriptor" );
-    ok( MemcacheGetRequest->can("meta"), "'meta' method not injected" );
+    ok( AppEngine::Service::MemcacheGetRequest->can("meta"), "'meta' method not injected" );
 }
 
 # build up a get request
 {
-    my $get = MemcacheGetRequest->new;
+    my $get = AppEngine::Service::MemcacheGetRequest->new;
     is($get->serialize_to_string, "");
     $get->add_key("foo");
     $get->add_key("bar");
@@ -39,7 +39,7 @@ BEGIN { use_ok("Memcache") };
 # build up a get response
 {
     my $it;
-    my $getres = MemcacheGetResponse->new;
+    my $getres = AppEngine::Service::MemcacheGetResponse->new;
     $it = $getres->add_item; # creates new item and appends it
     $it->set_key("foo");
     $it->set_value("VALUE_OF_FOO");
@@ -52,7 +52,7 @@ BEGIN { use_ok("Memcache") };
 # build up a set request
 {
     my $it;
-    my $setreq = MemcacheSetRequest->new;
+    my $setreq = AppEngine::Service::MemcacheSetRequest->new;
     $it = $setreq->add_item; # creates new item and appends it
     $it->set_key("foo");
     $it->set_value("FOO_VALUE");
@@ -60,18 +60,18 @@ BEGIN { use_ok("Memcache") };
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE5\xff\x00\x00\x00\x0c");
     # set
-    $it->set_set_policy(MemcacheSetRequest::Item::SetPolicy::SET);
+    $it->set_set_policy(AppEngine::Service::MemcacheSetRequest::Item::SetPolicy::SET);
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x015\xff\x00\x00\x00\x0c");
     # add
-    $it->set_set_policy(MemcacheSetRequest::Item::SetPolicy::ADD);
+    $it->set_set_policy(AppEngine::Service::MemcacheSetRequest::Item::SetPolicy::ADD);
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x025\xff\x00\x00\x00\x0c");
 }
 
 # build up a set response
 {
-    my $sres = MemcacheSetResponse->new;
+    my $sres = AppEngine::Service::MemcacheSetResponse->new;
     $sres->add_set_status(1);
     $sres->add_set_status(2);
     $sres->add_set_status(3);
@@ -82,7 +82,7 @@ BEGIN { use_ok("Memcache") };
 
 # increment response
 {
-    my $p = MemcacheIncrementResponse->new;
+    my $p = AppEngine::Service::MemcacheIncrementResponse->new;
     $p->set_new_value( BI(1) << 63 );
     bin_is($p->serialize_to_string,
        "\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01",
@@ -91,21 +91,21 @@ BEGIN { use_ok("Memcache") };
 
 # increment request
 {
-    my $p = MemcacheIncrementRequest->new;
+    my $p = AppEngine::Service::MemcacheIncrementRequest->new;
     is($p->delta, 1, "default value");
     $p->set_key("the_key");
     eval { $p->set_delta(-1) };
     ok($@);
     is($p->delta, 1, "still the default");
     $p->set_delta( BI(1) << 63);
-    $p->set_direction(MemcacheIncrementRequest::Direction::DECREMENT);
+    $p->set_direction(AppEngine::Service::MemcacheIncrementRequest::Direction::DECREMENT);
     bin_is($p->serialize_to_string,
        "\n\x07the_key\x10\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x18\x02");
 }
 
 # stats
 {
-    my $p = MemcacheStatsResponse->new;
+    my $p = AppEngine::Service::MemcacheStatsResponse->new;
     $p->stats;
     $p->stats->set_hits(1);
     is($p->stats->hits, 1);
