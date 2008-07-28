@@ -4,8 +4,8 @@ use Moose;
 use Protobuf::Types;
 
 my @typemap;
-@typemap[VARINT, C64, C32, STRING, START_GROUP, END_GROUP] = (
-    ( map { "encode_${_}_field" } qw(varint 8_byte 4_byte string) ),
+@typemap[VARINT, FIXED_64, FIXED_32, BYTES, START_GROUP, END_GROUP] = (
+    ( map { "encode_${_}_field" } qw(varint fixed_64 fixed_32 bytes) ),
     ( map { "encode_$_" } qw(start_group end_group) ),
 );
 
@@ -37,25 +37,25 @@ sub encode_varint {
     return $buf . chr($int);
 }
 
-sub encode_string {
+sub encode_bytes {
     my ( $self, $buf ) = @_;
 
-    die "unexpected utf8 string, should be octets" if utf8::is_utf8($buf); # FIXME what's the correct behavior? at any rate length() needs to be per byte
+    die "unexpected utf8 bytes, should be octets" if utf8::is_utf8($buf); # FIXME what's the correct behavior? at any rate length() needs to be per byte
 
     return ( $self->encode_varint(length($buf)) . $buf );
 
     # pack("W/a*")
 }
 
-sub encode_4_byte_field {
+sub encode_fixed_32_field {
     my ( $self, $field, $buf ) = @_;
-    die "value must be a 4 octet string" if utf8::is_utf8($buf) || length($buf) != 4;
+    die "value must be a 4 octet bytes" if utf8::is_utf8($buf) || length($buf) != 4;
     $self->encode_field_and_wire($field, 5) . $buf;
 }
 
-sub encode_8_byte_field {
+sub encode_fixed_64_field {
     my ( $self, $field, $buf ) = @_;
-    die "value must be an 8 octet string" if utf8::is_utf8($buf) || length($buf) != 8;
+    die "value must be an 8 octet bytes" if utf8::is_utf8($buf) || length($buf) != 8;
     $self->encode_field_and_wire($field, 1) . $buf;
 }
 
@@ -64,9 +64,9 @@ sub encode_varint_field {
     $self->encode_field_and_wire($field, 0) . $self->encode_varint($int);
 }
 
-sub encode_string_field {
-    my ( $self, $field, $string ) = @_;
-    $self->encode_field_and_wire($field, 2) . $self->encode_string($string);
+sub encode_bytes_field {
+    my ( $self, $field, $bytes ) = @_;
+    $self->encode_field_and_wire($field, 2) . $self->encode_bytes($bytes);
 }
 
 sub encode_start_group {
