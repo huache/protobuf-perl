@@ -109,8 +109,7 @@ use warnings;
 
 use Protobuf::Meta::Message ();
 
-# 5.8 doesn't have this: -brad
-# use namespace::clean;
+use namespace::clean;
 
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
