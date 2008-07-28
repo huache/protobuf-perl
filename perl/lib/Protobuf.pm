@@ -13,6 +13,8 @@ has 'fullname' => (is => 'rw', isa => 'Str');
 
 has 'values' => (is => 'rw', isa => 'ArrayRef[Protobuf::EnumValueDescriptor]' );
 
+__PACKAGE__->meta->make_immutable;
+
 package Protobuf::EnumValueDescriptor;
 
 use Moose::Policy 'Protobuf::AccessorNamingPolicy';
@@ -23,8 +25,12 @@ has 'index' => (is => 'rw', isa => 'Int');
 has 'number' => (is => 'rw', isa => 'Int');
 has 'type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
 
+__PACKAGE__->meta->make_immutable;
+
 package Protobuf::MessageOptions;
 use Moose;
+
+__PACKAGE__->meta->make_immutable;
 
 package Protobuf::Descriptor;
 use Moose;
@@ -50,6 +56,8 @@ sub fields_by_name {
     }
     return undef;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 package Protobuf::FieldDescriptor;
 use Moose::Policy 'Protobuf::AccessorNamingPolicy';
@@ -92,6 +100,8 @@ sub is_aggregate {
     # http://protobuf.googlecode.com/svn/trunk/src/google/protobuf/descriptor.proto
     return $type == 10 || $type == 11;
 }
+
+__PACKAGE__->meta->make_immutable;
 
 package Protobuf::Message;
 use strict;
