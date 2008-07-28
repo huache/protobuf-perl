@@ -15,10 +15,12 @@ sub zigzag_encode {
 sub zigzag_decode {
     my $v = $_[0];
     if (1 & $v) {
-        return ($v >> 1) ^ ( HAS_QUADS ? -1 : Math::BigInt->new(-1) );
-    } else {
+        return -( 1 + ($v >> 1) ); 
+        # ( $v >> 1 ) ^ -1; # if we do this (like the google ref) we get a UV instead of an IV on 64 bit ints
+    }
         return $v >> 1;
     }
 }
+
 
 1;
