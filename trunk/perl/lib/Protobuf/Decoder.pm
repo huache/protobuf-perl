@@ -47,13 +47,13 @@ sub decode {
         my $value = undef;
         if ($wire_format == VARINT) { # one more varint
             $value = $get_varint->();
-        } elsif ($wire_format == STRING) { # a varint saying length
+        } elsif ($wire_format == BYTES) { # a varint saying length
             my $length = $get_varint->();
             $value = $consume->($length);
-        } elsif ($wire_format == C64) {  # 64-bit
+        } elsif ($wire_format == FIXED_64) {  # 64-bit
             $value = $consume->(8);
             # TODO(brafitz): decode?  or at later stage?
-        } elsif ($wire_format == C32) {  # 32-bit
+        } elsif ($wire_format == FIXED_32) {  # 32-bit
             $value = $consume->(4);
             # TODO(brafitz): decode?  or at later stage?
         } elsif ($wire_format == START_GROUP) {  # start group
