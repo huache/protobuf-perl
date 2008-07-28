@@ -45,25 +45,25 @@ sub decode {
         my $wire_format = $field_and_wire & 7;  # bottom three bits.
         my $field_num = $field_and_wire >> 3;
         my $value = undef;
-        if ($wire_format == VARINT) { # one more varint
+        if ($wire_format == WIRE_VARINT) { # one more varint
             $value = $get_varint->();
-        } elsif ($wire_format == BYTES) { # a varint saying length
+        } elsif ($wire_format == WIRE_LENGTH_DELIMITED) { # a varint saying length
             my $length = $get_varint->();
             $value = $consume->($length);
-        } elsif ($wire_format == FIXED_64) {  # 64-bit
+        } elsif ($wire_format == WIRE_FIXED64) {  # 64-bit
             $value = $consume->(8);
             # TODO(brafitz): decode?  or at later stage?
-        } elsif ($wire_format == FIXED_32) {  # 32-bit
+        } elsif ($wire_format == WIRE_FIXED32) {  # 32-bit
             $value = $consume->(4);
             # TODO(brafitz): decode?  or at later stage?
-        } elsif ($wire_format == START_GROUP) {  # start group
+        } elsif ($wire_format == WIRE_START_GROUP) {  # start group
             push @evt, {
                 fieldnum => $field_num,
                 type => "start_group",
             };
             $group_depth++;
             next;
-        } elsif ($wire_format == END_GROUP) {  # end group
+        } elsif ($wire_format == WIRE_END_GROUP) {  # end group
             push @evt, {
                 fieldnum => $field_num,
                 type => "end_group",

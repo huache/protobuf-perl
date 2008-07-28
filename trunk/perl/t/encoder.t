@@ -36,24 +36,24 @@ bin_is( $e->encode_varint(128), "\x80\x01" );
 bin_is( $e->encode_varint(150), "\x96\x01" );
 bin_is( $e->encode_varint(16384), "\x80\x80\x01" );
 
-bin_is( $e->encode_varint_field(1, 150), "\x08\x96\x01");
-bin_is( $e->encode_field(1, VARINT, 150), "\x08\x96\x01");
+bin_is( $e->encode_wire_varint(1, 150), "\x08\x96\x01");
+bin_is( $e->encode_wire(1, WIRE_VARINT, 150), "\x08\x96\x01");
 
-bin_is( $e->encode_bytes("testing"), "\x07\x74\x65\x73\x74\x69\x6e\x67" );
+bin_is( $e->encode_length_delimited("testing"), "\x07\x74\x65\x73\x74\x69\x6e\x67" );
 
-bin_is( $e->encode_bytes_field(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
-bin_is( $e->encode_field(2, BYTES, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
+bin_is( $e->encode_wire_length_delimited(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
+bin_is( $e->encode_wire(2, WIRE_LENGTH_DELIMITED, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
 
-bin_is( $e->encode_field_and_wire(2, 2), "\x12" );
-bin_is( $e->encode_field_and_wire(128, 2), "\x82\x08" );
+bin_is( $e->encode_field_and_wire_type(2, 2), "\x12" );
+bin_is( $e->encode_field_and_wire_type(128, 2), "\x82\x08" );
 
 bin_is(
     join('',
-        $e->encode_start_group(1),
-        $e->encode_bytes_field(2, "foo"),
-        $e->encode_bytes_field(3, "VALUE_OF_FOO"),
-        $e->encode_fixed_32_field(4, "{\x00\x00\x00"),
-        $e->encode_end_group(1),
+        $e->encode_wire_start_group(1),
+        $e->encode_wire_length_delimited(2, "foo"),
+        $e->encode_wire_length_delimited(3, "VALUE_OF_FOO"),
+        $e->encode_wire_fixed_32(4, "{\x00\x00\x00"),
+        $e->encode_wire_end_group(1),
     ),
     "\x0b\x12\x03foo\x1a\x0cVALUE_OF_FOO%{\x00\x00\x00\x0c",
 );
@@ -61,22 +61,22 @@ bin_is(
 
 bin_is(
     join('',
-        $e->encode_start_group(1),
-        $e->encode_bytes_field(2, "foo"),
-        $e->encode_bytes_field(3, "FOO_VALUE"),
-        $e->encode_varint_field(5, 1),
-        $e->encode_fixed_32_field(6, "\xff\x00\x00\x00"),
-        $e->encode_end_group(1),
+        $e->encode_wire_start_group(1),
+        $e->encode_wire_length_delimited(2, "foo"),
+        $e->encode_wire_length_delimited(3, "FOO_VALUE"),
+        $e->encode_wire_varint(5, 1),
+        $e->encode_wire_fixed_32(6, "\xff\x00\x00\x00"),
+        $e->encode_wire_end_group(1),
     ),
     "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x015\xff\x00\x00\x00\x0c",
 );
 
 bin_is(
     join('',
-        $e->encode_varint_field(1, 1),
-        $e->encode_varint_field(1, 2),
-        $e->encode_varint_field(1, 3),
-        $e->encode_varint_field(1, 250),
+        $e->encode_wire_varint(1, 1),
+        $e->encode_wire_varint(1, 2),
+        $e->encode_wire_varint(1, 3),
+        $e->encode_wire_varint(1, 250),
     ),
     "\x08\x01\x08\x02\x08\x03\x08\xfa\x01"
 )
