@@ -11,9 +11,15 @@ use Protobuf::Types;
 our @EXPORT = qw(escaped bin_is BI);
 
 sub BI {
+    my $v = $_[0];
     if ( HAS_QUADS ) {
-        my ( $high, $low ) = unpack("NN", pack("H*", substr($_[0],2)));
-        return ( $high << 32 | $low );
+        return 0+$v if $v !~ /\D/;
+        if ( $v =~ /^0x/ ) {
+            my ( $high, $low ) = unpack("NN", pack("H*", substr($v,2)));
+            return ( $high << 32 | $low );
+        } else {
+            die "unknown number format: $v";
+        }
     } else {
         return Math::BigInt->new($_[0]);
     }
