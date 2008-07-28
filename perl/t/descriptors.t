@@ -39,4 +39,4 @@ ok( does_role( $attr, "Protobuf::Attribute::Field" ), "attr does Field role" );
 
 can_ok( $attr, "field" );
 
-is( $attr->field, $field, 'field atrribute of meta attribute' );
+is( $attr->field, $field, 'field attribute of meta attribute' );

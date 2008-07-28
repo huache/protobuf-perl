@@ -2,6 +2,9 @@
 
 use Test::More tests => 1;
 
+use strict;
+use warnings;
+
 use lib "t/lib";
 use Test::Protobuf;
 
@@ -10,7 +13,7 @@ use FindBin qw($Bin);
 use lib "$Bin/autogen";
 use Math::BigInt try => 'GMP';
 
-use_ok("Memcache");
+BEGIN { use_ok("Memcache") };
 
 # build up a get request
 {
@@ -48,11 +51,11 @@ use_ok("Memcache");
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE5\xff\x00\x00\x00\x0c");
     # set
-    $it->set_set_policy(MemcacheSetRequest::SetPolicy::SET);
+    $it->set_set_policy(MemcacheSetRequest::Item::SetPolicy::SET);
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x015\xff\x00\x00\x00\x0c");
     # add
-    $it->set_set_policy(MemcacheSetRequest::SetPolicy::ADD);
+    $it->set_set_policy(MemcacheSetRequest::Item::SetPolicy::ADD);
     bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x025\xff\x00\x00\x00\x0c");
 }
