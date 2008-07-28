@@ -172,6 +172,10 @@ sub GenerateClass {
             attributes => \@attributes,
             methods => \%methods,
         ));
+
+    $c->make_immutable;
+
+    return $c;
 }
 
 1;
