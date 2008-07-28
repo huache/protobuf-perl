@@ -1,6 +1,10 @@
 #!/usr/bin/perl
 
 use Test::More tests => 1;
+
+use lib "t/lib";
+use Test::Protobuf;
+
 use Protobuf;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
@@ -17,7 +21,7 @@ use_ok("Memcache");
     is($get->keys->[0], "foo");
     is($get->keys->[1], "bar");
     is($get->key_size, 2);
-    is($get->serialize_to_string, "\n\x03foo\n\x03bar");
+    bin_is($get->serialize_to_string, "\n\x03foo\n\x03bar");
 }
 
 # build up a get response
@@ -28,7 +32,7 @@ use_ok("Memcache");
     $it->set_key("foo");
     $it->set_value("VALUE_OF_FOO");
     $it->set_flags(123);
-    is($getres->serialize_to_string,
+    bin_is($getres->serialize_to_string,
        "\x0b\x12\x03foo\x1a\x0cVALUE_OF_FOO%{\x00\x00\x00\x0c");
 }
 
@@ -41,15 +45,15 @@ use_ok("Memcache");
     $it->set_key("foo");
     $it->set_value("FOO_VALUE");
     $it->set_expiration_time(255);
-    is($setreq->serialize_to_string,
+    bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE5\xff\x00\x00\x00\x0c");
     # set
     $it->set_set_policy(MemcacheSetRequest::SetPolicy::SET);
-    is($setreq->serialize_to_string,
+    bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x015\xff\x00\x00\x00\x0c");
     # add
     $it->set_set_policy(MemcacheSetRequest::SetPolicy::ADD);
-    is($setreq->serialize_to_string,
+    bin_is($setreq->serialize_to_string,
        "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x025\xff\x00\x00\x00\x0c");
 }
 
@@ -60,7 +64,7 @@ use_ok("Memcache");
     $sres->add_set_status(2);
     $sres->add_set_status(3);
     $sres->add_set_status(250);
-    is($sres->serialize_to_string,
+    bin_is($sres->serialize_to_string,
        "\x08\x01\x08\x02\x08\x03\x08\xfa\x01");
 }
 
@@ -68,7 +72,7 @@ use_ok("Memcache");
 {
     my $p = MemcacheIncrementResponse->new;
     $p->set_new_value(Math::BigInt->new(2) ** 63);
-    is($p->serialize_to_string,
+    bin_is($p->serialize_to_string,
        "\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01",
        "bigint in uint64 field");
 }
@@ -82,7 +86,7 @@ use_ok("Memcache");
     is($p->delta, 1, "still the default");
     $p->set_delta(Math::BigInt->new(2) ** 63);
     $p->set_direction(MemcacheIncrementRequest::Direction::DECREMENT);
-    is($p->serialize_to_string,
+    bin_is($p->serialize_to_string,
        "\n\x07the_key\x10\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x18\x02");
 }
 

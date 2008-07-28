@@ -49,6 +49,7 @@ my %wire_type_map = (
     FIXED64 => [qw(FIXED64 SFIXED64 DOUBLE)],
     LENGTH_DELIMITED => [qw(STRING BYTES MESSAGE)],
     FIXED32 => [qw(FIXED32 SFIXED32 FLOAT)],
+    START_GROUP => [qw(GROUP)],
 );
 
 my %type_to_wire = map {
@@ -81,7 +82,7 @@ sub type_to_wire {
 
 sub type_name {
     no warnings;
-    $type_name[$_[0]]
+    $type_name[$_[0]] || die "No such type $_[0]";
 }
 
 sub wire_type_name {

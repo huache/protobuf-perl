@@ -53,6 +53,7 @@ package Protobuf::FieldDescriptor;
 use Moose::Policy 'Protobuf::AccessorNamingPolicy';
 use Moose;
 
+has [qw(index number)] => (is => 'rw', isa => 'Int');
 has 'name' => (is => 'rw', isa => 'Str');
 has 'message_type' => (is => 'rw', isa => 'Maybe[Protobuf::Descriptor]');
 has 'enum_type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
@@ -88,8 +89,9 @@ sub is_aggregate {
 package Protobuf::Message;
 use strict;
 
-require Protobuf::Attribute::Field::Repeated;
-require Protobuf::Attribute::Field::Scalar;
+use Protobuf::Attribute::Field::Repeated;
+use Protobuf::Attribute::Field::Scalar;
+use Protobuf::Encoder ();
 
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
@@ -127,31 +129,37 @@ sub serialize_to_string {
     my ($self, $fieldsref) = @_;
     my $buf = '';
 
+    my $e = Protobuf::Encoder->new;
+
+    my $emit = sub {
+        my ($field, $value) = @_;
+        $buf .= $e->encode_field( $field->number, $field->type, $value );
+    };
+
   FIELD:
     foreach my $field (@$fieldsref) {
         my $name = $field->name;
-        my $emit = sub {
-            my ($value) = @_;
-            # TODO(bradfitz): ...
-        };
         if ($field->is_repeated) {
             my $size_method = "${name}_size";
             next FIELD unless $self->$size_method > 0;
-            $buf .= "[$name-repeated:";
+
             my $list_method = "${name}s";
             for my $value (@{ $self->$list_method }) {
-                $buf .= "[$name-$value]";
+                $emit->($field, $value);
                 # TODO(bradfitz): if it's ::isa("Protobuf::Message") emit it
             }
-            $buf .= "]";
         } else {
             my $has_method = "has_${name}";
-            my $has_it = $self->$has_method;
-            if ($field->is_required && !$has_it) {
-                die "Missing required field '$name'\n";
+
+            unless ( $self->$has_method ) {
+                if ($field->is_required ) {
+                    die "Missing required field '$name'\n";
+                } else {
+                    next FIELD;
+                }
             }
-            next FIELD unless $has_it;
-            $buf .= "[$name-single]";
+
+            $emit->( $field, $self->$name );
         }
     }
     return $buf;
