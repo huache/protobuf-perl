@@ -95,7 +95,10 @@ use strict;
 
 use Protobuf::Attribute::Field::Repeated;
 use Protobuf::Attribute::Field::Scalar;
-use Protobuf::Encoder ();
+use Protobuf::Encoder;
+use Moose::Util::TypeConstraints;
+
+use namespace::clean;
 
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
@@ -115,12 +118,14 @@ sub GenerateClass {
     my @attributes;
 
     foreach my $field ( @{ $descriptor->fields } ) {
-        push @attributes, Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
-            traits => [ 'Protobuf::Field::' . ( $field->is_repeated ? 'Repeated' : 'Scalar' ) ],
-            field => $field,
-        ));
+        my $type_constraint;
+
+        if ( my $message_desc = $field->message_type ) {
+            $type_constraint = class_type($message_desc->class_name);
+        }
 
         if ( my $enum = $field->enum_type) {
+            # create FIXME type constraint (range check)
             foreach my $value ( @{ $enum->values } ) {
                 my $fqname = join("::", $name, $enum->name, $value->name);
                 my $number = $value->number;
@@ -128,6 +133,13 @@ sub GenerateClass {
                 *$fqname = sub () { $number };
             }
         }
+
+        push @attributes, Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
+            traits => [ 'Protobuf::Field::' . ( $field->is_repeated ? 'Repeated' : 'Scalar' ) ],
+            field => $field,
+            type_constraint => $type_constraint,
+        ));
+
     }
 
     my $c = Moose::Meta::Class->create(

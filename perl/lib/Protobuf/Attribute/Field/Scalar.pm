@@ -11,9 +11,9 @@ with q(Protobuf::Attribute::Field);
 before _process_options => sub {
     my ( $class, $name, $options ) = @_;
 
-    $options->{reader} = $name;
-    $options->{writer} = "set_$name";
-    $options->{predicate} = "has_$name";
+    $options->{reader}    ||= $name;
+    $options->{writer}    ||= "set_$name";
+    $options->{predicate} ||= "has_$name";
 
     my $field = $options->{field};
 
@@ -21,26 +21,44 @@ before _process_options => sub {
 
     if ( defined ( my $default = $field->default_value ) ) {
         $options->{lazy} = 1;
-        if ( $type_constraint and !$type_constraint->check($default) ) {
-            if ( $type_constraint->has_coercion ) {
-                $default = $type_constraint->coerce($default);
-            } else {
-                die $type_constraint->get_message($default);
-            }
-        }
-
-        if ( ref $default ) {
-            my $value = $default;
-            $default = sub {
-                warn "returning $value for $name";
-                # FIXME clone when applicable, but only when applicable
-                # optimize simple refs
-                return dclone($value);
-            };
-        }
-        $options->{default} = $default;
+        $options->{default} = $class->process_default($default, $type_constraint);
+    } elsif ( $type_constraint->isa("Moose::Meta::TypeConstraint::Class") ) {
+        my $class = $type_constraint->class;
+        $options->{default} = sub { $class->new };
     }
 };
+
+sub process_default {
+    my ( $class, $default, $type_constraint ) = @_;
+
+    if ( $type_constraint and !$type_constraint->check($default) ) {
+        if ( $type_constraint->has_coercion ) {
+            $default = $type_constraint->coerce($default);
+        } else {
+            die $type_constraint->get_message($default);
+        }
+    }
+
+    unless ( ref $default ) {
+        return $default;
+    } else {
+        if ( blessed($default) ) {
+            if ( $default->isa("Math::BigInt" ) ) {
+                return sub { $default->copy };
+            }
+        } elsif ( ref $default eq 'ARRAY' ) {
+            return ( @$default ? sub { [ @$default ] } : sub { [] } );
+        } elsif ( ref $default eq 'HASH' ) {
+            return ( keys %$default ? sub { { %$default } } : sub { {} } );
+        }
+
+        return sub {
+            # FIXME clone when applicable, but only when applicable
+            # optimize simple refs
+            return dclone($default);
+        }
+    }
+}
 
 sub Moose::Meta::Attribute::Custom::Trait::Protobuf::Field::Scalar::register_implementation { __PACKAGE__ }
 
