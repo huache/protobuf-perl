@@ -75,7 +75,7 @@ BEGIN { use_ok("Memcache") };
 # increment response
 {
     my $p = MemcacheIncrementResponse->new;
-    $p->set_new_value( BI(2) ** 63 );
+    $p->set_new_value( BI(1) << 63 );
     bin_is($p->serialize_to_string,
        "\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01",
        "bigint in uint64 field");
@@ -89,7 +89,7 @@ BEGIN { use_ok("Memcache") };
     eval { $p->set_delta(-1) };
     ok($@);
     is($p->delta, 1, "still the default");
-    $p->set_delta( BI(2) ** 63);
+    $p->set_delta( BI(1) << 63);
     $p->set_direction(MemcacheIncrementRequest::Direction::DECREMENT);
     bin_is($p->serialize_to_string,
        "\n\x07the_key\x10\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x18\x02");
