@@ -145,6 +145,8 @@ sub encode_field_fixed64 {
     $self->encode_wire_fixed64( $field, $bin );
 }
 
+__PACKAGE__->meta->make_immutable;
+
 __PACKAGE__
 
 __END__
