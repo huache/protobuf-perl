@@ -8,7 +8,14 @@ use base qw(Exporter);
 use Moose::Util::TypeConstraints;
 
 # if HAS_QUADS we don't need BigInts
-use constant HAS_QUADS => do { local $@; not not eval { pack("Q", 42) && 1 } };
+use constant HAS_QUADS => not not 2 << 63;
+use constant QUAD_ENDIANESS => HAS_QUADS && do {
+    my $i;
+    ${{ map { $_ => ++$i }
+        "\x01\x01\x03\x04\0\0\0\0", # little-endian bytes
+        "\0\0\0\0\x04\x03\x02\x01", # big-endian bytes
+    }}{ pack("Q", 0x04030201) } || 0;
+};
 
 use Math::BigInt lib => 'GMP';
 
