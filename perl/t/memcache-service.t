@@ -63,3 +63,11 @@ use_ok("Memcache");
        "\x08\x01\x08\x02\x08\x03\x08\xfa\x01");
 }
 
+# increment response
+{
+    my $p = MemcacheIncrementResponse->new;
+    $p->set_new_value(Math::BigInt->new(2) ** 63);
+    is($sres->serialize_to_string,
+       "\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01",
+       "bigint in uint64 field");
+}
