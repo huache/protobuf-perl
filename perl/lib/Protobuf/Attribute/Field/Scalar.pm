@@ -51,16 +51,19 @@ sub process_default {
             if ( $default->isa("Math::BigInt" ) ) {
                 return sub { $default->copy };
             }
-        } elsif ( ref $default eq 'ARRAY' ) {
-            return ( @$default ? sub { [ @$default ] } : sub { [] } );
-        } elsif ( ref $default eq 'HASH' ) {
-            return ( keys %$default ? sub { { %$default } } : sub { {} } );
-        }
+        } else {
+            die "unsupported default value for Scalar";
+            if ( ref $default eq 'ARRAY' ) {
+                return ( @$default ? sub { [ @$default ] } : sub { [] } );
+            } elsif ( ref $default eq 'HASH' ) {
+                return ( keys %$default ? sub { { %$default } } : sub { {} } );
+            }
 
-        return sub {
-            # FIXME clone when applicable, but only when applicable
-            # optimize simple refs
-            return dclone($default);
+            return sub {
+                # FIXME clone when applicable, but only when applicable
+                # optimize simple refs
+                return dclone($default);
+            }
         }
     }
 }
