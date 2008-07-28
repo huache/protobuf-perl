@@ -125,7 +125,7 @@ sub GenerateClass {
 # capture its field list and pass it to us here.
 sub serialize_to_string {
     my ($self, $fieldsref) = @_;
-    my $buf;
+    my $buf = '';
 
   FIELD:
     foreach my $field (@$fieldsref) {
