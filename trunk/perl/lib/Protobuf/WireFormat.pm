@@ -17,7 +17,7 @@ sub zigzag_decode {
     if (1 & $v) {
         return -( 1 + ($v >> 1) ); 
         # ( $v >> 1 ) ^ -1; # if we do this (like the google ref) we get a UV instead of an IV on 64 bit ints
-    }
+    } else {
         return $v >> 1;
     }
 }
