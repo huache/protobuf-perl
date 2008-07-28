@@ -42,7 +42,10 @@ has 'fields' => (is => 'rw', isa => 'ArrayRef[Protobuf::FieldDescriptor]');
 sub class_name {
     my $self = shift;
     my $name = $self->full_name;
-    $name =~ s/^appengine_api\.//; # TODO(bradfitz): Hack. temporary.
+
+    # TODO(bradfitz): Hack. temporary:
+    $name =~ s/^appengine_api\./AppEngine::Service::/;
+
     $name =~ s/\./::/g;
     return $name;
 }

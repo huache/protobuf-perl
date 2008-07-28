@@ -5,8 +5,10 @@ use strict;
 use warnings;
 use 5.6.1;
 use Protobuf;
-package ProtoBuf::t::autogen::memcache;
 
+package AppEngine::Service::MemcacheProto;
+
+package AppEngine::Service;
 
 use constant TRUE => 1;
 use constant FALSE => 0;
@@ -18,56 +20,62 @@ use constant FALSE => 0;
 our $_MEMCACHESERVICEERROR_ERRORCODE = Protobuf::EnumDescriptor->new(
   name => 'ErrorCode',
   full_name => 'appengine_api.MemcacheServiceError.ErrorCode',
-  filename => 'ErrorCode',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'OK', index => 0, number => 0, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'UNSPECIFIED_ERROR', index => 1, number => 1, type => undef),
 ]);
+$_MEMCACHESERVICEERROR_ERRORCODE->values->[0]->set_type($_MEMCACHESERVICEERROR_ERRORCODE);
+$_MEMCACHESERVICEERROR_ERRORCODE->values->[1]->set_type($_MEMCACHESERVICEERROR_ERRORCODE);
 
 our $_MEMCACHESETREQUEST_SETPOLICY = Protobuf::EnumDescriptor->new(
   name => 'SetPolicy',
   full_name => 'appengine_api.MemcacheSetRequest.SetPolicy',
-  filename => 'SetPolicy',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'SET', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'ADD', index => 1, number => 2, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'REPLACE', index => 2, number => 3, type => undef),
 ]);
+$_MEMCACHESETREQUEST_SETPOLICY->values->[0]->set_type($_MEMCACHESETREQUEST_SETPOLICY);
+$_MEMCACHESETREQUEST_SETPOLICY->values->[1]->set_type($_MEMCACHESETREQUEST_SETPOLICY);
+$_MEMCACHESETREQUEST_SETPOLICY->values->[2]->set_type($_MEMCACHESETREQUEST_SETPOLICY);
 
 our $_MEMCACHESETRESPONSE_SETSTATUSCODE = Protobuf::EnumDescriptor->new(
   name => 'SetStatusCode',
   full_name => 'appengine_api.MemcacheSetResponse.SetStatusCode',
-  filename => 'SetStatusCode',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'STORED', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'NOT_STORED', index => 1, number => 2, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'ERROR', index => 2, number => 3, type => undef),
 ]);
+$_MEMCACHESETRESPONSE_SETSTATUSCODE->values->[0]->set_type($_MEMCACHESETRESPONSE_SETSTATUSCODE);
+$_MEMCACHESETRESPONSE_SETSTATUSCODE->values->[1]->set_type($_MEMCACHESETRESPONSE_SETSTATUSCODE);
+$_MEMCACHESETRESPONSE_SETSTATUSCODE->values->[2]->set_type($_MEMCACHESETRESPONSE_SETSTATUSCODE);
 
 our $_MEMCACHEDELETERESPONSE_DELETESTATUSCODE = Protobuf::EnumDescriptor->new(
   name => 'DeleteStatusCode',
   full_name => 'appengine_api.MemcacheDeleteResponse.DeleteStatusCode',
-  filename => 'DeleteStatusCode',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'DELETED', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'NOT_FOUND', index => 1, number => 2, type => undef),
 ]);
+$_MEMCACHEDELETERESPONSE_DELETESTATUSCODE->values->[0]->set_type($_MEMCACHEDELETERESPONSE_DELETESTATUSCODE);
+$_MEMCACHEDELETERESPONSE_DELETESTATUSCODE->values->[1]->set_type($_MEMCACHEDELETERESPONSE_DELETESTATUSCODE);
 
 our $_MEMCACHEINCREMENTREQUEST_DIRECTION = Protobuf::EnumDescriptor->new(
   name => 'Direction',
   full_name => 'appengine_api.MemcacheIncrementRequest.Direction',
-  filename => 'Direction',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'INCREMENT', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'DECREMENT', index => 1, number => 2, type => undef),
 ]);
+$_MEMCACHEINCREMENTREQUEST_DIRECTION->values->[0]->set_type($_MEMCACHEINCREMENTREQUEST_DIRECTION);
+$_MEMCACHEINCREMENTREQUEST_DIRECTION->values->[1]->set_type($_MEMCACHEINCREMENTREQUEST_DIRECTION);
 
 ## Message descriptors:
 
 our $_MEMCACHESERVICEERROR = Protobuf::Descriptor->new(
   name => 'MemcacheServiceError',
   full_name => 'appengine_api.MemcacheServiceError',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
   ],
@@ -85,7 +93,6 @@ our $_MEMCACHESERVICEERROR = Protobuf::Descriptor->new(
 our $_MEMCACHEGETREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheGetRequest',
   full_name => 'appengine_api.MemcacheGetRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -108,7 +115,6 @@ our $_MEMCACHEGETREQUEST = Protobuf::Descriptor->new(
 our $_MEMCACHEGETRESPONSE_ITEM = Protobuf::Descriptor->new(
   name => 'Item',
   full_name => 'appengine_api.MemcacheGetResponse.Item',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -142,7 +148,6 @@ our $_MEMCACHEGETRESPONSE_ITEM = Protobuf::Descriptor->new(
 our $_MEMCACHEGETRESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheGetResponse',
   full_name => 'appengine_api.MemcacheGetResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -165,7 +170,6 @@ our $_MEMCACHEGETRESPONSE = Protobuf::Descriptor->new(
 our $_MEMCACHESETREQUEST_ITEM = Protobuf::Descriptor->new(
   name => 'Item',
   full_name => 'appengine_api.MemcacheSetRequest.Item',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -211,7 +215,6 @@ our $_MEMCACHESETREQUEST_ITEM = Protobuf::Descriptor->new(
 our $_MEMCACHESETREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheSetRequest',
   full_name => 'appengine_api.MemcacheSetRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -235,7 +238,6 @@ our $_MEMCACHESETREQUEST = Protobuf::Descriptor->new(
 our $_MEMCACHESETRESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheSetResponse',
   full_name => 'appengine_api.MemcacheSetResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -259,7 +261,6 @@ our $_MEMCACHESETRESPONSE = Protobuf::Descriptor->new(
 our $_MEMCACHEDELETEREQUEST_ITEM = Protobuf::Descriptor->new(
   name => 'Item',
   full_name => 'appengine_api.MemcacheDeleteRequest.Item',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -287,7 +288,6 @@ our $_MEMCACHEDELETEREQUEST_ITEM = Protobuf::Descriptor->new(
 our $_MEMCACHEDELETEREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheDeleteRequest',
   full_name => 'appengine_api.MemcacheDeleteRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -310,7 +310,6 @@ our $_MEMCACHEDELETEREQUEST = Protobuf::Descriptor->new(
 our $_MEMCACHEDELETERESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheDeleteResponse',
   full_name => 'appengine_api.MemcacheDeleteResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -334,7 +333,6 @@ our $_MEMCACHEDELETERESPONSE = Protobuf::Descriptor->new(
 our $_MEMCACHEINCREMENTREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheIncrementRequest',
   full_name => 'appengine_api.MemcacheIncrementRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -370,7 +368,6 @@ our $_MEMCACHEINCREMENTREQUEST = Protobuf::Descriptor->new(
 our $_MEMCACHEINCREMENTRESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheIncrementResponse',
   full_name => 'appengine_api.MemcacheIncrementResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -393,7 +390,6 @@ our $_MEMCACHEINCREMENTRESPONSE = Protobuf::Descriptor->new(
 our $_MEMCACHEFLUSHREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheFlushRequest',
   full_name => 'appengine_api.MemcacheFlushRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
   ],
@@ -410,7 +406,6 @@ our $_MEMCACHEFLUSHREQUEST = Protobuf::Descriptor->new(
 our $_MEMCACHEFLUSHRESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheFlushResponse',
   full_name => 'appengine_api.MemcacheFlushResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
   ],
@@ -427,7 +422,6 @@ our $_MEMCACHEFLUSHRESPONSE = Protobuf::Descriptor->new(
 our $_MEMCACHESTATSREQUEST = Protobuf::Descriptor->new(
   name => 'MemcacheStatsRequest',
   full_name => 'appengine_api.MemcacheStatsRequest',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
   ],
@@ -444,7 +438,6 @@ our $_MEMCACHESTATSREQUEST = Protobuf::Descriptor->new(
 our $_MERGEDNAMESPACESTATS = Protobuf::Descriptor->new(
   name => 'MergedNamespaceStats',
   full_name => 'appengine_api.MergedNamespaceStats',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -497,7 +490,6 @@ our $_MERGEDNAMESPACESTATS = Protobuf::Descriptor->new(
 our $_MEMCACHESTATSRESPONSE = Protobuf::Descriptor->new(
   name => 'MemcacheStatsResponse',
   full_name => 'appengine_api.MemcacheStatsResponse',
-  filename => 't/autogen/memcache.proto',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -529,36 +521,36 @@ $_MEMCACHEINCREMENTREQUEST->fields_by_name('direction')->set_enum_type($_MEMCACH
 $_MEMCACHESTATSRESPONSE->fields_by_name('stats')->set_message_type($_MERGEDNAMESPACESTATS);
 
 ## Messages:
-Protobuf::Message->GenerateClass('MemcacheServiceError', $_MEMCACHESERVICEERROR);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheServiceError', $_MEMCACHESERVICEERROR);
 
-Protobuf::Message->GenerateClass('MemcacheGetRequest', $_MEMCACHEGETREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheGetRequest', $_MEMCACHEGETREQUEST);
 
-Protobuf::Message->GenerateClass('MemcacheGetResponse', $_MEMCACHEGETRESPONSE);
-Protobuf::Message->GenerateClass('MemcacheGetResponse::Item', $_MEMCACHEGETRESPONSE_ITEM);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheGetResponse', $_MEMCACHEGETRESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheGetResponse::Item', $_MEMCACHEGETRESPONSE_ITEM);
 
-Protobuf::Message->GenerateClass('MemcacheSetRequest', $_MEMCACHESETREQUEST);
-Protobuf::Message->GenerateClass('MemcacheSetRequest::Item', $_MEMCACHESETREQUEST_ITEM);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheSetRequest', $_MEMCACHESETREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheSetRequest::Item', $_MEMCACHESETREQUEST_ITEM);
 
-Protobuf::Message->GenerateClass('MemcacheSetResponse', $_MEMCACHESETRESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheSetResponse', $_MEMCACHESETRESPONSE);
 
-Protobuf::Message->GenerateClass('MemcacheDeleteRequest', $_MEMCACHEDELETEREQUEST);
-Protobuf::Message->GenerateClass('MemcacheDeleteRequest::Item', $_MEMCACHEDELETEREQUEST_ITEM);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheDeleteRequest', $_MEMCACHEDELETEREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheDeleteRequest::Item', $_MEMCACHEDELETEREQUEST_ITEM);
 
-Protobuf::Message->GenerateClass('MemcacheDeleteResponse', $_MEMCACHEDELETERESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheDeleteResponse', $_MEMCACHEDELETERESPONSE);
 
-Protobuf::Message->GenerateClass('MemcacheIncrementRequest', $_MEMCACHEINCREMENTREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheIncrementRequest', $_MEMCACHEINCREMENTREQUEST);
 
-Protobuf::Message->GenerateClass('MemcacheIncrementResponse', $_MEMCACHEINCREMENTRESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheIncrementResponse', $_MEMCACHEINCREMENTRESPONSE);
 
-Protobuf::Message->GenerateClass('MemcacheFlushRequest', $_MEMCACHEFLUSHREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheFlushRequest', $_MEMCACHEFLUSHREQUEST);
 
-Protobuf::Message->GenerateClass('MemcacheFlushResponse', $_MEMCACHEFLUSHRESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheFlushResponse', $_MEMCACHEFLUSHRESPONSE);
 
-Protobuf::Message->GenerateClass('MemcacheStatsRequest', $_MEMCACHESTATSREQUEST);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheStatsRequest', $_MEMCACHESTATSREQUEST);
 
-Protobuf::Message->GenerateClass('MergedNamespaceStats', $_MERGEDNAMESPACESTATS);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MergedNamespaceStats', $_MERGEDNAMESPACESTATS);
 
-Protobuf::Message->GenerateClass('MemcacheStatsResponse', $_MEMCACHESTATSRESPONSE);
+Protobuf::Message->GenerateClass(__PACKAGE__ . '::MemcacheStatsResponse', $_MEMCACHESTATSRESPONSE);
 
 ## Fix foreign fields in extensions:
 ## Services:
