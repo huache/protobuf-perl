@@ -27,6 +27,10 @@ before _process_options => sub {
         my $class = $type_constraint->class;
         $options->{default} = sub { $class->new };
     }
+
+    if ( $type_constraint->is_a_type_of("Math::BigInt") ) {
+        $options->{coerce} = 1;
+    }
 };
 
 sub process_default {
