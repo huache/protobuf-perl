@@ -81,12 +81,7 @@ void PrintTopBoilerplate(io::Printer* printer) {
       "use strict;\n"
       "use warnings;\n"
       "use 5.6.1;\n"
-      "use Protobuf::Descriptor;\n"
-      "use Protobuf::EnumDescriptor;\n"
-      "use Protobuf::EnumValueDescriptor;\n"
-      "use Protobuf::FieldDescriptor;\n"
-      "use Protobuf::Message;\n"
-      "use Protobuf::MessageOptions;\n"
+      "use Protobuf;"
       "\n");
 }
 
@@ -157,7 +152,7 @@ void PrintFieldDescriptor(const FieldDescriptor& field, bool is_extension,
   m["cpp_type"] = SimpleItoa(field.cpp_type());
   m["label"] = SimpleItoa(field.label());
   m["default_value"] = StringifyDefaultValue(field);
-  m["is_extension"] = is_extension ? "True" : "False";
+  m["is_extension"] = is_extension ? "TRUE" : "FALSE";
   // We always set message_type and enum_type to None at this point, and then
   // these fields in correctly after all referenced descriptors have been
   // defined and/or imported (see FixForeignFieldsInDescriptors()).
@@ -294,6 +289,9 @@ bool Generator::Generate(const FileDescriptor* file,
   PrintTopBoilerplate(printer_);
   printer_->Print("package `package_name`;\n\n",
                   "package_name", package_name);
+  printer_->Print("\n"
+                  "use constant TRUE => 1;\n"
+                  "use constant FALSE => 0;\n");
 
   printer_->Print("## Top-level enums:\n");
   PrintTopLevelEnums();
@@ -464,7 +462,7 @@ void Generator::PrintDescriptor(const Descriptor& message_descriptor) const {
   printer_->Print("],\n");
   PrintOptionsInDescriptor(message_descriptor, printer_);
   printer_->Outdent();
-  printer_->Print(")\n");
+  printer_->Print(");\n");
 }
 
 // Prints Perl Descriptor objects for all nested types contained in
