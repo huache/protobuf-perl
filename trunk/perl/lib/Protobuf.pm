@@ -105,6 +105,7 @@ __PACKAGE__->meta->make_immutable;
 
 package Protobuf::Message;
 use strict;
+use warnings;
 
 use Protobuf::Attribute::Field::Repeated;
 use Protobuf::Attribute::Field::Scalar;
