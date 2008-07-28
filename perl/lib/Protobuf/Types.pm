@@ -7,8 +7,10 @@ use base qw(Exporter);
 
 use Moose::Util::TypeConstraints;
 
-use Math::BigInt lib => 'GMP';
+# if HAS_QUADS we don't need BigInts
+use constant HAS_QUADS => do { local $@; not not eval { pack("Q", 42) && 1 } };
 
+use Math::BigInt lib => 'GMP';
 
 our @EXPORT = qw(type_to_wire type_name wire_type_name type_constraint); # and some exports
 
