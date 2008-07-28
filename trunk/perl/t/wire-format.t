@@ -2,7 +2,7 @@
 
 use Test::More 'no_plan';
 use Data::Dumper;
-use Math::BigInt try => 'GMP';
+use Math::BigInt lib => 'GMP';
 
 use_ok("Protobuf::WireFormat");
 my $F;

@@ -11,7 +11,7 @@ use Test::Protobuf;
 use Protobuf;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
-use Math::BigInt try => 'GMP';
+use Math::BigInt lib => 'GMP';
 
 BEGIN { use_ok("Memcache") };
 
