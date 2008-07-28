@@ -1,0 +1,99 @@
+How to get a Python shell to test what serialization should be like:
+
+$ ./python-proto-shell.sh 
+
+
+message MemcacheGetRequest { 
+  repeated bytes key = 1; 
+} 
+
+>>> req = memcache.MemcacheGetRequest()
+>>> req.key.append("foo")
+>>> req.key.append("bar")
+>>> req.SerializeToString()
+'\n\x03foo\n\x03bar'
+
+>>> txt.MessageToString(req)
+'key: "foo"\nkey: "bar"\n'
+>>> txt.MessageToString(req2)
+'key: "foo"\nkey: "bar"\nkey: "baz"\n'
+>>> import google.protobuf.text_format as txt
+
+
+message MemcacheGetResponse { 
+  repeated group Item = 1 { 
+    required bytes key = 2; 
+    required bytes value = 3; 
+    optional fixed32 flags = 4;  // server-opaque (app-owned) flags 
+  } 
+} 
+
+>>> res = memcache.MemcacheGetResponse()
+>>> it = res.item.add()
+>>> it.key = "foo"
+>>> it.value = "VALUE_OF_FOO"
+>>> it.flags = 123
+>>> res.SerializeToString()
+'\x0b\x12\x03foo\x1a\x0cVALUE_OF_FOO%{\x00\x00\x00\x0c'
+
+
+message MemcacheSetRequest { 
+  enum SetPolicy { 
+    SET = 1;  // set value in memcached, unconditionally 
+    ADD = 2;  // add to memcached, if it doesn't already exist 
+    REPLACE = 3;  // put it in memcached, but only if it's already in there 
+  } 
+  repeated group Item = 1 { 
+    required bytes key = 2;  // max 250 bytes, per upstream spec 
+    required bytes value = 3; 
+    // From the docs above: 
+    // <flags> is an arbitrary 32-bit unsigned integer that the server 
+    // stores along with the data and sends back when the item is 
+    // retrieved. Clients may use this as a bit field to store 
+    // data-specific information; this field is opaque to the server. 
+    optional fixed32 flags = 4; 
+    optional SetPolicy set_policy = 5 [default = SET]; 
+    // unixtime to expire key. 0 or unset means "no expiration" 
+    // From the memcached documentation: 
+    // <exptime> is expiration time. If it's 0, the item never expires 
+    // (although it may be deleted from the cache to make place for 
+    // other items). If it's non-zero (either Unix time or offset in 
+    // seconds from current time), it is guaranteed that clients will 
+    // not be able to retrieve this item after the expiration time 
+    // arrives (measured by server time). 
+    optional fixed32 expiration_time = 6 [default = 0]; 
+  } 
+} 
+
+
+>>> sreq = memcache.MemcacheSetRequest()
+>>> s>>> it = sreq.item.add()
+>>> it
+<memcache_pb2.Item object at 0x5c9570>
+>>> it.key = "foo"
+>>> it.value = "FOO_VALUE"
+>>> it.expiration_time = 255
+>>> sreq.SerializeToString()
+'\x0b\x12\x03foo\x1a\tFOO_VALUE5\xff\x00\x00\x00\x0c'
+
+
+
+message MemcacheSetResponse { 
+  enum SetStatusCode { 
+    STORED = 1; 
+    NOT_STORED = 2;  // for policy reasons, not error reasons 
+    ERROR = 3;       // not set due to some server error 
+  } 
+  // one set_status will be returned for each set key, in the same 
+  // order that the requests were in. 
+  repeated SetStatusCode set_status = 1; 
+} 
+
+>>> sres = memcache.MemcacheSetResponse()
+>>> sres.set_status.append(1)
+>>> sres.set_status.append(2)
+>>> sres.set_status.append(3)
+>>> sres.set_status.append(250)
+>>> sres.SerializeToString()
+'\x08\x01\x08\x02\x08\x03\x08\xfa\x01'
+
