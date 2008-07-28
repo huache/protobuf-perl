@@ -22,6 +22,7 @@ bin_is( $e->encode_varint(127), "\x7f" );
 bin_is( $e->encode_varint(128), "\x80\x01" );
 bin_is( $e->encode_varint(150), "\x96\x01" );
 bin_is( $e->encode_varint(16384), "\x80\x80\x01" );
+bin_is( $e->encode_varint(BI(2) ** 63), "\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01" );
 
 bin_is( $e->encode_wire_varint(1, 150), "\x08\x96\x01");
 bin_is( $e->encode_wire(1, WIRE_VARINT, 150), "\x08\x96\x01");
@@ -35,7 +36,7 @@ bin_is( $e->encode_field_string(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e
 bin_is( $e->encode_field_and_wire_type(2, 2), "\x12" );
 bin_is( $e->encode_field_and_wire_type(128, 2), "\x82\x08" );
 
-
+bin_is( $e->encode_field_fixed64(1, BI(2) ** 63), "\x09\x00\x00\x00\x00\x00\x00\x00\x80" );
 
 bin_is(
     join('',
