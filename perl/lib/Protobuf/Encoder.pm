@@ -128,8 +128,20 @@ sub encode_field_uint64 {
 
 sub encode_field_fixed64 {
     my ( $self, $field, $bigint ) = @_;
-    my $hex = $bigint->as_hex;
-    my $bin = reverse pack('H16', substr($hex, 2));
+    my $bin;
+    if ( HAS_QUADS ) {
+        if ( QUAD_ENDIANESS == QUAD_LEB ) {
+            $bin = pack("Q", $bigint);
+        } elsif ( QUAD_ENDIANESS == QUAD_BEB ) {
+            $bin = reverse(pack("Q", $bigint));
+        } else {
+            die "endianess unknown";
+        }
+    } else {
+        my $hex = $bigint->as_hex;
+        $bin = reverse pack('H16', substr($hex, 2));
+    }
+
     $self->encode_wire_fixed64( $field, $bin );
 }
 
