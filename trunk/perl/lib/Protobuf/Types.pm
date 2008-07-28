@@ -8,7 +8,7 @@ use base qw(Exporter);
 use Moose::Util::TypeConstraints;
 
 # if HAS_QUADS we don't need BigInts
-use constant HAS_QUADS => not not 2 << 63;
+use constant HAS_QUADS => ( 1 << 32 > 1 << 31 );
 use constant QUAD_LEB => 1;
 use constant QUAD_BEB => 2;
 use constant QUAD_ENDIANESS => HAS_QUADS && do {
