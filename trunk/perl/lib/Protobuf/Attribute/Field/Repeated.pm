@@ -97,6 +97,16 @@ sub generate_simple_add_method {
     }
 }
 
+sub protobuf_emit {
+    my ( $self, $instance, $emit ) = @_;
+
+    my $field = $self->field;
+
+    foreach my $value ( @{ $self->get_value($instance) } ) {
+        $emit->($field, $value);
+    }
+}
+
 sub Moose::Meta::Attribute::Custom::Trait::Protobuf::Field::Repeated::register_implementation { __PACKAGE__ }
 
 __PACKAGE__

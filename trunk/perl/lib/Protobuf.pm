@@ -100,6 +100,7 @@ use Protobuf::Attribute::Field::Repeated;
 use Protobuf::Attribute::Field::Scalar;
 use Protobuf::Encoder;
 use Moose::Util::TypeConstraints;
+use Moose::Util;
 
 # 5.8 doesn't have this: -brad
 # use namespace::clean;
@@ -113,11 +114,30 @@ sub GenerateClass {
         return $class->meta->new_object(%param);
     };
 
+    # each auto-generated class overrides serialize_to_string just to
+    # capture its field list and pass it to us here.
     $methods{serialize_to_string} = sub {
         my $self = shift;
-        my $fields_ref = $descriptor->fields;
-        return Protobuf::Message::serialize_to_string($self, $fields_ref);
+        my $buf = '';
+
+        my $metaclass = Class::MOP::Class->initialize(ref $self);
+
+        my @field_attrs = grep { $_->does("Protobuf::Attribute::Field") } $metaclass->compute_all_applicable_attributes;
+
+        my $e = Protobuf::Encoder->new;
+
+        my $emit = sub {
+            my ($field, $value) = @_;
+            $buf .= $e->encode_field( $field->number, $field->type, $value );
+        };
+
+        foreach my $attr (sort { $a->field->index <=> $b->field->index } @field_attrs ) {
+            $attr->protobuf_emit($self, $emit);
+        }
+
+        return $buf;
     };
+
 
     my @attributes;
 
@@ -152,48 +172,6 @@ sub GenerateClass {
             attributes => \@attributes,
             methods => \%methods,
         ));
-}
-
-# each auto-generated class overrides serialize_to_string just to
-# capture its field list and pass it to us here.
-sub serialize_to_string {
-    my ($self, $fieldsref) = @_;
-    my $buf = '';
-
-    my $e = Protobuf::Encoder->new;
-
-    my $emit = sub {
-        my ($field, $value) = @_;
-        $buf .= $e->encode_field( $field->number, $field->type, $value );
-    };
-
-  FIELD:
-    foreach my $field (@$fieldsref) {
-        my $name = $field->name;
-        if ($field->is_repeated) {
-            my $size_method = "${name}_size";
-            next FIELD unless $self->$size_method > 0;
-
-            my $list_method = "${name}s";
-            for my $value (@{ $self->$list_method }) {
-                $emit->($field, $value);
-                # TODO(bradfitz): if it's ::isa("Protobuf::Message") emit it
-            }
-        } else {
-            my $has_method = "has_${name}";
-
-            unless ( $self->$has_method ) {
-                if ($field->is_required ) {
-                    die "Missing required field '$name'\n";
-                } else {
-                    next FIELD;
-                }
-            }
-
-            $emit->( $field, $self->$name );
-        }
-    }
-    return $buf;
 }
 
 1;

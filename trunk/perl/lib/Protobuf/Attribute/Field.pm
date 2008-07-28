@@ -5,6 +5,7 @@ has field => (
 	isa => "Protobuf::FieldDescriptor",
 	is  => "ro",
 	required => 1,
+    handles => [qw(is_repeated)],
 );
 
 has '+type_constraint' => (
