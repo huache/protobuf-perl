@@ -23,7 +23,7 @@ use constant UQUAD_TYPE => join("::", __PACKAGE__,  HAS_QUADS ? "PositiveBigInt"
 
 our @EXPORT = qw(
     type_to_wire type_name wire_type_name type_constraint
-    HAS_QUADS SQUAD_TYPE UQUAD_TYPE QUAD_ENDIANESS QUAD_LEB QUAD_QEB
+    HAS_QUADS SQUAD_TYPE UQUAD_TYPE QUAD_ENDIANESS QUAD_LEB QUAD_BEB
 ); # and some exports
 
 use constant ();
