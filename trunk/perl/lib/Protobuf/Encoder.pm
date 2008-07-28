@@ -12,10 +12,10 @@ sub encode_wire {
 }
 
 sub encode_field {
-    my ( $self, $field, $value ) = @_;
-    my $type_name = lc type_name($field->type);
+    my ( $self, $field, $type, $value ) = @_;
+    my $type_name = lc type_name($type);
     my $method = "encode_field_${type_name}";
-    $self->encode_field($field, $value);
+    $self->$method($field, $value);
 }
 
 sub encode_field_and_wire_type {

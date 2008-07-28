@@ -80,6 +80,7 @@ sub type_to_wire {
 }
 
 sub type_name {
+    no warnings;
     $type_name[$_[0]]
 }
 
