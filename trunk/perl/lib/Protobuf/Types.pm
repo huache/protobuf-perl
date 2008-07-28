@@ -14,9 +14,9 @@ use constant QUAD_BEB => 2;
 use constant QUAD_ENDIANESS => HAS_QUADS && do {
     my $i;
     ${{
-        "\x01\x01\x03\x04\0\0\0\0" => QUAD_LEB, # little-endian bytes
+        "\x01\x02\x03\x04\0\0\0\0" => QUAD_LEB, # little-endian bytes
         "\0\0\0\0\x04\x03\x02\x01" => QUAD_BEB, # big-endian bytes
-    }}{ pack("Q", 0x04030201) } || 0;
+    }}{ pack("Q", 0x04030201) } || warn("unknown endianness: " . unpack("H*", pack("Q", 0x04030201))) && 0;
 };
 use constant SQUAD_TYPE => HAS_QUADS ? "Int" : "Math::BigInt";
 use constant UQUAD_TYPE => join("::", __PACKAGE__,  HAS_QUADS ? "PositiveBigInt" : "PositiveInt" );
