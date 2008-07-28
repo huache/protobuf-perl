@@ -107,11 +107,7 @@ package Protobuf::Message;
 use strict;
 use warnings;
 
-use Protobuf::Attribute::Field::Repeated;
-use Protobuf::Attribute::Field::Scalar;
-use Protobuf::Encoder;
-use Moose::Util::TypeConstraints;
-use Moose::Util;
+use Protobuf::Meta::Message ();
 
 # 5.8 doesn't have this: -brad
 # use namespace::clean;
@@ -119,50 +115,10 @@ use Moose::Util;
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
 
-    my %methods;
-    $methods{new} = sub {
-        my ($class, %param) = @_;
-        return $class->meta->new_object(%param);
-    };
-
-    # each auto-generated class overrides serialize_to_string just to
-    # capture its field list and pass it to us here.
-    $methods{serialize_to_string} = sub {
-        my $self = shift;
-        my $buf = '';
-
-        my $metaclass = Class::MOP::Class->initialize(ref $self);
-
-        my @field_attrs = grep { $_->does("Protobuf::Attribute::Field") } $metaclass->compute_all_applicable_attributes;
-
-        my $e = Protobuf::Encoder->new;
-
-        my $emit = sub {
-            my ($field, $value) = @_;
-            $buf .= $e->encode_field( $field->number, $field->type, $value );
-        };
-
-        foreach my $attr (sort { $a->field->index <=> $b->field->index } @field_attrs ) {
-            $attr->protobuf_emit($self, $emit);
-        }
-
-        return $buf;
-    };
-
-    my @attributes = map {
-        my $field = $_;
-        Moose::Meta::Attribute->interpolate_class_and_new( $field->name => (
-            traits => [ 'Protobuf::Field::' . ( $field->is_repeated ? 'Repeated' : 'Scalar' ) ],
-            field => $field,
-        ));
-    } @{ $descriptor->fields };
-
-    my $c = Moose::Meta::Class->create(
-        $name => (
-            superclasses => ['Protobuf::Message'],
-            attributes => \@attributes,
-            methods => \%methods,
-        ));
+    my $c = Protobuf::Meta::Message->create_from_descriptor(
+        descriptor => $descriptor,
+        class      => $name,
+    );
 
     $c->make_immutable;
 

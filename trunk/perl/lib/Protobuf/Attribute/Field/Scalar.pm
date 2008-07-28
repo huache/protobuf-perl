@@ -2,7 +2,6 @@ package Protobuf::Attribute::Field::Scalar;
 use Moose::Role;
 
 use Protobuf::Types qw(type_constraint);
-use Storable qw(dclone);
 
 # 5.8 doesn't have this: -brad
 #use namespace::clean -except => 'meta';
@@ -18,14 +17,14 @@ before _process_options => sub {
 
     my $field = $options->{field};
 
-    my $type_constraint = $options->{type_constraint} ||= $class->field_to_type_constraint($options->{field});
+    my $type_constraint = $options->{type_constraint} = $class->field_to_type_constraint($options->{field});
 
     if ( defined ( my $default = $field->default_value ) ) {
         $options->{lazy} = 1;
         $options->{default} = $class->process_default($default, $type_constraint);
     } elsif ( $type_constraint->isa("Moose::Meta::TypeConstraint::Class") ) {
         my $class = $type_constraint->class;
-        $options->{default} = sub { $class->new };
+        $options->{default} = sub { $class->new }; # FIXME only ->isa("Protobuf::Message")?
     }
 
     if ( $type_constraint->is_a_type_of("Math::BigInt") ) {
@@ -51,21 +50,10 @@ sub process_default {
             if ( $default->isa("Math::BigInt" ) ) {
                 return sub { $default->copy };
             }
-        } else {
-            die "unsupported default value for Scalar";
-            if ( ref $default eq 'ARRAY' ) {
-                return ( @$default ? sub { [ @$default ] } : sub { [] } );
-            } elsif ( ref $default eq 'HASH' ) {
-                return ( keys %$default ? sub { { %$default } } : sub { {} } );
-            }
-
-            return sub {
-                # FIXME clone when applicable, but only when applicable
-                # optimize simple refs
-                return dclone($default);
-            }
         }
+
     }
+    die "unsupported default value for Scalar";
 }
 
 sub protobuf_emit {
