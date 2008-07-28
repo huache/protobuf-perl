@@ -86,3 +86,15 @@ use_ok("Memcache");
        "\n\x07the_key\x10\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x18\x02");
 }
 
+# stats
+{
+    my $p = MemcacheStatsResponse->new;
+    $p->stats->set_hits(1);
+    is($p->stats->hits, 1);
+    $p->stats->set_misses(2);
+    $p->stats->set_oldest_item_age(500);
+    is($p->serialize_to_string,
+       "\n\t\x08\x01\x10\x025\xf4\x01\x00\x00");
+    is($p->stats->serialize_to_string,
+       "\x08\x01\x10\x025\xf4\x01\x00\x00");
+}
