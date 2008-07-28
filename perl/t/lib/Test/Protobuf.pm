@@ -11,7 +11,7 @@ our @EXPORT = qw(escaped bin_is);
 
 sub escaped {
     my $v = shift;
-    $v =~ s/([^[:print:]\n])/"\\x" . sprintf("%02x", ord($1))/eg;
+    $v =~ s/([^[:print:]])/"\\x" . sprintf("%02x", ord($1))/eg;
     return $v;
 }
 

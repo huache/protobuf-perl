@@ -96,6 +96,11 @@ sub encode_field_string {
     $self->encode_wire_length_delimited($field, $string);
 }
 
+sub encode_field_group {
+    my ( $self, $field ) = @_;
+    $self->encode_wire_start_group($field);
+}
+
 __PACKAGE__
 
 __END__
