@@ -1197,6 +1197,14 @@ class LIBPROTOBUF_EXPORT FileOptions : public ::google::protobuf::Message {
   inline bool java_multiple_files() const;
   inline void set_java_multiple_files(bool value);
   
+  // optional string perl_package = 11;
+  inline bool has_perl_package() const;
+  inline void clear_perl_package();
+  inline const ::std::string& perl_package() const;
+  inline void set_perl_package(const ::std::string& value);
+  inline void set_perl_package(const char* value);
+  inline ::std::string* mutable_perl_package();
+  
   // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
   inline bool has_optimize_for() const;
   inline void clear_optimize_for();
@@ -1212,12 +1220,14 @@ class LIBPROTOBUF_EXPORT FileOptions : public ::google::protobuf::Message {
   ::std::string* java_outer_classname_;
   static const ::std::string _default_java_outer_classname_;
   bool java_multiple_files_;
+  ::std::string* perl_package_;
+  static const ::std::string _default_perl_package_;
   int optimize_for_;
   
   static const FileOptions default_instance_;
-  static const int _offsets_[4];
+  static const int _offsets_[5];
   
-  ::google::protobuf::uint32 _has_bits_[(4 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
   
   // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
   inline bool _has_bit(int index) const {
@@ -2843,20 +2853,55 @@ inline void FileOptions::set_java_multiple_files(bool value) {
   java_multiple_files_ = value;
 }
 
+// optional string perl_package = 11;
+inline bool FileOptions::has_perl_package() const {
+  return _has_bit(3);
+}
+inline void FileOptions::clear_perl_package() {
+  if (perl_package_ != &_default_perl_package_) {
+    perl_package_->clear();
+  }
+  _clear_bit(3);
+}
+inline const ::std::string& FileOptions::perl_package() const {
+  return *perl_package_;
+}
+inline void FileOptions::set_perl_package(const ::std::string& value) {
+  _set_bit(3);
+  if (perl_package_ == &_default_perl_package_) {
+    perl_package_ = new ::std::string;
+  }
+  perl_package_->assign(value);
+}
+inline void FileOptions::set_perl_package(const char* value) {
+  _set_bit(3);
+  if (perl_package_ == &_default_perl_package_) {
+    perl_package_ = new ::std::string;
+  }
+  perl_package_->assign(value);
+}
+inline ::std::string* FileOptions::mutable_perl_package() {
+  _set_bit(3);
+  if (perl_package_ == &_default_perl_package_) {
+    perl_package_ = new ::std::string;
+  }
+  return perl_package_;
+}
+
 // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
 inline bool FileOptions::has_optimize_for() const {
-  return _has_bit(3);
+  return _has_bit(4);
 }
 inline void FileOptions::clear_optimize_for() {
   optimize_for_ = 2;
-  _clear_bit(3);
+  _clear_bit(4);
 }
 inline ::google::protobuf::FileOptions_OptimizeMode FileOptions::optimize_for() const {
   return static_cast< ::google::protobuf::FileOptions_OptimizeMode >(optimize_for_);
 }
 inline void FileOptions::set_optimize_for(::google::protobuf::FileOptions_OptimizeMode value) {
   GOOGLE_DCHECK(::google::protobuf::FileOptions_OptimizeMode_IsValid(value));
-  _set_bit(3);
+  _set_bit(4);
   optimize_for_ = value;
 }
 

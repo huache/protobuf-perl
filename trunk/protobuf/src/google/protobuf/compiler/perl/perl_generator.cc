@@ -30,7 +30,7 @@ namespace perl {
 
 namespace {
 
-// Returns a copy of |filename| with any trailing ".protodevel" or ".proto
+// Returns a copy of filename with any trailing ".protodevel" or ".proto
 // suffix stripped.
 // TODO(xxx): Unify with copy in compiler/cpp/internal/helpers.cc.
 string StripProto(const string& filename) {
@@ -41,7 +41,13 @@ string StripProto(const string& filename) {
 
 
 // Returns the Perl package name expected for a given .proto filename.
-string PackageName(const string& filename) {
+static string PackageName(const FileDescriptor* file) {
+  if (file->options().has_perl_package()) {
+    const string& package = file->options().perl_package();
+    // TODO(bradfitz): sanity check it.
+    return package;
+  }
+  const string& filename = file->name();
   string package = StripProto(filename);
   StripString(&package, "-", '_');
   GlobalReplaceSubstring("_", "::", &package);
@@ -89,8 +95,6 @@ void PrintTopBoilerplate(io::Printer* printer) {
 // object for the given C++ descriptor.
 string EnumValueDescriptorExpression(
     const EnumValueDescriptor& descriptor) {
-  // TODO(bradfitz): Fix up EnumValueDescriptor "type" fields.
-  // More circular references.  ::sigh::
   return strings::Substitute("Protobuf::EnumValueDescriptor->new("
                              "name => '$0', "
                              "index => $1, "
@@ -274,7 +278,8 @@ bool Generator::Generate(const FileDescriptor* file,
   // we need to, but I doubt it will be an issue.
   MutexLock lock(&mutex_);
   file_ = file;
-  string package_name = PackageName(file->name());
+
+  string package_name = PackageName(file);
   string filename = package_name;
 
   GlobalReplaceSubstring("::", "/", &filename);
@@ -323,7 +328,7 @@ bool Generator::Generate(const FileDescriptor* file,
 // Prints Perl imports for all modules imported by |file|.
 void Generator::PrintImports() const {
   for (int i = 0; i < file_->dependency_count(); ++i) {
-    string module_name = PackageName(file_->dependency(i)->name());
+    string module_name = PackageName(file_->dependency(i));
     printer_->Print("eval \"use `module`;\";\n", "module",
                     module_name);
   }
@@ -374,7 +379,8 @@ void Generator::PrintEnum(const EnumDescriptor& enum_descriptor) const {
       "our $`descriptor_name` = Protobuf::EnumDescriptor->new(\n"
       "  name => '`name`',\n"
       "  full_name => '`full_name`',\n"
-      "  filename => '`filename`',\n"
+    // We don't seem to need this in Perl space yet:
+    //"  filename => '`filename`',\n"
       "  values => [\n";
   printer_->Print(m, enum_descriptor_template);
   printer_->Indent();
@@ -387,6 +393,20 @@ void Generator::PrintEnum(const EnumDescriptor& enum_descriptor) const {
   printer_->Outdent();
   printer_->Outdent();
   printer_->Print("]);\n");
+
+  // Set types
+  const char set_enumtype_template[] =
+    "$`descriptor_name`->values->[`n`]"
+    "->set_type($`descriptor_name`);\n";
+  for (int i = 0; i < enum_descriptor.value_count(); ++i) {
+    char buf[10];
+    sprintf(buf, "%d", i);
+    m.clear();
+    m["descriptor_name"] = ModuleLevelDescriptorName(enum_descriptor);
+    string n(buf);
+    m["n"] = n;
+    printer_->Print(m, set_enumtype_template);
+  }
   printer_->Print("\n");
 }
 
@@ -442,7 +462,8 @@ void Generator::PrintDescriptor(const Descriptor& message_descriptor) const {
   const char required_function_arguments[] =
       "name => '`name`',\n"
       "full_name => '`full_name`',\n"
-      "filename => '`filename`',\n"
+    // Filename doesn't seem to be needed yet in Perl space:
+    // "filename => '`filename`',\n"
       "containing_type => undef,\n";  // TODO(bradfitz): Implement containing_type.
   printer_->Print(m, required_function_arguments);
   PrintFieldsInDescriptor(message_descriptor, printer_);
@@ -495,7 +516,8 @@ void Generator::PrintMessages() const {
 void Generator::PrintMessage(
     const string& class_prefix,
     const Descriptor& message_descriptor) const {
-  printer_->Print("Protobuf::Message->GenerateClass('`name`', ", "name",
+  printer_->Print("Protobuf::Message->GenerateClass(__PACKAGE__ . '::`name`', ",
+                  "name",
                   class_prefix + message_descriptor.name());
   printer_->Print("$`descriptor_name`);\n",
                   "descriptor_name",
@@ -664,7 +686,7 @@ string Generator::ModuleLevelDescriptorName(
   // We now have the name relative to its own module.  Also qualify with
   // the module name iff this descriptor is from a different .proto file.
   if (descriptor.file() != file_) {
-    name = PackageName(descriptor.file()->name()) + "::" + name;
+    name = PackageName(descriptor.file()) + "::" + name;
   }
   return name;
 }
@@ -676,7 +698,7 @@ string Generator::ModuleLevelDescriptorName(
 string Generator::ModuleLevelMessageName(const Descriptor& descriptor) const {
   string name = NamePrefixedWithNestedTypes(descriptor, ".");
   if (descriptor.file() != file_) {
-    name = PackageName(descriptor.file()->name()) + "." + name;
+    name = PackageName(descriptor.file()) + "." + name;
   }
   return name;
 }

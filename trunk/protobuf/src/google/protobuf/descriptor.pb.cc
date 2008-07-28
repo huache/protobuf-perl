@@ -93,20 +93,21 @@ void proto_BuildDescriptors_google_2fprotobuf_2fdescriptor_2eproto() {
     "erviceOptions\"\177\n\025MethodDescriptorProto\022\014"
     "\n\004name\030\001 \001(\t\022\022\n\ninput_type\030\002 \001(\t\022\023\n\013outp"
     "ut_type\030\003 \001(\t\022/\n\007options\030\004 \001(\0132\036.google."
-    "protobuf.MethodOptions\"\333\001\n\013FileOptions\022\024"
+    "protobuf.MethodOptions\"\361\001\n\013FileOptions\022\024"
     "\n\014java_package\030\001 \001(\t\022\034\n\024java_outer_class"
     "name\030\010 \001(\t\022\"\n\023java_multiple_files\030\n \001(\010:"
-    "\005false\022J\n\014optimize_for\030\t \001(\0162).google.pr"
-    "otobuf.FileOptions.OptimizeMode:\tCODE_SI"
-    "ZE\"(\n\014OptimizeMode\022\t\n\005SPEED\020\001\022\r\n\tCODE_SI"
-    "ZE\020\002\"8\n\016MessageOptions\022&\n\027message_set_wi"
-    "re_format\030\001 \001(\010:\005false\"\205\001\n\014FieldOptions\022"
-    "2\n\005ctype\030\001 \001(\0162#.google.protobuf.FieldOp"
-    "tions.CType\022\034\n\024experimental_map_key\030\t \001("
-    "\t\"#\n\005CType\022\010\n\004CORD\020\001\022\020\n\014STRING_PIECE\020\002\"\r"
-    "\n\013EnumOptions\"\022\n\020EnumValueOptions\"\020\n\016Ser"
-    "viceOptions\"\017\n\rMethodOptionsB)\n\023com.goog"
-    "le.protobufB\020DescriptorProtosH\001", 2551);
+    "\005false\022\024\n\014perl_package\030\013 \001(\t\022J\n\014optimize"
+    "_for\030\t \001(\0162).google.protobuf.FileOptions"
+    ".OptimizeMode:\tCODE_SIZE\"(\n\014OptimizeMode"
+    "\022\t\n\005SPEED\020\001\022\r\n\tCODE_SIZE\020\002\"8\n\016MessageOpt"
+    "ions\022&\n\027message_set_wire_format\030\001 \001(\010:\005f"
+    "alse\"\205\001\n\014FieldOptions\0222\n\005ctype\030\001 \001(\0162#.g"
+    "oogle.protobuf.FieldOptions.CType\022\034\n\024exp"
+    "erimental_map_key\030\t \001(\t\"#\n\005CType\022\010\n\004CORD"
+    "\020\001\022\020\n\014STRING_PIECE\020\002\"\r\n\013EnumOptions\"\022\n\020E"
+    "numValueOptions\"\020\n\016ServiceOptions\"\017\n\rMet"
+    "hodOptionsB)\n\023com.google.protobufB\020Descr"
+    "iptorProtosH\001", 2573);
   FileDescriptorProto_descriptor_ = file->message_type(0);
   ::google::protobuf::MessageFactory::InternalRegisterGeneratedMessage(
     FileDescriptorProto_descriptor_, &FileDescriptorProto::default_instance());
@@ -2745,11 +2746,13 @@ const FileOptions FileOptions::default_instance_;
 const ::std::string FileOptions::_default_java_package_;
 const ::std::string FileOptions::_default_java_outer_classname_;
 
+const ::std::string FileOptions::_default_perl_package_;
 
-const int FileOptions::_offsets_[4] = {
+const int FileOptions::_offsets_[5] = {
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileOptions, java_package_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileOptions, java_outer_classname_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileOptions, java_multiple_files_),
+  GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileOptions, perl_package_),
   GOOGLE_PROTOBUF_GENERATED_MESSAGE_FIELD_OFFSET(FileOptions, optimize_for_),
 };
 
@@ -2761,6 +2764,7 @@ FileOptions::FileOptions()
     java_package_(const_cast< ::std::string*>(&_default_java_package_)),
     java_outer_classname_(const_cast< ::std::string*>(&_default_java_outer_classname_)),
     java_multiple_files_(false),
+    perl_package_(const_cast< ::std::string*>(&_default_perl_package_)),
     optimize_for_(2) {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   if (this == &default_instance_) {
@@ -2775,6 +2779,7 @@ FileOptions::FileOptions(const FileOptions& from)
     java_package_(const_cast< ::std::string*>(&_default_java_package_)),
     java_outer_classname_(const_cast< ::std::string*>(&_default_java_outer_classname_)),
     java_multiple_files_(false),
+    perl_package_(const_cast< ::std::string*>(&_default_perl_package_)),
     optimize_for_(2) {
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
   MergeFrom(from);
@@ -2786,6 +2791,9 @@ FileOptions::~FileOptions() {
   }
   if (java_outer_classname_ != &_default_java_outer_classname_) {
     delete java_outer_classname_;
+  }
+  if (perl_package_ != &_default_perl_package_) {
+    delete perl_package_;
   }
   if (this != &default_instance_) {
   }
@@ -2813,6 +2821,11 @@ void FileOptions::Clear() {
       }
     }
     java_multiple_files_ = false;
+    if (_has_bit(3)) {
+      if (perl_package_ != &_default_perl_package_) {
+        perl_package_->clear();
+      }
+    }
     optimize_for_ = 2;
   }
   ::memset(_has_bits_, 0, sizeof(_has_bits_));
@@ -2876,6 +2889,18 @@ bool FileOptions::MergePartialFromCodedStream(
         DO_(::google::protobuf::internal::WireFormat::ReadBool(
               input, &java_multiple_files_));
         _set_bit(2);
+        if (input->ExpectTag(90)) goto parse_perl_package;
+        break;
+      }
+      
+      // optional string perl_package = 11;
+      case 11: {
+        if (::google::protobuf::internal::WireFormat::GetTagWireType(tag) !=
+            ::google::protobuf::internal::WireFormat::WIRETYPE_LENGTH_DELIMITED) {
+          goto handle_uninterpreted;
+        }
+       parse_perl_package:
+        DO_(::google::protobuf::internal::WireFormat::ReadString(input, mutable_perl_package()));
         if (input->ExpectAtEnd()) return true;
         break;
       }
@@ -2910,13 +2935,18 @@ bool FileOptions::SerializeWithCachedSizes(
   }
   
   // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
-  if (_has_bit(3)) {
+  if (_has_bit(4)) {
     DO_(::google::protobuf::internal::WireFormat::WriteEnum(9, this->optimize_for(), output));
   }
   
   // optional bool java_multiple_files = 10 [default = false];
   if (_has_bit(2)) {
     DO_(::google::protobuf::internal::WireFormat::WriteBool(10, this->java_multiple_files(), output));
+  }
+  
+  // optional string perl_package = 11;
+  if (_has_bit(3)) {
+    DO_(::google::protobuf::internal::WireFormat::WriteString(11, this->perl_package(), output));
   }
   
   if (!unknown_fields().empty()) {
@@ -2946,6 +2976,12 @@ int FileOptions::ByteSize() const {
     // optional bool java_multiple_files = 10 [default = false];
     if (has_java_multiple_files()) {
       total_size += 1 + 1;
+    }
+    
+    // optional string perl_package = 11;
+    if (has_perl_package()) {
+      total_size += 1 +
+        ::google::protobuf::internal::WireFormat::StringSize(this->perl_package());
     }
     
     // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
@@ -2990,6 +3026,9 @@ void FileOptions::MergeFrom(const FileOptions& from) {
       set_java_multiple_files(from.java_multiple_files());
     }
     if (from._has_bit(3)) {
+      set_perl_package(from.perl_package());
+    }
+    if (from._has_bit(4)) {
       set_optimize_for(from.optimize_for());
     }
   }
