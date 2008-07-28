@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 27;
+use Test::More tests => 36;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
