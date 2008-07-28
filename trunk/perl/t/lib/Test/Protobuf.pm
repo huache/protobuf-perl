@@ -11,7 +11,7 @@ use Protobuf::Types;
 our @EXPORT = qw(escaped bin_is BI);
 
 sub BI {
-    return HAS_QUADS ? eval($_[0]) : Math::BigInt->new($_[0]);
+    return HAS_QUADS ? eval('no warnings "portable"; ' . $_[0]) : Math::BigInt->new($_[0]);
 }
 
 sub escaped {
