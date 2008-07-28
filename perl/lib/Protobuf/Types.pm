@@ -7,7 +7,7 @@ use base qw(Exporter);
 
 use Moose::Util::TypeConstraints;
 
-use Math::BigInt try => 'GMP';
+use Math::BigInt lib => 'GMP';
 
 
 our @EXPORT = qw(type_to_wire type_name wire_type_name type_constraint); # and some exports

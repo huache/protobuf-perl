@@ -1,7 +1,7 @@
 How to get a Python shell to test what serialization should be like:
 
-$ ./python-proto-shell.sh 
-
+$ devtools/python-proto-shell.sh 
+  (from the 'perl' directory)
 
 message MemcacheGetRequest { 
   repeated bytes key = 1; 
