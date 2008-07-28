@@ -5,28 +5,15 @@ use warnings;
 
 use Test::More 'no_plan';
 
+use lib "t/lib";
+use Test::Protobuf;
+
+
 use_ok("Protobuf::Encoder");
 
 use Protobuf::Types;
 
 my $e = Protobuf::Encoder->new;
-
-sub escaped {
-    my $v = shift;
-    $v =~ s/([^[:print:]\n])/"\\x" . sprintf("%02x", ord($1))/eg;
-    return $v;
-}
-
-sub bin_is ($$;$) {
-    my @args = @_;
-    foreach my $buf ( @args[0,1] ) { # copy because of readonly assignment
-        fail("found utf8 data") if utf8::is_utf8($buf);
-        $buf = escaped($buf);
-    }
-
-    @_ = @args;
-    goto \&is;
-}
 
 bin_is( $e->encode_varint(0), "\x00" );
 bin_is( $e->encode_varint(1), "\x01" );
