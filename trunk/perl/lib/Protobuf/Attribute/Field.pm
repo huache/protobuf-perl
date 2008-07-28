@@ -1,11 +1,12 @@
 package Protobuf::Attribute::Field;
 use Moose::Role;
 
-use Protobuf::Types ();
+use Protobuf::Types;
+use Moose::Util::TypeConstraints ();
 
 requires 'protobuf_emit';
 
-# namespace::clean -except => 'meta';
+use namespace::clean -except => 'meta';
 
 has field => (
 	isa => "Protobuf::FieldDescriptor",
@@ -28,7 +29,7 @@ sub field_to_type_constraint {
         # create FIXME type constraint (range check)
     }
 
-    return Protobuf::Types::type_constraint($field->type);
+    return type_constraint($field->type);
 };
 
 after 'install_accessors' => sub {
