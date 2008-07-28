@@ -22,10 +22,8 @@ sub constant ($$) {
 
 
 coerce( class_type('Math::BigInt'),
-    from "Int",
-    via { Math::BigInt->new($_) },
-    from "Str",
-    via { Math::BigInt->new($_) },
+    from Int => via { Math::BigInt->new($_[0]) },
+    from Str => via { Math::BigInt->new($_[0]) },
 );
 
 class_type "Protobuf::Message";
@@ -35,10 +33,8 @@ coerce(
         as 'Math::BigInt',
         where { $_ >= 0 },
     ),
-    from "Int",
-    via { Math::BigInt->new($_) },
-    from "Str",
-    via { Math::BigInt->new($_) },
+    from Int => via { Math::BigInt->new($_[0]) },
+    from Str => via { Math::BigInt->new($_[0]) },
 );
 
 
@@ -47,6 +43,7 @@ subtype ( __PACKAGE__ . '::PositiveInt',
     where { $_ >= 0 },
     optimize_as { $_[0] !~ /\D/ },
 );
+
 
 subtype ( __PACKAGE__ . '::Bytes',
     as 'Str',

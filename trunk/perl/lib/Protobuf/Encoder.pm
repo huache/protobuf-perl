@@ -96,6 +96,11 @@ sub encode_field_string {
     $self->encode_wire_length_delimited($field, $string);
 }
 
+sub encode_field_message {
+    my ( $self, $field, $item ) = @_;
+    $self->encode_wire_length_delimited($field, $item->serialize_to_string);
+}
+
 sub encode_field_group {
     my ( $self, $field, @items ) = @_;
 

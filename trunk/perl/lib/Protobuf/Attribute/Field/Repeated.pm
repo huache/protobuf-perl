@@ -11,13 +11,13 @@ with q(Protobuf::Attribute::Field);
 before _process_options => sub {
     my ( $class, $name, $options ) = @_;
 
-    $options->{reader} = "${name}s";
-    $options->{predicate} = "set_$name";
-    $options->{default} = sub { [] };
+    $options->{reader}    ||= "${name}s";
+    $options->{predicate} ||= "set_$name";
+    $options->{default}   ||= sub { [] };
 
-    my $type_constraint = type_constraint($options->{field}->type);
+    my $type_constraint = $options->{type_constraint} || type_constraint($options->{field}->type);
 
-    $options->{type_constraint} ||= Moose::Meta::TypeConstraint::Parameterized->new(
+    $options->{type_constraint} = Moose::Meta::TypeConstraint::Parameterized->new(
         name           => 'ArrayRef[' . $type_constraint->name . ']',
         parent         => find_type_constraint('ArrayRef'),
         type_parameter => $type_constraint,
