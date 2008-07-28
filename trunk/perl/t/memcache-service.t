@@ -9,9 +9,10 @@ use lib "t/lib";
 use Test::Protobuf;
 
 use Protobuf;
+use Protobuf::Types;
+
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
-use Math::BigInt lib => 'GMP';
 
 BEGIN { use_ok("Memcache") };
 
@@ -74,7 +75,7 @@ BEGIN { use_ok("Memcache") };
 # increment response
 {
     my $p = MemcacheIncrementResponse->new;
-    $p->set_new_value(Math::BigInt->new(2) ** 63);
+    $p->set_new_value( BI(2) ** 63 );
     bin_is($p->serialize_to_string,
        "\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01",
        "bigint in uint64 field");
@@ -88,7 +89,7 @@ BEGIN { use_ok("Memcache") };
     eval { $p->set_delta(-1) };
     ok($@);
     is($p->delta, 1, "still the default");
-    $p->set_delta(Math::BigInt->new(2) ** 63);
+    $p->set_delta( BI(2) ** 63);
     $p->set_direction(MemcacheIncrementRequest::Direction::DECREMENT);
     bin_is($p->serialize_to_string,
        "\n\x07the_key\x10\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01\x18\x02");
@@ -98,7 +99,6 @@ BEGIN { use_ok("Memcache") };
 {
     my $p = MemcacheStatsResponse->new;
     $p->stats;
-    # FIXME coerce by default? potentially a big perf hit, unless we do a custom coercion for bigints
     $p->stats->set_hits(1);
     is($p->stats->hits, 1);
     $p->stats->set_misses(2);

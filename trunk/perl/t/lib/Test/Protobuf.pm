@@ -6,8 +6,13 @@ use warnings;
 use base qw(Exporter);
 
 use Test::More;
+use Protobuf::Types;
 
-our @EXPORT = qw(escaped bin_is);
+our @EXPORT = qw(escaped bin_is BI);
+
+sub BI {
+    return HAS_QUADS ? eval($_[0]) : Math::BigInt->new($_[0]);
+}
 
 sub escaped {
     my $v = shift;

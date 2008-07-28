@@ -9,17 +9,19 @@ use Moose::Util::TypeConstraints;
 
 # if HAS_QUADS we don't need BigInts
 use constant HAS_QUADS => not not 2 << 63;
+use constant QUAD_LEB => 1;
+use constant QUAD_BEB => 2;
 use constant QUAD_ENDIANESS => HAS_QUADS && do {
     my $i;
-    ${{ map { $_ => ++$i }
-        "\x01\x01\x03\x04\0\0\0\0", # little-endian bytes
-        "\0\0\0\0\x04\x03\x02\x01", # big-endian bytes
+    ${{
+        "\x01\x01\x03\x04\0\0\0\0" => QUAD_LEB, # little-endian bytes
+        "\0\0\0\0\x04\x03\x02\x01" => QUAD_BEB, # big-endian bytes
     }}{ pack("Q", 0x04030201) } || 0;
 };
+use constant SQUAD_TYPE => HAS_QUADS ? "Int" : "Math::BigInt";
+use constant UQUAD_TYPE => join("::", __PACKAGE__,  HAS_QUADS ? "PositiveBigInt" : "PositiveInt" );
 
-use Math::BigInt lib => 'GMP';
-
-our @EXPORT = qw(type_to_wire type_name wire_type_name type_constraint); # and some exports
+our @EXPORT = qw(type_to_wire type_name wire_type_name type_constraint HAS_QUADS SQUAD_TYPE UQUAD_TYPE QUAD_ENDIANESS); # and some exports
 
 use constant ();
 
@@ -28,14 +30,19 @@ sub constant ($$) {
     push @EXPORT, $_[0];
 }
 
+class_type "Protobuf::Message";
 
+#unless ( HAS_QUADS ) { # doesn't hurt to define
+require Math::BigInt;
+{
+    local $SIG{__WARN__} = sub { };
+    Math::BigInt->import( lib => "GMP" );
+}
 
 coerce( class_type('Math::BigInt'),
     from Int => via { Math::BigInt->new($_[0]) },
     from Str => via { Math::BigInt->new($_[0]) },
 );
-
-class_type "Protobuf::Message";
 
 coerce(
     subtype ( __PACKAGE__ . '::PositiveBigInt',
@@ -45,7 +52,7 @@ coerce(
     from Int => via { Math::BigInt->new($_[0]) },
     from Str => via { Math::BigInt->new($_[0]) },
 );
-
+#}
 
 subtype ( __PACKAGE__ . '::PositiveInt',
     as 'Int',
@@ -81,10 +88,10 @@ my %wire_types = (
 my %types = (
     DOUBLE => [ 1, "Num" ],
     FLOAT => [ 2, "Num" ],
-    INT64 => [ 3, "Math::BigInt" ],
-    UINT64 => [ 4, __PACKAGE__ . '::PositiveBigInt' ],
+    INT64 => [ 3, SQUAD_TYPE ],
+    UINT64 => [ 4, UQUAD_TYPE ],
     INT32 => [ 5, "Int" ],
-    FIXED64 => [ 6, "Math::BigInt" ],
+    FIXED64 => [ 6, UQUAD_TYPE ],
     FIXED32 => [ 7, "Int" ],
     BOOL => [ 8, "Bool" ],
     STRING => [ 9, "Str" ],
@@ -94,9 +101,9 @@ my %types = (
     UINT32 => [ 13, __PACKAGE__ . '::PositiveInt' ],
     ENUM => [ 14, "Int" ], # FIXME
     SFIXED32 => [ 15, "Int" ],
-    SFIXED64 => [ 16, "Math::BigInt" ],
+    SFIXED64 => [ 16, SQUAD_TYPE ],
     SINT32 => [ 17, "Int" ],
-    SINT64 => [ 18, "Math::BigInt" ],
+    SINT64 => [ 18, SQUAD_TYPE ],
 );
 
 my %wire_type_map = (

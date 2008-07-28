@@ -2,13 +2,12 @@
 
 use Test::More 'no_plan';
 use Data::Dumper;
-use Math::BigInt lib => 'GMP';
+
+use lib "t/lib";
+use Test::Protobuf;
 
 use_ok("Protobuf::WireFormat");
 my $F;
-sub BI {
-    return Math::BigInt->new($_[0]);
-}
 
 diag("zigzag_encode tests:");
 $F = \&Protobuf::WireFormat::zigzag_encode;
