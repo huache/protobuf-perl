@@ -5,5 +5,6 @@ WriteMakefile('NAME' => 'Protobuf',
               'PREREQ_PM' => {
                   'Moose' => 0,
                   'Moose::Policy' => 0,
+                  'namespace::clean' => 0,
               });
 
