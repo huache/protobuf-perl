@@ -1,6 +1,20 @@
 package Protobuf::Encoder;
 use Moose;
 
+use Protobuf::Types;
+
+my @typemap;
+@typemap[VARINT, C64, C32, STRING, START_GROUP, END_GROUP] = (
+    ( map { "encode_${_}_field" } qw(varint 8_byte 4_byte string) ),
+    ( map { "encode_$_" } qw(start_group end_group) ),
+);
+
+sub encode_field {
+    my ( $self, $field, $wire, $data ) = @_;
+    my $type = $typemap[$wire] || die "unknown type $wire";
+    $self->$type($field, $data);
+}
+
 sub encode_field_and_wire {
     my ( $self, $field, $wire ) = @_;
     die "bad field value, must be int" unless $field == int($field);

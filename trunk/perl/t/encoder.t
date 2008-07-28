@@ -7,6 +7,8 @@ use Test::More 'no_plan';
 
 use_ok("Protobuf::Encoder");
 
+use Protobuf::Types;
+
 my $e = Protobuf::Encoder->new;
 
 sub escaped {
@@ -35,10 +37,12 @@ bin_is( $e->encode_varint(150), "\x96\x01" );
 bin_is( $e->encode_varint(16384), "\x80\x80\x01" );
 
 bin_is( $e->encode_varint_field(1, 150), "\x08\x96\x01");
+bin_is( $e->encode_field(1, VARINT, 150), "\x08\x96\x01");
 
 bin_is( $e->encode_string("testing"), "\x07\x74\x65\x73\x74\x69\x6e\x67" );
 
 bin_is( $e->encode_string_field(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
+bin_is( $e->encode_field(2, STRING, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
 
 bin_is( $e->encode_field_and_wire(2, 2), "\x12" );
 bin_is( $e->encode_field_and_wire(128, 2), "\x82\x08" );
