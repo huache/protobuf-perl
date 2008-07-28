@@ -66,3 +66,13 @@ bin_is(
     ),
     "\x0b\x12\x03foo\x1a\tFOO_VALUE(\x015\xff\x00\x00\x00\x0c",
 );
+
+bin_is(
+    join('',
+        $e->encode_varint_field(1, 1),
+        $e->encode_varint_field(1, 2),
+        $e->encode_varint_field(1, 3),
+        $e->encode_varint_field(1, 250),
+    ),
+    "\x08\x01\x08\x02\x08\x03\x08\xfa\x01"
+)
