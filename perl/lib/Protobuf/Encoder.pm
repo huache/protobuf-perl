@@ -6,9 +6,16 @@ use utf8 ();
 
 sub encode_wire {
     my ( $self, $field, $wire, $data ) = @_;
-    my $wire_name = lc(wire_type_name($wire));
+    my $wire_name = lc wire_type_name($wire);
     my $method = "encode_wire_${wire_name}";
     $self->$method($field, $data);
+}
+
+sub encode_field {
+    my ( $self, $field, $value ) = @_;
+    my $type_name = lc type_name($field->type);
+    my $method = "encode_field_${type_name}";
+    $self->encode_field($field, $value);
 }
 
 sub encode_field_and_wire_type {
@@ -73,6 +80,20 @@ sub encode_wire_start_group {
 sub encode_wire_end_group {
     my ( $self, $field ) = @_;
     $self->encode_field_and_wire_type($field, WIRE_END_GROUP);
+}
+
+
+
+
+sub encode_field_bytes {
+    my ( $self, $field, $bytes ) = @_;
+    $self->encode_wire_length_delimited($field, $bytes);
+}
+
+sub encode_field_string {
+    my ( $self, $field, $string ) = @_;
+    utf8::decode($string);
+    $self->encode_wire_length_delimited($field, $string);
 }
 
 __PACKAGE__
