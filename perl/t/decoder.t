@@ -4,6 +4,10 @@ use strict;
 use warnings;
 
 use Test::More tests => 36;
+
+use lib "t/lib";
+use Test::Protobuf;
+
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
@@ -137,11 +141,5 @@ is_deeply($events,
 
 sub dump_events {
     diag(escaped(Dumper($events)));
-}
-
-sub escaped {
-    my $v = shift;
-    $v =~ s/([^[:print:]\n])/"\\x" . sprintf("%02x", ord($1))/eg;
-    return $v;
 }
 
