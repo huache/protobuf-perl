@@ -2,6 +2,7 @@
 
 use Test::More tests => 11;
 use Protobuf;
+use Protobuf::Types;
 
 use Moose::Util qw(does_role);
 
@@ -20,6 +21,7 @@ is($enum->fullname, "Foo.NewCode");
 my $field = Protobuf::FieldDescriptor->new(
 	name => "Name",
 	fullname => "Foo.NewName",
+    type => TYPE_STRING,
 );
 
 ok($field);
@@ -29,7 +31,7 @@ $enum->set_name("NewCode");
 is($enum->name, "NewCode");
 
 my $attr = Moose::Meta::Attribute->interpolate_class_and_new( blah => 
-	traits => [qw(Protobuf::Field)],
+	traits => [qw(Protobuf::Field::Scalar)],
 	field  => $field,
 );
 

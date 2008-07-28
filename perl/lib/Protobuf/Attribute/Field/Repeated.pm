@@ -14,11 +14,17 @@ before _process_options => sub {
 
     $options->{reader}    ||= "${name}s";
     $options->{predicate} ||= "set_$name";
-    $options->{default}   ||= sub { [] };
+    $options->{default}   ||= sub { [] }; # FIXME can it be anything else?
 
-    my $type_constraint = $options->{type_constraint} || $class->field_to_type_constraint($options->{field});
+    $options->{type_constraint} = $class->field_to_type_constraint($options->{field});
+};
 
-    $options->{type_constraint} = Moose::Meta::TypeConstraint::Parameterized->new(
+around field_to_type_constraint => sub {
+    my ( $next, $self, $field ) = @_;
+
+    my $type_constraint = $self->$next($field);
+
+    return Moose::Meta::TypeConstraint::Parameterized->new(
         name           => 'ArrayRef[' . $type_constraint->name . ']',
         parent         => find_type_constraint('ArrayRef'),
         type_parameter => $type_constraint,
@@ -30,11 +36,11 @@ after 'install_accessors' => sub {
 
     my $name = $self->name;
 
-    $self->install_method( "add_$name"    => $self->generate_add_method );
-    $self->install_method( "${name}_size" => $self->generate_size_method );
+    $self->_wrap_and_install_method( "add_$name"    => $self->generate_add_method );
+    $self->_wrap_and_install_method( "${name}_size" => $self->generate_size_method );
 };
 
-sub install_method {
+sub _wrap_and_install_method {
     my ( $self, $name, $body ) = @_;
 
     my $class = $self->associated_class;

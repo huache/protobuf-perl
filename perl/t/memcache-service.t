@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 19;
+use Test::More tests => 23;
 
 use strict;
 use warnings;
@@ -15,6 +15,14 @@ use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
 BEGIN { use_ok("Memcache") };
+
+{
+    my $meta = Class::MOP::Class->initialize("MemcacheGetRequest");
+    isa_ok( $meta, "Class::MOP::Class" );
+    isa_ok( $meta, "Protobuf::Meta::Message" );
+    isa_ok( $meta->descriptor, "Protobuf::Descriptor" );
+    ok( MemcacheGetRequest->can("meta"), "'meta' method not injected" );
+}
 
 # build up a get request
 {

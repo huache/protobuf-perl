@@ -3,6 +3,8 @@ use Moose::Role;
 
 use Protobuf::Types ();
 
+requires 'protobuf_emit';
+
 # namespace::clean -except => 'meta';
 
 has field => (
