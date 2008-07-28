@@ -9,6 +9,8 @@ use Protobuf::Encoder;
 use Moose::Util::TypeConstraints;
 use Protobuf::Meta::Message;
 
+use namespace::clean -except => 'meta';
+
 has 'descriptor' => (
     isa => "Protobuf::Descriptor",
     is  => "rw",
@@ -93,8 +95,6 @@ sub protobuf_emit {
         $attr->protobuf_emit($instance, @args);
     }
 }
-
-no Moose;
 
 __PACKAGE__
 
