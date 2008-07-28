@@ -65,6 +65,8 @@ has 'label' => (is => 'rw', isa => 'Int'); # TODO(bradfitz): but only 1, 2, or 3
 
 has 'type' => (is => 'rw', isa => 'Int'); # TODO(bradfitz): but only [1,18]. see descriptor.proto
 
+has 'default_value' => ( is => 'rw' );
+
 sub is_repeated {
     my $self = shift;
     return $self->label == 3;

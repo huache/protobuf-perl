@@ -1,15 +1,28 @@
 package Protobuf::Attribute::Field::Repeated;
 use Moose::Role;
 
+use Moose::Util::TypeConstraints;
+use Protobuf::Types;
+
+use namespace::clean -except => 'meta';
+
 with q(Protobuf::Attribute::Field);
 
-sub _process_options {
+before _process_options => sub {
     my ( $class, $name, $options ) = @_;
 
     $options->{reader} = "${name}s";
     $options->{predicate} = "set_$name";
     $options->{default} = sub { [] };
-}
+
+    my $type_constraint = type_constraint($options->{field}->type);
+
+    $options->{type_constraint} ||= Moose::Meta::TypeConstraint::Parameterized->new(
+        name           => 'ArrayRef[' . $type_constraint->name . ']',
+        parent         => find_type_constraint('ArrayRef'),
+        type_parameter => $type_constraint,
+    );
+};
 
 after 'install_accessors' => sub {
     my $self = shift;
