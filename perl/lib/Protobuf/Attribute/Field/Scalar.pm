@@ -18,7 +18,7 @@ before _process_options => sub {
 
     my $field = $options->{field};
 
-    my $type_constraint = $options->{type_constraint} ||= type_constraint($field->type);
+    my $type_constraint = $options->{type_constraint} ||= $class->field_to_type_constraint($options->{field});
 
     if ( defined ( my $default = $field->default_value ) ) {
         $options->{lazy} = 1;
