@@ -4,7 +4,8 @@ use Moose::Role;
 use Moose::Util::TypeConstraints;
 use Protobuf::Types;
 
-use namespace::clean -except => 'meta';
+# 5.8 doesn't have this: -brad
+#use namespace::clean -except => 'meta';
 
 with q(Protobuf::Attribute::Field);
 

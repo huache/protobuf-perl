@@ -21,7 +21,7 @@ use Moose;
 has 'name' => (is => 'rw', isa => 'Str');
 has 'index' => (is => 'rw', isa => 'Int');
 has 'number' => (is => 'rw', isa => 'Int');
-has 'type' => (is => 'rw');  # TODO(bradfitz): isa what?
+has 'type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
 
 package Protobuf::MessageOptions;
 use Moose;
@@ -59,6 +59,9 @@ has [qw(index number)] => (is => 'rw', isa => 'Int');
 has 'name' => (is => 'rw', isa => 'Str');
 has 'message_type' => (is => 'rw', isa => 'Maybe[Protobuf::Descriptor]');
 has 'enum_type' => (is => 'rw', isa => 'Maybe[Protobuf::EnumDescriptor]');
+
+# can be arrayref (?), int, string, ...
+has 'default_value' => (is => 'rw', isa => 'Any');
 
 # label can be 1 (optional), 2 (required), 3 (repeated)
 has 'label' => (is => 'rw', isa => 'Int'); # TODO(bradfitz): but only 1, 2, or 3.
@@ -98,7 +101,8 @@ use Protobuf::Attribute::Field::Scalar;
 use Protobuf::Encoder;
 use Moose::Util::TypeConstraints;
 
-use namespace::clean;
+# 5.8 doesn't have this: -brad
+# use namespace::clean;
 
 sub GenerateClass {
     my ($class, $name, $descriptor) = @_;
