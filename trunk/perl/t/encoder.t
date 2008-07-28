@@ -43,9 +43,12 @@ bin_is( $e->encode_length_delimited("testing"), "\x07\x74\x65\x73\x74\x69\x6e\x6
 
 bin_is( $e->encode_wire_length_delimited(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
 bin_is( $e->encode_wire(2, WIRE_LENGTH_DELIMITED, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
+bin_is( $e->encode_field_string(2, "testing"), "\x12\x07\x74\x65\x73\x74\x69\x6e\x67" );
 
 bin_is( $e->encode_field_and_wire_type(2, 2), "\x12" );
 bin_is( $e->encode_field_and_wire_type(128, 2), "\x82\x08" );
+
+
 
 bin_is(
     join('',
