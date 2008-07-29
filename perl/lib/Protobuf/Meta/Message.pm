@@ -18,6 +18,11 @@ has 'descriptor' => (
     #required => 1, # Class::MOP bug
 );
 
+# hashref from field number -> Attribute
+has 'attribute_by_number' => (
+    is => 'rw',
+);
+
 sub create_from_descriptor {
     my ( $metaclass, %args ) = @_;
 
@@ -25,16 +30,28 @@ sub create_from_descriptor {
 
     my $name = delete($args{class}) || $descriptor->name;
 
+    my @attributes = $metaclass->fields_to_attributes(%args, class => $name);
+
+    # For O(1) lookup of field number when decoding...
+    my %attribute_by_number;
+    foreach my $attr (@attributes) {
+        $attribute_by_number{$attr->field->number} = $attr;
+    }
+
     $metaclass->create( $name,
         %args,
         superclasses => ['Protobuf::Message' ],
-        attributes   => [ $metaclass->fields_to_attributes(%args, class => $name) ],
+        attributes   => \@attributes,
         methods      => { $metaclass->generate_default_methods(%args, class => $name) },
     );
 
+    # TODO(bradfitz): do this earlier, and pass is to
+    # generate_default_methods, so it can be captured by all the
+    # methods, so they don't have to do it themselves?
     my $meta = Class::MOP::Class->initialize($name);
 
     $meta->descriptor($descriptor);
+    $meta->attribute_by_number(\%attribute_by_number);
 
     return $meta;
 }
@@ -86,7 +103,32 @@ sub generate_default_methods {
             die "wrong number of arguments. expected 2." unless @_ == 2;
             my $self = $_[0];
             my $iter = Protobuf::Decoder->decode_iterator(\$_[1]);
-            die "iter = $iter\n";
+            my $meta = Class::MOP::Class->initialize(ref $self);
+            my $attribute_by_number = $meta->attribute_by_number;
+
+          EVENT:
+            while (my $event = $iter->()) {
+                #use Data::Dumper;
+                #print Dumper($event);
+                if ($event->{'value'}) {
+                    my $fieldnum = $event->{'fieldnum'} or
+                        die "assert: expected field number.";
+                    # skip unknown attributes.
+                    my $attr = $attribute_by_number->{$fieldnum} or
+                        next;
+                    if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
+                        $attr->set_value($self, $event->{'value'});
+                    } else {
+                        $attr->push_value($self, $event->{'value'});
+                    }
+                } elsif ($event->{'type'} eq "start_group") {
+                    die "TODO(bradfitz): groups aren't supported yet.";
+                } else {
+                    require Data::Dumper;
+                    die "Unknown decode event in merge_from_string: " .
+                        Data::Dumper::Dumper($event);
+                }
+            }
         },
     );
 }
@@ -108,7 +150,7 @@ sub fields_to_attributes {
 sub protobuf_attributes {
     my $self = shift;
 
-    return sort { $a->field->index <=> $b->field->index }
+    return sort { $a->field->number <=> $b->field->number }
         grep { $_->does("Protobuf::Attribute::Field") }
             $self->compute_all_applicable_attributes;
 }

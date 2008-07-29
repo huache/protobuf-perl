@@ -104,6 +104,13 @@ sub generate_simple_add_method {
     }
 }
 
+# TODO(bradfitz): nothingmuch should audit this. :)
+sub push_value {
+    my ($self, $instance, $value) = @_;
+    my $reader = $self->get_read_method_ref->body;
+    push @{ $instance->$reader }, $value;
+}
+
 sub protobuf_emit {
     my ( $self, $instance, $emit ) = @_;
 

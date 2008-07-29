@@ -41,12 +41,15 @@ $get2->add_key("foo");
 # and append a bar.  (foo should still be there)
 $get2->merge_from_string("\n\x03bar");
 is($get2->key_size, 2);
-is($get->keys->[0], "foo");
-is($get->keys->[1], "bar");
+is($get2->keys->[0], "foo");
+is($get2->keys->[1], "bar");
 
 # but this should clear it and set it to just bar
 $get2->parse_from_string("\n\x03bar");
 is($get2->key_size, 1);
-is($get->keys->[0], "bar");
+is($get2->keys->[0], "bar");
 
+# round-trips:
+$get2->parse_from_string($get->serialize_to_string);
+bin_is($get2->serialize_to_string, $get->serialize_to_string);
 
