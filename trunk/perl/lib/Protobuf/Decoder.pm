@@ -83,4 +83,9 @@ sub decode {
     return \@evt;
 }
 
+sub decode_iterator {
+    my ($class, $dataref) = @_;
+    die "No iterator yet.  dataref length is " . length($$dataref);
+}
+
 1;

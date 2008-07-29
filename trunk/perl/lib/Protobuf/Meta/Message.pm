@@ -5,6 +5,7 @@ extends qw(Moose::Meta::Class);
 
 use Protobuf::Attribute::Field::Repeated;
 use Protobuf::Attribute::Field::Scalar;
+use Protobuf::Decoder;
 use Protobuf::Encoder;
 use Moose::Util::TypeConstraints;
 use Protobuf::Meta::Message;
@@ -62,6 +63,21 @@ sub generate_default_methods {
             $meta->protobuf_emit($self, $emit);
 
             return $buf;
+        },
+        parse_from_string => sub {
+            die "wrong number of arguments. expected 2." unless @_ == 2;
+            my $self = $_[0];
+            $self->clear;
+            $self->merge_from_string($_[1]);
+        },
+        clear => sub {
+            die "TODO(bradfitz): no clear yet.";
+        },
+        merge_from_string => sub {
+            die "wrong number of arguments. expected 2." unless @_ == 2;
+            my $self = $_[0];
+            my $iter = Protobuf::Decoder->decode_iterator(\$_[1]);
+            die "iter = $iter\n";
         },
     );
 }
