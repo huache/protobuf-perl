@@ -83,9 +83,14 @@ sub decode {
     return \@evt;
 }
 
+# TODO(bradfitz): lame implementation for now, but leaves possibility
+# for better one later.
 sub decode_iterator {
     my ($class, $dataref) = @_;
-    die "No iterator yet.  dataref length is " . length($$dataref);
+    my @events = @{ $class->decode($$dataref) };
+    return sub {
+        return shift @events;
+    };
 }
 
 1;
