@@ -1,6 +1,6 @@
 #!/usr/bin/perl
 
-use Test::More tests => 23;
+use Test::More tests => 25;
 
 use strict;
 use warnings;
@@ -107,18 +107,19 @@ BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
 {
     my $p = AppEngine::Service::MemcacheStatsResponse->new;
     $p->stats;
-    $p->stats->set_hits(1);
-    is($p->stats->hits, 1);
-    $p->stats->set_misses(2);
-    $p->stats->set_oldest_item_age(500);
+    $p->stats->set_hits(7);
+    is($p->stats->hits, 7);
+    $p->stats->set_misses(8);
+    $p->stats->set_oldest_item_age(257);
+    ok(!defined(eval { $p->serialize_to_string; }),
+       "failed to serialize with missing required fields");
+    ok($@, "failed to serialize with missing required fields.");
 
-    local $TODO = "required fields don't match test";
-
-    $p->stats->set_byte_hits(3);
-    $p->stats->set_items(4);
+    $p->stats->set_byte_hits(9);
+    $p->stats->set_items(10);
     $p->stats->set_bytes(5);
-    bin_is($p->serialize_to_string,
-       "\n\t\x08\x01\x10\x025\xf4\x01\x00\x00");
     bin_is($p->stats->serialize_to_string,
-       "\x08\x01\x10\x025\xf4\x01\x00\x00");
+           "\x08\x07\x10\x08\x18\t \n(\x055\x01\x01\x00\x00");
+    bin_is($p->serialize_to_string,
+           "\n\x0f\x08\x07\x10\x08\x18\t \n(\x055\x01\x01\x00\x00");
 }
