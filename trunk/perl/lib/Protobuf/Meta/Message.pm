@@ -71,7 +71,16 @@ sub generate_default_methods {
             $self->merge_from_string($_[1]);
         },
         clear => sub {
-            die "TODO(bradfitz): no clear yet.";
+            my $self = shift;
+            my $meta = Class::MOP::Class->initialize(ref $self);
+
+            # TODO(bradfitz): is the grep really necessary?  I'm
+            # concerned that it's unnecessary and just slows this
+            # down.
+            for my $attr (grep { $_->does("Protobuf::Attribute::Field") }
+                          $meta->compute_all_applicable_attributes) {
+                $attr->clear_value($self);
+            }
         },
         merge_from_string => sub {
             die "wrong number of arguments. expected 2." unless @_ == 2;

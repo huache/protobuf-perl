@@ -13,6 +13,7 @@ before _process_options => sub {
     $options->{reader}    ||= $name;
     $options->{writer}    ||= "set_$name";
     $options->{predicate} ||= "has_$name";
+    $options->{clearer}   ||= "clear_$name";
 
     my $field = $options->{field};
 
