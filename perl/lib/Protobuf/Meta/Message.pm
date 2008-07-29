@@ -103,30 +103,49 @@ sub generate_default_methods {
             die "wrong number of arguments. expected 2." unless @_ == 2;
             my $self = $_[0];
             my $iter = Protobuf::Decoder->decode_iterator(\$_[1]);
+            $self->_merge_from_decode_iterator($iter);
+        },
+        _merge_from_decode_iterator => sub {
+            die "wrong number of arguments. expected 2." unless @_ == 2;
+            my ($self, $iter) = @_;
             my $meta = Class::MOP::Class->initialize(ref $self);
             my $attribute_by_number = $meta->attribute_by_number;
 
           EVENT:
-            while (my $event = $iter->()) {
-                #use Data::Dumper;
-                #print Dumper($event);
-                if ($event->{'value'}) {
-                    my $fieldnum = $event->{'fieldnum'} or
-                        die "assert: expected field number.";
-                    # skip unknown attributes.
-                    my $attr = $attribute_by_number->{$fieldnum} or
-                        next;
-                    if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
-                        $attr->set_value($self, $event->{'value'});
+            while (my $event = $iter->next) {
+                my $fieldnum = $event->{'fieldnum'} or
+                    die "assert: expected field number.";
+
+                # skip unknown attributes.
+                my $attr = $attribute_by_number->{$fieldnum} or
+                    next;
+
+                my $value;
+                if ($attr->field->is_aggregate) {
+                    my $class_name = $attr->field->message_type->class_name;
+                    $value = $class_name->new;
+
+                    if ($event->{'type'} eq "start_group") {
+                        # this returns an iterator which tracks nesting depth
+                        # and stops at the matching 'end_group'.  it also
+                        # keeps advancing the main iterator from which it came.
+                        my $groupiter = $iter->subgroup_iterator;
+                        $value->_merge_from_decode_iterator($groupiter);
+                    } elsif (defined $event->{'value'}) {
+                        # an embedded message
+                        $value->merge_from_string($value);
                     } else {
-                        $attr->push_value($self, $event->{'value'});
+                        die "internal assert: expected a group or value from parse stream.";
                     }
-                } elsif ($event->{'type'} eq "start_group") {
-                    die "TODO(bradfitz): groups aren't supported yet.";
                 } else {
-                    require Data::Dumper;
-                    die "Unknown decode event in merge_from_string: " .
-                        Data::Dumper::Dumper($event);
+                    $value = $event->{'value'};
+                    die "Expected value in non-aggregate" unless defined $value;
+                }
+
+                if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
+                    $attr->set_value($self, $value);
+                } else {
+                    $attr->push_value($self, $value);
                 }
             }
         },

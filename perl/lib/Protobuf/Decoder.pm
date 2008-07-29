@@ -88,9 +88,47 @@ sub decode {
 sub decode_iterator {
     my ($class, $dataref) = @_;
     my @events = @{ $class->decode($$dataref) };
-    return sub {
-        return shift @events;
+    return Protobuf::Decoder::EventIterator->new(\@events);
+}
+
+package Protobuf::Decoder::EventIterator;
+use strict;
+
+sub new {
+    my ($class, $listref, $group_depth) = @_;
+    return bless {
+        events => $listref,
+        group_depth => $group_depth,
     };
+}
+
+sub next {
+    my $self = shift;
+    my $event = shift @{ $self->{events} } or
+        return undef;
+    return $event unless defined $self->{group_depth};
+    if ($event->{type}) {
+        if ($event->{type} eq "start_group") {
+            $self->{group_depth}++;
+        } elsif ($event->{type} eq "end_group") {
+            $self->{group_depth}--;
+            if ($self->{group_depth} == 0) {
+                return undef;
+            }
+        } else {
+            die "assert: unexpected type";
+        }
+    }
+    return $event;
+}
+
+# Create an iterator from an iterator which is backed by the same
+# event stream, but stops when the group depth goes to zero.  (returns
+# an 'undef' event in place of the closing end_group).  Only valid to
+# create one of these when you just read in a 'start_group' event.
+sub subgroup_iterator {
+    my $self = shift;
+    return __PACKAGE__->new($self->{events}, 1);
 }
 
 1;
