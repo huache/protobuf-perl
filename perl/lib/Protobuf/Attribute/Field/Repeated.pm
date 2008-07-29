@@ -14,6 +14,8 @@ before _process_options => sub {
     $options->{reader}    ||= "${name}s";
     $options->{predicate} ||= "set_$name";
     $options->{default}   ||= sub { [] }; # FIXME can it be anything else?
+    $options->{clearer}   ||= "clear_$name";
+    $options->{lazy} = 1;  # so the default is used ([]), not undef
 
     $options->{type_constraint} = $class->field_to_type_constraint($options->{field});
 };

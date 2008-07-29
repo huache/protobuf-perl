@@ -27,18 +27,13 @@ bin_is($get->serialize_to_string, "\n\x03foo\n\x03bar");
 
 my $get2 = AppEngine::Service::MemcacheGetRequest->new;
 
-# nothing, still nothing...
-is($get2->serialize_to_string, "");
-$get2->parse_from_string("");
-is($get2->serialize_to_string, "");
-
 # add a foo
 $get2->add_key("foo");
-bin_is($get2->serialize_to_string, "\n\x03foo");
+bin_is($get2->serialize_to_string, "\n\x03foo", "just a foo");
 
 # kill it.
 $get2->clear;
-bin_is($get2->serialize_to_string, "");
+bin_is($get2->serialize_to_string, "", "is cleared");
 
 # add it back.
 $get2->add_key("foo");
