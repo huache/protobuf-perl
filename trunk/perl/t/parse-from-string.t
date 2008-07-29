@@ -78,3 +78,38 @@ BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
     bin_is($get2->serialize_to_string, $get->serialize_to_string, "round-trips");
 }
 
+# aggregates.  groups:
+{
+    my $gr = AppEngine::Service::MemcacheGetResponse->new;
+    is($gr->item_size, 0, "no items");
+
+    my $i1 = $gr->add_item;
+    $i1->set_key("key");
+    $i1->set_value("value");
+    is($gr->item_size, 1, "now 1 item");
+
+    bin_is($gr->serialize_to_string, "\x0b\x12\x03key\x1a\x05value\x0c");
+
+    # double its size (add it all to itself)
+    $gr->merge_from_string($gr->serialize_to_string);
+    is($gr->item_size, 2, "now 2 items");
+    is(scalar @{$gr->items}, 2, "yeah, really 2");
+    is(ref($gr->items), "ARRAY", "is array");
+    
+    is($gr->items->[0]->key, "key", "item0 is 'key'");
+    is($gr->items->[1]->key, "key", "item1 is 'key'");
+
+    # double its size again
+    $gr->merge_from_string($gr->serialize_to_string);
+    is($gr->item_size, 4, "now 4 item");
+
+    is($gr->items->[2]->key, "key");
+    is($gr->items->[3]->key, "key");
+  
+}
+
+# aggregates.  embedded messages:
+{
+    # TODO(bradfitz)
+    is(1, 1); # shutup warning
+}
