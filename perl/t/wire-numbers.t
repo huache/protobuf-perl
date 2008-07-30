@@ -90,6 +90,7 @@ foreach my $t (@tests) {
     my $field = "optional_$type";
 
     my $p = ProtobufTestBasic::TestAllTypes->new;
+    %$p = ();
     my $setter = "set_$field";
 
     # for _now_ only test success here. failing tests in the future.
@@ -102,6 +103,6 @@ foreach my $t (@tests) {
     if ($@) {
         diag("Got error encoding $type: $@");
     }
-    bin_is($encoded, $expected_encoded, "  .. matches expected encoding");
+    bin_is($encoded, $expected_encoded, "  .. $type $num matches expected encoding");
 }
 
