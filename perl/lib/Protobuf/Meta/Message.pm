@@ -139,6 +139,8 @@ sub generate_default_methods {
                     }
                 } else {
                     $value = $event->{'value'};
+                    # TODO(bradfitz): we need to convert values here, now that
+                    # we know their real type (not just their wire type).
                     die "Expected value in non-aggregate" unless defined $value;
                 }
 

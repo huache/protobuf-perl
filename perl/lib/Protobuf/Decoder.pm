@@ -16,7 +16,7 @@ sub decode {
     # consumes a varint from the front of the stream
     my $get_varint = sub {
         die "Expected varint at position " . pos($data) unless
-            $data =~ /\G([\x80-\xff]*[\x00-\x7f])/gc;
+            $data =~ /\G([\x80-\xff]{0,9}[\x00-\x7f])/gc;
         my $varint_enc = $1;
         my $num = 0;
         my $bytes = length($varint_enc) > 4 && !HAS_QUADS ? Math::BigInt->new(0) : 0;
@@ -51,11 +51,15 @@ sub decode {
             my $length = $get_varint->();
             $value = $consume->($length);
         } elsif ($wire_format == WIRE_FIXED64) {  # 64-bit
+            # Decoded at another layer, when meaning is known.
+            # At this wire-level, we only know the length, but
+            # not the type (double? signed int? unsigned int?)
             $value = $consume->(8);
-            # TODO(brafitz): decode?  or at later stage?
         } elsif ($wire_format == WIRE_FIXED32) {  # 32-bit
+            # Decoded at another layer, when meaning is known.
+            # At this wire-level, we only know the length, but
+            # not the type (double? signed int? unsigned int?)
             $value = $consume->(4);
-            # TODO(brafitz): decode?  or at later stage?
         } elsif ($wire_format == WIRE_START_GROUP) {  # start group
             push @evt, {
                 fieldnum => $field_num,
