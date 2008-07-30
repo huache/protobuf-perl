@@ -62,7 +62,11 @@ sub decode_field_double {
 
 sub decode_field_sint32 {
     my ($class, $v) = @_;
-    return Protobuf::WireFormat::zigzag_decode($v);
+    my $zd = Protobuf::WireFormat::zigzag_decode($v);
+    if (UNIVERSAL::isa($zd, "Math::BigInt")) {
+        return $zd->numify;
+    }
+    return $zd;
 }
 
 sub decode_field_sint64 {
