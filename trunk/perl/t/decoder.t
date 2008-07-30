@@ -41,7 +41,7 @@ is($events->[0]{fieldnum}, 1);
 
 ok($events = Protobuf::Decoder->decode("\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"));
 is(scalar @$events, 1);
-is($events->[0]{value}, BI(1) << 63);
+is($events->[0]{value}, HAS_QUADS ? 1 << 63 : (BI(1) << 63)->bneg );
 is($events->[0]{fieldnum}, 1);
 
 ok($events = Protobuf::Decoder->decode("\x12\x07\x74\x65\x73\x74\x69\x6e\x67"));
