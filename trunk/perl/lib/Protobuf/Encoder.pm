@@ -30,14 +30,36 @@ sub encode_varint {
 
     my $buf = '';
 
-    die "varint must be unsigned" if $int < 0;
     die "value is not an int" unless $int == int($int); # FIXME too pedantic?
+
+    my $neg;
+    # unset the sign bit
+    if ( $int < 0 ) {
+        $neg = 1;
+        if ( ref $int ) {
+            use Data::Dumper;
+            #$int = Math::BigInt->new(2) ** 64 - $int;
+            $int &= Math::BigInt->new("0xffffffffffffffff");
+        } else {
+            $int &= ~( HAS_QUADS ? 1 << 63 : 1 << 31 );
+        }
+    }
 
     while ( $int > 127 ) {
         $buf .= chr( ($int & 0x7f) | 0x80 );
         $int >>= 7;
     }
-    return $buf . chr($int);
+
+    $buf .= chr($int);
+
+    if ( $neg ) {
+        substr($buf, -1) = "\xff" x ( 10 - length($buf) );
+        $buf .= "\x01";
+    }
+
+    die "Integer too long" if length($buf) > 10;
+
+    return $buf;
 }
 
 sub encode_length_delimited {
@@ -117,6 +139,11 @@ sub encode_field_fixed32 {
 }
 
 sub encode_field_enum {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_varint($field, $int);
+}
+
+sub encode_field_uint32 {
     my ( $self, $field, $int ) = @_;
     $self->encode_wire_varint($field, $int);
 }
