@@ -37,6 +37,8 @@ my %field_number = (
     'bool' => 13,
     );
 
+my $max_u64 = BI(18446744073709551615);
+
 # tests to run:
 my @tests = (
     ['int32',      7, "\x08"."\x07"],
@@ -48,7 +50,7 @@ my @tests = (
     ['uint32',  4294967295, "\x18"."\xff\xff\xff\xff\x0f"],
     ['uint32',  7, "\x18"."\x07"],
 
-    ['uint64',  BI(2)**64 - 1, " "."\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
+    ['uint64',  $max_u64, " "."\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['uint64',  7, " "."\x07"],
 
     ['sint32', -7, "("."\r"],
@@ -59,6 +61,25 @@ my @tests = (
     ['sint64',  7, "0"."\x03"],
     ['sint64',  BI("-9223372036854775808"),
      "0\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
+
+    ['fixed32', BI("4294967295"), "="."\xff"x4],
+    ['fixed32', 7, "=\x07\0\0\0"],
+
+    ['fixed64', $max_u64, "A"."\xff"x8],
+    ['fixed64', 7, "A"."\x07\0\0\0\0\0\0\0"],
+
+    ['sfixed32',  7, "M"."\x07\0\0\0"],
+    ['sfixed32', -2**31, "M"."\x00\x00\x00\x80"],
+    ['sfixed32', 2147483647, "M"."\xff\xff\xff\x7f"],
+
+    ['sfixed64',  7, "Q"."\x07\0\0\0\0\0\0\0"],
+    ['sfixed64', BI("-9223372036854775808"),
+     "Q"."\x00\x00\x00\x00\x00\x00\x00\x80"],
+    ['sfixed64', BI("9223372036854775807"),
+     "Q"."\xff\xff\xff\xff\xff\xff\xff\x7f"],
+
+    ['float', 1.0/3.0, "]"."\xab\xaa\xaa>"],
+    ['double', 1.0/3.0, "a"."UUUUUU\xd5?"],
     );
 
 foreach my $t (@tests) {
