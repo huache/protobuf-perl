@@ -57,13 +57,68 @@ sub decode {
     my $get_varint = sub {
         die "Expected varint at position " . pos($data) unless
             $data =~ /\G([\x80-\xff]{0,9}[\x00-\x7f])/gc;
+
         my $varint_enc = $1;
-        my $num = 0;
-        my $bytes = length($varint_enc) > 4 && !HAS_QUADS ? Math::BigInt->new(0) : 0;
-        foreach my $byte (split(//, $varint_enc)) {
-            my $byte_value = (ord($byte) & 0x7f) << (7 * $bytes++);
-            $num += $byte_value;
+
+        my @bytes = map { $_ & 0x7f } unpack("C*", $varint_enc);
+
+        # 7 bit clumps concatenated in big endian order, followed by 8 bit clumps &x7f
+        #warn join " ", unpack("(a8)*", join("", unpack("(xa7)*", unpack("B*", pack("C*", @bytes)))));
+        #warn join " ", map { unpack("B*", pack("C", $_)) } @bytes;
+
+        my $neg;
+        
+        if ( @bytes == 10 ) { # signed
+            $neg = 1;
+            pop @bytes;
+
+            # remove padding for sign
+            while ( $bytes[-1] == 0x7f ) {
+                pop @bytes;
+                if ( @bytes == 5 ) {
+                    # throw away high nybble, method varies according to alignment
+                    # this nybble is set due to padding. The fourth octet ends
+                    # at the low nybble of the 5th byte due to 7 bit encoding,
+                    # so this data is only used for the sign.
+                    if ( ( $bytes[-1] & 0x70 ) == 0x70 ) {
+                        $bytes[-1] &= 0x0f;
+                    } else {
+                        warn join " ", unpack("(a8)*", join("", reverse unpack("(xa7)*", unpack("B*", pack("C*", @bytes)))));
+                        warn join " ", map { unpack("B*", pack("C", $_)) } @bytes;
+                        die "shouldn't happen";
+                    }
+                    last;
+                }
+            }
         }
+
+        pop @bytes while @bytes and not $bytes[-1];
+
+        my $num = 0;
+        my $shift = 0;
+
+        if ( !HAS_QUADS and ( @bytes > 5 or @bytes == 5 && ( $bytes[-1] & 0x70 ) ) ) {
+            $shift = Math::BigInt->new(0);
+        }
+
+        foreach my $byte (@bytes) {
+            #warn "shifting " . unpack("H*", pack("N", $byte & 0x7f)), " by " . ( 7 * $shift) . " == " . Math::BigInt->new(($byte & 0x7f) << (7 * $shift))->as_hex;
+            my $byte_value = ($byte & 0x7f) << (7 * $shift++);
+            $num |= $byte_value;
+            #warn Math::BigInt->new($num)->as_hex;
+        }
+
+        if ( $neg ) { 
+            if ( $num == 0 ) {
+                $num = Math::BigInt->new(1) << 63;
+            }
+            if ( ref $num ) {
+                $num = $num->bneg;
+            } else {
+                $num = -1 * ~( $num - 1 );
+            }
+        }
+
         return $num;
     };
 
@@ -104,6 +159,7 @@ sub decode {
             push @evt, {
                 fieldnum => $field_num,
                 type => "start_group",
+                wire_format => $wire_format,
             };
             $group_depth++;
             next;
@@ -111,6 +167,7 @@ sub decode {
             push @evt, {
                 fieldnum => $field_num,
                 type => "end_group",
+                wire_format => $wire_format,
             };
             $group_depth--;
             next;
@@ -146,12 +203,27 @@ sub decode_field_uint32 {
 
 sub decode_field_uint64 {
     my ( $self, $bigint ) = @_;
-    return $bigint;
+    if ( HAS_QUADS ){
+        return $bigint;
+        # FIXME two's complement if < 0
+    } else {
+        if ( $bigint < 0 ) {
+            my $pos = $bigint & Math::BigInt->new("0xffffffffffffffff");
+            return $pos;
+        } else {
+            return $bigint;
+        }
+    }
 }
 
 sub decode_field_int32 {
     my ( $self, $int ) = @_;
     return $int;
+}
+
+sub decode_field_int64 {
+    my ( $self, $bigint ) = @_;
+    return $bigint;
 }
 
 sub decode_field_sint32 {
@@ -167,6 +239,11 @@ sub decode_field_sint64 {
 sub decode_field_fixed32 {
     my ( $self, $octets ) = @_;
     unpack("V", $octets);
+}
+
+sub decode_field_fixed64 {
+    my ( $self, $octets ) = @_;
+    Math::BigInt->new("0x", unpack("H", $octets));
 }
 
 
