@@ -38,6 +38,16 @@ sub decode_field_sfixed64 {
     return $int;
 }
 
+sub decode_field_fixed64 {
+    my ($class, $v) = @_;
+    die "assert: length not 8 bytes" unless length($v) == 8;
+    my $is_neg = vec($v, 63, 1);
+    # TODO(bradfitz): sick of the pack manpage... this works for now.
+    my $hex = join('', sprintf("%02x"x8, reverse unpack("C16", $v)));
+    my $int = Math::BigInt->new("0x$hex");
+    return $int;
+}
+
 sub decode_field_float {
     my ($class, $v) = @_;
     die 'assert: should be 8 bytes' unless length($v) == 4;
