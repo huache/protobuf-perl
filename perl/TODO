@@ -1,0 +1,36 @@
+rename perl_package options to be consistent with java.  same purposes exactly.
+
+make unittest.proto work
+  -- extensions
+  -- imports ("use" the perl_outer_package of the imported package)
+  -- use Math::BigInt on large default values.  currently:
+         default_value => 18446744073709551615,
+     #     Tried to use 'ProtobufTestBasic'.
+     #     Error:  Validation failed for 'Protobuf::Types::PositiveInt' failed with
+     #     value 1.84467440737096e+19 at lib/Protobuf/Attribute/Field/Scalar.pm line 42.
+
+
+-      default_value => 18446744073709551615,
++      default_value => Math::BigInt->new("18446744073709551615"),
+
+This noise:
+Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::FOO redefined at lib/Protobuf/Attribute/Field.pm line 44.
+Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::BAR redefined at lib/Protobuf/Attribute/Field.pm line 44.
+Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::BAZ redefined at lib/Protobuf/Attribute/Field.pm line 44.
+
+This is still Python:
+-FOREIGN_FOO = 4;
+-FOREIGN_BAR = 5;
+-FOREIGN_BAZ = 6;
+-FOO1 = 1;
+-BAR1 = 2;
+-BAZ = 3;
+-FOO2 = 1;
+-BAR2 = 2;
+-SPARSE_A = 123;
+-SPARSE_B = 62374;
+-SPARSE_C = 12589234;
+-SPARSE_D = -15;
+-SPARSE_E = -53452;
+-SPARSE_F = 0;
+-SPARSE_G = 2;

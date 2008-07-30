@@ -64,21 +64,6 @@ $_TESTSPARSEENUM->values->[5]->set_type($_TESTSPARSEENUM);
 $_TESTSPARSEENUM->values->[6]->set_type($_TESTSPARSEENUM);
 
 
-FOREIGN_FOO = 4;
-FOREIGN_BAR = 5;
-FOREIGN_BAZ = 6;
-FOO1 = 1;
-BAR1 = 2;
-BAZ = 3;
-FOO2 = 1;
-BAR2 = 2;
-SPARSE_A = 123;
-SPARSE_B = 62374;
-SPARSE_C = 12589234;
-SPARSE_D = -15;
-SPARSE_E = -53452;
-SPARSE_F = 0;
-SPARSE_G = 2;
 
 ## Top-level extensions:
 
@@ -1230,13 +1215,13 @@ our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'large_uint32', index => 1, number => 2,
       type => 13, cpp_type => 3, label => 1,
-      default_value => 4294967295,
+      default_value => Math::BigInt->new("4294967295"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'large_uint64', index => 2, number => 3,
       type => 4, cpp_type => 4, label => 1,
-      default_value => 18446744073709551615,
+      default_value => Math::BigInt->new("18446744073709551615"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -1248,7 +1233,7 @@ our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'small_int64', index => 4, number => 5,
       type => 3, cpp_type => 2, label => 1,
-      default_value => -9223372036854775807,
+      default_value => Math::BigInt->new("-9223372036854775807"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
