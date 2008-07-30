@@ -126,6 +126,16 @@ sub encode_field_uint64 {
     $self->encode_wire_varint($field, $bigint);
 }
 
+sub encode_field_int32 {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_varint($field, $int);
+}
+
+sub encode_field_int64 {
+    my ( $self, $field, $bigint ) = @_;
+    $self->encode_wire_varint($field, $bigint);
+}
+
 sub encode_field_fixed64 {
     my ( $self, $field, $bigint ) = @_;
     my $bin;

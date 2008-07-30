@@ -40,6 +40,7 @@ my %field_number = (
 # tests to run:
 my @tests = (
     ['int32',      7, "\x08"."\x07"],
+    ['int32',     -7, "\x08"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['int32', -2**31, "\x08"."\x80\x80\x80\x80\xf8\xff\xff\xff\xff\x01"],
     ['int64', 0 - (BI(2) ** 63)]
     );
