@@ -73,7 +73,7 @@ is($events->[1]{fieldnum}, 1);
 # groups.  memcache get response.  (deprecated, but used in app engine
 # because they're from proto1 originally)
 ok($events = Protobuf::Decoder->decode(
-       "\x0b\x12\x03foo\x1a\x0cVALUE_OF_FOO%{\x00\x00\x00\x0c"));
+       "\x0b\x12\x03foo\x1a\x0cVALUE_OF_FOO\%{\x00\x00\x00\x0c"));
 is_deeply($events,
           [
            {
