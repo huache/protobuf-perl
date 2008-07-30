@@ -107,9 +107,20 @@ foreach my $t (@tests) {
         diag("Set failure: $@");
 
     ok($ok, "set $field to $num");
-    is($p->$field(), $num, "  .. and field was set to $num");
 
-    my $encoded = eval { $p->serialize_to_string; };
+    my $value_check = sub {
+        my ($pi, $phase) = @_;
+        if ($type eq "float") {
+            my $got = $pi->$field();
+            ok($got > $num-0.05 && $got < $num+0.05, "  .. and float field $phase is close enough.");
+        } else {
+            is($pi->$field(), $num, "  .. and field $phase was set to $num");
+        }
+    };
+
+    $value_check->($p, "encoded");
+
+    my $encoded = eval { $p->serialize_to_string };
     if ($@) {
         diag("Got error encoding $type: $@");
     }
@@ -117,8 +128,9 @@ foreach my $t (@tests) {
 
     # now see if we can decode it
     my $p2 = ProtobufTestBasic::TestAllTypes->new;
-    $ok = eval { $p2->parse_from_string($expected_encoded); 1 };
-    ok($ok, "  .. and parsed it ($type $num)");
-    is($p2->$field(), $num, "  .. and parsed value was correctly set ($type $num)");
+    $ok = eval { $p2->parse_from_string($expected_encoded); 1 } or
+        diag("Error parsing from string: $@");
+    ok($ok, "  .. and parsed it ($type $num)"); 
+    $value_check->($p2, "decoded");
 }
 

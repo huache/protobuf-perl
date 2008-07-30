@@ -4,6 +4,31 @@ use warnings;
 
 use Protobuf::Types;
 
+# decode a value (as gotten from 'decode' below) once we know its attribute
+# type.  only with that can we properly decode it from its blob on the wire.
+# note that varints have already been converted to IVs/UVs/BigInts.
+sub decode_value {
+    my ($class, $attr, $value) = @_;
+    my $type_name = lc type_name($attr->field->type);
+    my $method = "decode_field_" . $type_name;
+    return $class->$method($value);
+}
+
+sub decode_field_float {
+    my ($class, $v) = @_;
+    die 'assert: should be 8 bytes' unless length($v) == 4;
+    return unpack("f", $v);
+}
+
+sub decode_field_double {
+    my ($class, $v) = @_;
+    die 'assert: should be 8 bytes' unless length($v) == 8;
+    return unpack("d", $v);
+}
+
+# Decode a wire stream into arrayref of 'events' (hashref of parts
+# of the stream)
+# TODO(bradfitz): rename this to 'decode_wire' or something.
 sub decode {
     my ($class, $data) = @_;
 
