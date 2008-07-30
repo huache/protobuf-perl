@@ -110,6 +110,12 @@ BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
 
 # aggregates.  embedded messages:
 {
-    # TODO(bradfitz)
-    is(1, 1); # shutup warning
+    my $p = AppEngine::Service::MemcacheStatsResponse->new;
+    $p->parse_from_string("\n\x0f\x08\x07\x10\x08\x18\t \n(\x055\x01\x01\x00\x00");
+    is($p->stats->byte_hits, 9);
+    is($p->stats->bytes, 5);
+    is($p->stats->hits, 7);
+    is($p->stats->items, 10);
+    is($p->stats->misses, 8);
+    is($p->stats->oldest_item_age, 257);
 }
