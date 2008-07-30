@@ -114,5 +114,11 @@ foreach my $t (@tests) {
         diag("Got error encoding $type: $@");
     }
     bin_is($encoded, $expected_encoded, "  .. $type $num matches expected encoding");
+
+    # now see if we can decode it
+    my $p2 = ProtobufTestBasic::TestAllTypes->new;
+    $ok = eval { $p2->parse_from_string($expected_encoded); 1 };
+    ok($ok, "  .. and parsed it ($type $num)");
+    is($p2->$field(), $num, "  .. and parsed value was correctly set ($type $num)");
 }
 
