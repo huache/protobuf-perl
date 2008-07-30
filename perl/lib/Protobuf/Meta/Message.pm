@@ -125,7 +125,7 @@ sub generate_default_methods {
                     my $class_name = $attr->field->message_type->class_name;
                     $value = $class_name->new;
 
-                    if ($event->{'type'} eq "start_group") {
+                    if ( $event->{'type'} && $event->{'type'} eq "start_group") {
                         # this returns an iterator which tracks nesting depth
                         # and stops at the matching 'end_group'.  it also
                         # keeps advancing the main iterator from which it came.
@@ -133,7 +133,7 @@ sub generate_default_methods {
                         $value->_merge_from_decode_iterator($groupiter);
                     } elsif (defined $event->{'value'}) {
                         # an embedded message
-                        $value->merge_from_string($value);
+                        $value->merge_from_string($event->{'value'});
                     } else {
                         die "internal assert: expected a group or value from parse stream.";
                     }
