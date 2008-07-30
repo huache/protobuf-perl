@@ -42,7 +42,11 @@ my @tests = (
     ['int32',      7, "\x08"."\x07"],
     ['int32',     -7, "\x08"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['int32', -2**31, "\x08"."\x80\x80\x80\x80\xf8\xff\xff\xff\xff\x01"],
-    ['int64', 0 - (BI(2) ** 63)]
+
+    ['int64', 0 - (BI(2) ** 63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
+
+    ['uint32',  4294967295, "\x18"."\xff\xff\xff\xff\x0f"],
+    ['uint32',  7, "\x18"."\x07"],
     );
 
 foreach my $t (@tests) {
