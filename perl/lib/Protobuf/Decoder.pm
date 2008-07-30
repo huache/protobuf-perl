@@ -120,6 +120,7 @@ sub decode {
         push @evt, {
             fieldnum => $field_num,
             value => $value,
+            wire_format => $wire_format,
         };
     }
 
