@@ -3,6 +3,7 @@ use strict;
 use warnings;
 
 use Protobuf::Types;
+use Protobuf::WireFormat;
 
 # decode a value (as gotten from 'decode' below) once we know its attribute
 # type.  only with that can we properly decode it from its blob on the wire.
@@ -11,6 +12,10 @@ sub decode_value {
     my ($class, $attr, $value) = @_;
     my $type_name = lc type_name($attr->field->type);
     my $method = "decode_field_" . $type_name;
+    unless ($class->can($method)) {
+        # by default
+        return $value;
+    }
     return $class->$method($value);
 }
 
@@ -24,6 +29,16 @@ sub decode_field_double {
     my ($class, $v) = @_;
     die 'assert: should be 8 bytes' unless length($v) == 8;
     return unpack("d", $v);
+}
+
+sub decode_field_sint32 {
+    my ($class, $v) = @_;
+    return Protobuf::WireFormat::zigzag_decode($v);
+}
+
+sub decode_field_sint64 {
+    my ($class, $v) = @_;
+    return Protobuf::WireFormat::zigzag_decode($v);
 }
 
 # Decode a wire stream into arrayref of 'events' (hashref of parts
