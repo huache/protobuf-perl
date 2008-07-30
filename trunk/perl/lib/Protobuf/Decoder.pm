@@ -12,10 +12,6 @@ sub decode_value {
     my ($class, $attr, $value) = @_;
     my $type_name = lc type_name($attr->field->type);
     my $method = "decode_field_" . $type_name;
-    unless ($class->can($method)) {
-        # by default
-        return $value;
-    }
     return $class->$method($value);
 }
 
@@ -97,6 +93,17 @@ sub decode_field_uint64 {
 
 my $sign_bit_64 = Math::BigInt->new("0x8000000000000000");
 
+sub decode_field_int64 {
+    my ($self, $int) = @_;
+    if (UNIVERSAL::isa($int, "Math::BigInt") && ($int & $sign_bit_64)) {
+        # TODO(bradfitz): pairs of bnot works too.  benchmark which is faster.
+        $int->bneg;
+        $int &= Math::BigInt->new("0xffffffffffffffff");
+        $int->bneg;
+    }
+    return $int;
+}
+
 sub decode_field_int32 {
     my ($self, $int) = @_;
     if (UNIVERSAL::isa($int, "Math::BigInt")) {
@@ -111,7 +118,10 @@ sub decode_field_int32 {
         # shouldn't get here, though?
         return $int->numify;
     }
-    return unpack("l", pack("L", int($int)));
+    # If it was negative at all, it would've been a negative 64-bit
+    # number (10 byte varint), so we know this is not a bigint and not
+    # negative here:
+    return $int;
 }
 
 sub decode_field_fixed32 {
