@@ -115,15 +115,18 @@ is_deeply($events,
            },
            {
                'value' => 'FOO_VALUE',
-               'fieldnum' => 3
+               'fieldnum' => 3,
+               'wire_format' => 2,
            },
            {
                'value' => 1,
-               'fieldnum' => 5
+               'fieldnum' => 5,
+               'wire_format' => 0,
            },
            {
                'value' => "\xff\x00\x00\x00",
-               'fieldnum' => 6
+               'fieldnum' => 6,
+               'wire_format' => 5,
            },
            {
                'fieldnum' => 1,
@@ -138,19 +141,23 @@ is_deeply($events,
           [
            {
              'value' => 1,
-             'fieldnum' => 1
+             'fieldnum' => 1,
+             'wire_format' => 0,
            },
            {
              'value' => 2,
-             'fieldnum' => 1
+             'fieldnum' => 1,
+             'wire_format' => 0,
            },
            {
              'value' => 3,
-             'fieldnum' => 1
+             'fieldnum' => 1,
+             'wire_format' => 0,
            },
            {
              'value' => 250,
-             'fieldnum' => 1
+             'fieldnum' => 1,
+             'wire_format' => 0,
           }
           ], "MemcacheSetResponse");
 
