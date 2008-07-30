@@ -2,6 +2,7 @@ package Protobuf::Encoder;
 use Moose;
 
 use Protobuf::Types;
+use Protobuf::WireFormat;
 use utf8 ();
 
 sub encode_wire {
@@ -156,6 +157,18 @@ sub encode_field_uint64 {
 sub encode_field_int32 {
     my ( $self, $field, $int ) = @_;
     $self->encode_wire_varint($field, $int);
+}
+
+sub encode_field_sint32 {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_varint($field,
+                              Protobuf::WireFormat::zigzag_encode($int));
+}
+
+sub encode_field_sint64 {
+    my ( $self, $field, $int ) = @_;
+    $self->encode_wire_varint($field,
+                              Protobuf::WireFormat::zigzag_encode($int));
 }
 
 sub encode_field_int64 {
