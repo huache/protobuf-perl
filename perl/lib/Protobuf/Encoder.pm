@@ -175,7 +175,7 @@ sub encode_field_sint64 {
 # but hopefully somebody (me?) improves this later.
 sub encode_field_sfixed64 {
     my ( $self, $field, $num ) = @_;
-    $num = Math::BigInt->($num) unless UNIVERSAL::isa($num, "Math::BigInt");
+    $num = Math::BigInt->new($num) unless UNIVERSAL::isa($num, "Math::BigInt");
     my $hex = $num->as_hex;
     $hex =~ s/^\-//;
     # pad it, skipping leading 0x
@@ -209,6 +209,7 @@ sub encode_field_fixed64 {
             die "endianess unknown";
         }
     } else {
+        $bigint = Math::BigInt->new($bigint) unless UNIVERSAL::isa($bigint, "Math::BigInt");
         my $hex = $bigint->as_hex;
         $bin = reverse pack('H16', substr($hex, 2));
     }
