@@ -27,7 +27,7 @@ sub BI {
 
 sub escaped {
     my $v = shift;
-    $v =~ s/([^[:print:]])/"\\x" . sprintf("%02x", ord($1))/eg;
+    $v =~ s/([^[:print:]])/"\\x" . sprintf("%02x", ord($1))/eg if defined $v;
     return $v;
 }
 

@@ -45,6 +45,7 @@ sub class_name {
 
     # TODO(bradfitz): Hack. temporary:
     $name =~ s/^appengine_api\./AppEngine::Service::/;
+    $name =~ s/^protobuf_unittest\./ProtobufTestBasic::/;
 
     $name =~ s/\./::/g;
     return $name;
