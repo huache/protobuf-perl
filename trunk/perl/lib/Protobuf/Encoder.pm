@@ -171,6 +171,22 @@ sub encode_field_sint64 {
                               Protobuf::WireFormat::zigzag_encode($int));
 }
 
+# TODO(bradfitz): this function wins the slow competition.  correctness first,
+# but hopefully somebody (me?) improves this later.
+sub encode_field_sfixed64 {
+    my ( $self, $field, $num ) = @_;
+    $num = Math::BigInt->($num) unless UNIVERSAL::isa($num, "Math::BigInt");
+    my $hex = $num->as_hex;
+    $hex =~ s/^\-//;
+    # pad it, skipping leading 0x
+    $hex = "0"x(18-length($hex)) . substr($hex, 2);
+    my $buf;
+    for (0..7) {
+        $buf .= chr(hex(substr($hex, 2*(7-$_), 2)));
+    }
+    $self->encode_wire_fixed64($field, $buf);
+}
+
 sub encode_field_int64 {
     my ( $self, $field, $bigint ) = @_;
     $self->encode_wire_varint($field, $bigint);
