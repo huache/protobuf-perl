@@ -15,6 +15,17 @@ use Protobuf::Encoder;
 use Protobuf::Types;
 use Math::BigInt lib => 'GMP';
 
+my $max_u64 = BI("18446744073709551615");
+my $max_u32 = 4294967295; # a perl UV.  should work on 32-bit. or BI("4294967295")
+is("$max_u32", "4294967295", "max_u32 literal works") or die;
+
+{
+    my $p = ProtobufTestBasic::TestAllTypes->new;
+    ok(eval { $p->set_optional_fixed32($max_u32); 1}, "setting maxu32 works")
+        or diag("Error: $@");
+    is($p->optional_fixed32, $max_u32, "got the u32 value back.");
+}
+
 # The numbers from unittest.proto's TestAllTypes.
 # Use devtools/python-proto-shell.sh to play with this.
 # >>> p = unittest.TestAllTypes()
@@ -37,8 +48,6 @@ my %field_number = (
     'bool' => 13,
     );
 
-my $max_u64 = BI("18446744073709551615");
-
 # tests to run:
 my @tests = (
     ['int32',      7, "\x08"."\x07"],
@@ -47,7 +56,7 @@ my @tests = (
 
     ['int64', 0-(BI(2)**63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
 
-    ['uint32',  4294967295, "\x18"."\xff\xff\xff\xff\x0f"],
+    ['uint32',  $max_u32, "\x18"."\xff\xff\xff\xff\x0f"],
     ['uint32',  7, "\x18"."\x07"],
 
     ['uint64',  $max_u64, " "."\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
@@ -58,11 +67,11 @@ my @tests = (
     ['sint32', -2147483648, "("."\xff\xff\xff\xff\x0f"],
 
     ['sint64', -7, "0"."\r"],
-    ['sint64',  7, "0"."\x03"],
+    ['sint64',  7, "0"."\x0e"],
     ['sint64',  BI("-9223372036854775808"),
      "0\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
 
-    ['fixed32', BI("4294967295"), "="."\xff"x4],
+    ['fixed32', $max_u32, "="."\xff"x4],
     ['fixed32', 7, "=\x07\0\0\0"],
 
     ['fixed64', $max_u64, "A"."\xff"x8],
@@ -94,7 +103,8 @@ foreach my $t (@tests) {
     my $setter = "set_$field";
 
     # for _now_ only test success here. failing tests in the future.
-    my $ok = eval { $p->$setter($num); 1; };
+    my $ok = eval { $p->$setter($num); 1; } or
+        diag("Set failure: $@");
 
     ok($ok, "set $field to $num");
     is($p->$field(), $num, "  .. and field was set to $num");

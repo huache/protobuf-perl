@@ -5,6 +5,8 @@ use Protobuf::Types;
 use Protobuf::WireFormat;
 use utf8 ();
 
+use constant MAX_SINT32 => 2147483647;
+
 sub encode_wire {
     my ( $self, $field, $wire, $data ) = @_;
     my $wire_name = lc wire_type_name($wire);
