@@ -187,6 +187,11 @@ sub encode_field_sfixed64 {
     $self->encode_wire_fixed64($field, $buf);
 }
 
+sub encode_field_sfixed32 {
+    my ( $self, $field, $num ) = @_;
+    $self->encode_wire_fixed32($field, pack("V", $num));
+}
+
 sub encode_field_int64 {
     my ( $self, $field, $bigint ) = @_;
     $self->encode_wire_varint($field, $bigint);
