@@ -54,6 +54,8 @@ my @tests = (
     ['int32',     -7, "\x08"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['int32', -2147483648, "\x08"."\x80\x80\x80\x80\xf8\xff\xff\xff\xff\x01"],
 
+    ['int64',   7, "\x10"."\x07"],
+    ['int64',  -7, "\x10"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['int64', 0-(BI(2)**63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
 
     ['uint32',  $max_u32, "\x18"."\xff\xff\xff\xff\x0f"],
@@ -93,6 +95,8 @@ my @tests = (
 
 foreach my $t (@tests) {
     my ($type, $num, $expected_encoded) = @$t;
+    next if $ENV{TEST_TYPE} && $type ne $ENV{TEST_TYPE};
+
     $expected_encoded = "?" unless defined $expected_encoded;
 
     # they're all prefixed with optional in their name in this type:
