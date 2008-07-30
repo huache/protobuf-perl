@@ -114,7 +114,7 @@ foreach my $t (@tests) {
             my $got = $pi->$field();
             ok($got > $num-0.05 && $got < $num+0.05, "  .. and float field $phase is close enough.");
         } else {
-            is($pi->$field(), $num, "  .. and field $phase was set to $num");
+            is($pi->$field(), $num, "  .. and field $phase was set to $num ($type)");
         }
     };
 
