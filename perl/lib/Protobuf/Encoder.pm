@@ -198,20 +198,21 @@ sub encode_field_int64 {
 }
 
 sub encode_field_fixed64 {
-    my ( $self, $field, $bigint ) = @_;
+    my ( $self, $field, $num ) = @_;
     my $bin;
     if ( HAS_QUADS ) {
         if ( QUAD_ENDIANESS == QUAD_LEB ) {
-            $bin = pack("Q", $bigint);
+            $bin = pack("Q", $num);
         } elsif ( QUAD_ENDIANESS == QUAD_BEB ) {
-            $bin = reverse(pack("Q", $bigint));
+            $bin = reverse(pack("Q", $num));
         } else {
             die "endianess unknown";
         }
     } else {
-        $bigint = Math::BigInt->new($bigint) unless UNIVERSAL::isa($bigint, "Math::BigInt");
-        my $hex = $bigint->as_hex;
-        $bin = reverse pack('H16', substr($hex, 2));
+        $num = Math::BigInt->new($num) unless ref $num;
+        my $hex = $num->as_hex;
+        $hex = "0"x(18-length($hex)) . substr($hex, 2);
+        $bin = reverse pack('H16', $hex);
     }
 
     $self->encode_wire_fixed64( $field, $bin );
