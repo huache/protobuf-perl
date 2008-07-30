@@ -39,7 +39,7 @@ is($events->[0]{fieldnum}, 1);
 
 ok($events = Protobuf::Decoder->decode("\x08\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"));
 is(scalar @$events, 1);
-is($events->[0]{value}, BI(1) << 63) );
+is($events->[0]{value}, BI(1) << 63);
 is($events->[0]{fieldnum}, 1);
 
 ok($events = Protobuf::Decoder->decode("\x12\x07\x74\x65\x73\x74\x69\x6e\x67"));
@@ -80,15 +80,18 @@ is_deeply($events,
            },
            {
                'value' => 'foo',
-               'fieldnum' => 2
+               'fieldnum' => 2,
+               'wire_format' => 2,
            },
            {
                'value' => 'VALUE_OF_FOO',
-               'fieldnum' => 3
+               'fieldnum' => 3,
+               'wire_format' => 2,
            },
            {
                'value' => "{\x00\x00\x00",
-               'fieldnum' => 4
+               'fieldnum' => 4,
+               'wire_format' => 5,
            },
            {
                'fieldnum' => 1,
@@ -107,7 +110,8 @@ is_deeply($events,
            },
            {
                'value' => 'foo',
-               'fieldnum' => 2
+               'fieldnum' => 2,
+               'wire_format' => 2,
            },
            {
                'value' => 'FOO_VALUE',
