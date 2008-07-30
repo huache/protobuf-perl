@@ -1,42 +1,9 @@
-// Protocol Buffers - Google's data interchange format
-// Copyright 2008 Google Inc.
-// http://code.google.com/p/protobuf/
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-//      http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+// A lite version of unittest.proto
 
-// Author: kenton@google.com (Kenton Varda)
-//  Based on original Protocol Buffers design by
-//  Sanjay Ghemawat, Jeff Dean, and others.
-//
-// A proto file we will use for unit testing.
-
-
-import "unittest_import.proto";
-
-// We don't put this in a package within proto2 because we need to make sure
-// that the generated code doesn't depend on being in the proto2 namespace.
-// In test_util.h we do "using namespace unittest = protobuf_unittest".
 package protobuf_unittest;
 
-// Protos optimized for SPEED use a strict superset of the generated code
-// of equivalent ones optimized for CODE_SIZE, so we should optimize all our
-// tests for speed unless explicitly testing code size optimization.
-option optimize_for = SPEED;
-
-option java_outer_classname = "UnittestProto";
-
-option perl_message_package = "ProtobufTest";
-option perl_file_package = "ProtobufTest";
+option perl_message_package = "ProtobufTestBasic";
+option perl_file_package = "ProtobufTestBasic";
 
 // This proto includes every type of field in both singular and repeated
 // forms.
@@ -77,11 +44,9 @@ message TestAllTypes {
 
   optional NestedMessage                        optional_nested_message  = 18;
   optional ForeignMessage                       optional_foreign_message = 19;
-  optional protobuf_unittest_import.ImportMessage optional_import_message  = 20;
 
   optional NestedEnum                           optional_nested_enum     = 21;
   optional ForeignEnum                          optional_foreign_enum    = 22;
-  optional protobuf_unittest_import.ImportEnum    optional_import_enum     = 23;
 
   optional string optional_string_piece = 24 [ctype=STRING_PIECE];
   optional string optional_cord = 25 [ctype=CORD];
@@ -109,11 +74,9 @@ message TestAllTypes {
 
   repeated NestedMessage                        repeated_nested_message  = 48;
   repeated ForeignMessage                       repeated_foreign_message = 49;
-  repeated protobuf_unittest_import.ImportMessage repeated_import_message  = 50;
 
   repeated NestedEnum                           repeated_nested_enum     = 51;
   repeated ForeignEnum                          repeated_foreign_enum    = 52;
-  repeated protobuf_unittest_import.ImportEnum    repeated_import_enum     = 53;
 
   repeated string repeated_string_piece = 54 [ctype=STRING_PIECE];
   repeated string repeated_cord = 55 [ctype=CORD];
@@ -137,8 +100,6 @@ message TestAllTypes {
 
   optional NestedEnum  default_nested_enum  = 81 [default = BAR        ];
   optional ForeignEnum default_foreign_enum = 82 [default = FOREIGN_BAR];
-  optional protobuf_unittest_import.ImportEnum
-      default_import_enum = 83 [default = IMPORT_BAR];
 
   optional string default_string_piece = 84 [ctype=STRING_PIECE,default="abc"];
   optional string default_cord = 85 [ctype=CORD,default="123"];
@@ -156,107 +117,6 @@ enum ForeignEnum {
   FOREIGN_BAZ = 6;
 }
 
-message TestAllExtensions {
-  extensions 1 to max;
-}
-
-extend TestAllExtensions {
-  // Singular
-  optional    int32 optional_int32_extension    =  1;
-  optional    int64 optional_int64_extension    =  2;
-  optional   uint32 optional_uint32_extension   =  3;
-  optional   uint64 optional_uint64_extension   =  4;
-  optional   sint32 optional_sint32_extension   =  5;
-  optional   sint64 optional_sint64_extension   =  6;
-  optional  fixed32 optional_fixed32_extension  =  7;
-  optional  fixed64 optional_fixed64_extension  =  8;
-  optional sfixed32 optional_sfixed32_extension =  9;
-  optional sfixed64 optional_sfixed64_extension = 10;
-  optional    float optional_float_extension    = 11;
-  optional   double optional_double_extension   = 12;
-  optional     bool optional_bool_extension     = 13;
-  optional   string optional_string_extension   = 14;
-  optional    bytes optional_bytes_extension    = 15;
-
-  optional group OptionalGroup_extension = 16 {
-    optional int32 a = 17;
-  }
-
-  optional TestAllTypes.NestedMessage optional_nested_message_extension = 18;
-  optional ForeignMessage optional_foreign_message_extension = 19;
-  optional protobuf_unittest_import.ImportMessage
-    optional_import_message_extension = 20;
-
-  optional TestAllTypes.NestedEnum optional_nested_enum_extension = 21;
-  optional ForeignEnum optional_foreign_enum_extension = 22;
-  optional protobuf_unittest_import.ImportEnum
-    optional_import_enum_extension = 23;
-
-  optional string optional_string_piece_extension = 24 [ctype=STRING_PIECE];
-  optional string optional_cord_extension = 25 [ctype=CORD];
-
-  // Repeated
-  repeated    int32 repeated_int32_extension    = 31;
-  repeated    int64 repeated_int64_extension    = 32;
-  repeated   uint32 repeated_uint32_extension   = 33;
-  repeated   uint64 repeated_uint64_extension   = 34;
-  repeated   sint32 repeated_sint32_extension   = 35;
-  repeated   sint64 repeated_sint64_extension   = 36;
-  repeated  fixed32 repeated_fixed32_extension  = 37;
-  repeated  fixed64 repeated_fixed64_extension  = 38;
-  repeated sfixed32 repeated_sfixed32_extension = 39;
-  repeated sfixed64 repeated_sfixed64_extension = 40;
-  repeated    float repeated_float_extension    = 41;
-  repeated   double repeated_double_extension   = 42;
-  repeated     bool repeated_bool_extension     = 43;
-  repeated   string repeated_string_extension   = 44;
-  repeated    bytes repeated_bytes_extension    = 45;
-
-  repeated group RepeatedGroup_extension = 46 {
-    optional int32 a = 47;
-  }
-
-  repeated TestAllTypes.NestedMessage repeated_nested_message_extension = 48;
-  repeated ForeignMessage repeated_foreign_message_extension = 49;
-  repeated protobuf_unittest_import.ImportMessage
-    repeated_import_message_extension = 50;
-
-  repeated TestAllTypes.NestedEnum repeated_nested_enum_extension = 51;
-  repeated ForeignEnum repeated_foreign_enum_extension = 52;
-  repeated protobuf_unittest_import.ImportEnum
-    repeated_import_enum_extension = 53;
-
-  repeated string repeated_string_piece_extension = 54 [ctype=STRING_PIECE];
-  repeated string repeated_cord_extension = 55 [ctype=CORD];
-
-  // Singular with defaults
-  optional    int32 default_int32_extension    = 61 [default =  41    ];
-  optional    int64 default_int64_extension    = 62 [default =  42    ];
-  optional   uint32 default_uint32_extension   = 63 [default =  43    ];
-  optional   uint64 default_uint64_extension   = 64 [default =  44    ];
-  optional   sint32 default_sint32_extension   = 65 [default = -45    ];
-  optional   sint64 default_sint64_extension   = 66 [default =  46    ];
-  optional  fixed32 default_fixed32_extension  = 67 [default =  47    ];
-  optional  fixed64 default_fixed64_extension  = 68 [default =  48    ];
-  optional sfixed32 default_sfixed32_extension = 69 [default =  49    ];
-  optional sfixed64 default_sfixed64_extension = 70 [default = -50    ];
-  optional    float default_float_extension    = 71 [default =  51.5  ];
-  optional   double default_double_extension   = 72 [default =  52e3  ];
-  optional     bool default_bool_extension     = 73 [default = true   ];
-  optional   string default_string_extension   = 74 [default = "hello"];
-  optional    bytes default_bytes_extension    = 75 [default = "world"];
-
-  optional TestAllTypes.NestedEnum
-    default_nested_enum_extension = 81 [default = BAR];
-  optional ForeignEnum
-    default_foreign_enum_extension = 82 [default = FOREIGN_BAR];
-  optional protobuf_unittest_import.ImportEnum
-    default_import_enum_extension = 83 [default = IMPORT_BAR];
-
-  optional string default_string_piece_extension = 84 [ctype=STRING_PIECE,
-                                                       default="abc"];
-  optional string default_cord_extension = 85 [ctype=CORD, default="123"];
-}
 
 // We have separate messages for testing required fields because it's
 // annoying to have to fill in required fields in TestProto in order to
@@ -267,11 +127,6 @@ message TestRequired {
   required int32 a = 1;
   optional int32 dummy2 = 2;
   required int32 b = 3;
-
-  extend TestAllExtensions {
-    optional TestRequired single = 1000;
-    repeated TestRequired multi  = 1001;
-  }
 
   // Pad the field count to 32 so that we can test that IsInitialized()
   // properly checks multiple elements of has_bits_.
@@ -321,12 +176,6 @@ message TestForeignNested {
 
 // TestEmptyMessage is used to test unknown field support.
 message TestEmptyMessage {
-}
-
-// Like above, but declare all field numbers as potential extensions.  No
-// actual extensions should ever be defined for this type.
-message TestEmptyMessageWithExtensions {
-  extensions 1 to max;
 }
 
 // Test that really large tag numbers don't break anything.
@@ -415,16 +264,8 @@ message TestCamelCaseFieldNames {
 // field index to determine serialization order.
 message TestFieldOrderings {
   optional string my_string = 11;
-  extensions 2 to 10;
   optional int64 my_int = 1;
-  extensions 12 to 100;
   optional float my_float = 101;
-}
-
-
-extend TestFieldOrderings {
-  optional string my_extension_string = 50;
-  optional int32 my_extension_int = 5;
 }
 
 
