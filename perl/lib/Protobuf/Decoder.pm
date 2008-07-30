@@ -91,9 +91,23 @@ sub decode_field_uint64 {
     return $int;
 }
 
+my $sign_bit_64 = Math::BigInt->new("0x8000000000000000");
+
 sub decode_field_int32 {
     my ($self, $int) = @_;
-    return $int;
+    if (UNIVERSAL::isa($int, "Math::BigInt")) {
+        if ($int & $sign_bit_64) {
+            # TODO(bradfitz): pairs of bnot works too.  benchmark which is faster.
+            $int->bneg;
+            $int &= Math::BigInt->new("0xffffffffffffffff");
+            $int->bneg;
+            $int = $int->numify;
+            return $int;
+        }
+        # shouldn't get here, though?
+        return $int->numify;
+    }
+    return unpack("l", pack("L", int($int)));
 }
 
 sub decode_field_fixed32 {
