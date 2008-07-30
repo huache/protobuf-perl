@@ -182,6 +182,17 @@ sub encode_field_fixed64 {
     $self->encode_wire_fixed64( $field, $bin );
 }
 
+sub encode_field_double {
+    my ( $self, $field, $number ) = @_;
+    $self->encode_wire_fixed64($field, pack("d", $number));
+}
+
+sub encode_field_float {
+    my ( $self, $field, $number ) = @_;
+    $self->encode_wire_fixed32($field, pack("f", $number));
+}
+
+
 __PACKAGE__->meta->make_immutable;
 
 __PACKAGE__
