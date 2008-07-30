@@ -143,7 +143,7 @@ foreach my $name ( keys %type_to_wire ) {
 sub type_to_wire {
     my ( $type ) = @_;
     no warnings;
-    $type_to_wire[$type] || $type_to_wire{$type};
+    $type_to_wire[$type] || $type_to_wire{uc($type)};
 }
 
 sub type_name {
