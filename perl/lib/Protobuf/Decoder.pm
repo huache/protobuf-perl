@@ -19,6 +19,11 @@ sub decode_value {
     return $class->$method($value);
 }
 
+sub decode_field_sfixed32 {
+    my ($class, $v) = @_;
+    return unpack("l", $v);
+}
+
 sub decode_field_float {
     my ($class, $v) = @_;
     die 'assert: should be 8 bytes' unless length($v) == 4;
