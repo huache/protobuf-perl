@@ -93,7 +93,6 @@ my @tests = (
 
 foreach my $t (@tests) {
     my ($type, $num, $expected_encoded) = @$t;
-    my $wire = type_to_wire($type);
     $expected_encoded = "?" unless defined $expected_encoded;
 
     # they're all prefixed with optional in their name in this type:
@@ -130,8 +129,8 @@ foreach my $t (@tests) {
     # now see if we can decode it
     my $p2 = ProtobufTestBasic::TestAllTypes->new;
     $ok = eval { $p2->parse_from_string($expected_encoded); 1 } or
-        diag("Parse failure: $@");
-    ok($ok, "  .. and parsed it ($type $num $wire)");
-    is($p2->$field(), $num, "  .. and parsed value was correctly set ($type $num)");
+        diag("Error parsing from string: $@");
+    ok($ok, "  .. and parsed it ($type $num)"); 
+    $value_check->($p2, "decoded");
 }
 

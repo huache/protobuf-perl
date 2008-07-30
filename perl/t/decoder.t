@@ -11,8 +11,6 @@ use Test::Protobuf;
 use FindBin qw($Bin);
 use lib "$Bin/autogen";
 
-use Protobuf::Types;
-
 no utf8;
 
 use_ok("Protobuf::Decoder");
@@ -78,28 +76,23 @@ is_deeply($events,
           [
            {
                'fieldnum' => 1,
-               'type' => 'start_group',
-               'wire_format' => WIRE_START_GROUP,
+               'type' => 'start_group'
            },
            {
                'value' => 'foo',
-               'fieldnum' => 2,
-               'wire_format' => WIRE_LENGTH_DELIMITED,
+               'fieldnum' => 2
            },
            {
                'value' => 'VALUE_OF_FOO',
-               'fieldnum' => 3,
-               'wire_format' => WIRE_LENGTH_DELIMITED,
+               'fieldnum' => 3
            },
            {
                'value' => "{\x00\x00\x00",
-               'fieldnum' => 4,
-               'wire_format' => WIRE_FIXED32,
+               'fieldnum' => 4
            },
            {
                'fieldnum' => 1,
-               'type' => 'end_group',
-               'wire_format' => WIRE_END_GROUP,
+               'type' => 'end_group'
            }
           ], "MemcacheGetResponse - w/ groups");
 
@@ -110,33 +103,27 @@ is_deeply($events,
           [
            {
                'fieldnum' => 1,
-               'type' => 'start_group',
-               'wire_format' => WIRE_START_GROUP,
+               'type' => 'start_group'
            },
            {
                'value' => 'foo',
-               'fieldnum' => 2,
-               'wire_format' => WIRE_LENGTH_DELIMITED,
+               'fieldnum' => 2
            },
            {
                'value' => 'FOO_VALUE',
-               'fieldnum' => 3,
-               'wire_format' => WIRE_LENGTH_DELIMITED,
+               'fieldnum' => 3
            },
            {
                'value' => 1,
-               'fieldnum' => 5,
-               'wire_format' => WIRE_VARINT,
+               'fieldnum' => 5
            },
            {
                'value' => "\xff\x00\x00\x00",
-               'fieldnum' => 6,
-               'wire_format' => WIRE_FIXED32,
+               'fieldnum' => 6
            },
            {
                'fieldnum' => 1,
-               'type' => 'end_group',
-               'wire_format' => WIRE_END_GROUP,
+               'type' => 'end_group'
            }
           ], "MemcacheSetRequest - w/ groups");
 
@@ -147,23 +134,19 @@ is_deeply($events,
           [
            {
              'value' => 1,
-             'fieldnum' => 1,
-             'wire_format' => WIRE_VARINT,
+             'fieldnum' => 1
            },
            {
              'value' => 2,
-             'fieldnum' => 1,
-             'wire_format' => WIRE_VARINT,
+             'fieldnum' => 1
            },
            {
              'value' => 3,
-             'fieldnum' => 1,
-             'wire_format' => WIRE_VARINT,
+             'fieldnum' => 1
            },
            {
              'value' => 250,
-             'fieldnum' => 1,
-             'wire_format' => WIRE_VARINT,
+             'fieldnum' => 1
           }
           ], "MemcacheSetResponse");
 
