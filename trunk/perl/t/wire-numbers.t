@@ -13,7 +13,7 @@ use_ok("ProtobufTestBasic");  # unittest_basic.proto
 
 use Protobuf::Encoder;
 use Protobuf::Types;
-use Math::BigInt;
+use Math::BigInt lib => 'GMP';
 
 # The numbers from unittest.proto's TestAllTypes.
 # Use devtools/python-proto-shell.sh to play with this.
@@ -37,7 +37,7 @@ my %field_number = (
     'bool' => 13,
     );
 
-my $max_u64 = BI(18446744073709551615);
+my $max_u64 = BI("18446744073709551615");
 
 # tests to run:
 my @tests = (
