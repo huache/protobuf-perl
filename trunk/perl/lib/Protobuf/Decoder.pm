@@ -128,6 +128,48 @@ sub decode {
     return \@evt;
 }
 
+sub decode_field_bytes {
+    my ( $self, $bytes ) = @_;
+    return $bytes;
+}
+
+sub decode_field_string {
+    my ( $self, $string ) = @_;
+    utf8::decode($string);
+    return $string;
+}
+
+sub decode_field_uint32 {
+    my ( $self, $int ) = @_;
+    return $int;
+}
+
+sub decode_field_uint64 {
+    my ( $self, $bigint ) = @_;
+    return $bigint;
+}
+
+sub decode_field_int32 {
+    my ( $self, $int ) = @_;
+    return $int;
+}
+
+sub decode_field_sint32 {
+    my ( $self, $int ) = @_;
+    return Protobuf::WireFormat::zigzag_decode($int);
+}
+
+sub decode_field_sint64 {
+    my ( $self, $bigint ) = @_;
+    return Protobuf::WireFormat::zigzag_decode($bigint);
+}
+
+sub decode_field_fixed32 {
+    my ( $self, $octets ) = @_;
+    unpack("V", $octets);
+}
+
+
 # TODO(bradfitz): lame implementation for now, but leaves possibility
 # for better one later.
 sub decode_iterator {
