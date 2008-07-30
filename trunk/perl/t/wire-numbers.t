@@ -43,10 +43,22 @@ my @tests = (
     ['int32',     -7, "\x08"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     ['int32', -2**31, "\x08"."\x80\x80\x80\x80\xf8\xff\xff\xff\xff\x01"],
 
-    ['int64', 0 - (BI(2) ** 63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
+    ['int64', 0-(BI(2)**63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
 
     ['uint32',  4294967295, "\x18"."\xff\xff\xff\xff\x0f"],
     ['uint32',  7, "\x18"."\x07"],
+
+    ['uint64',  BI(2)**64 - 1, " "."\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
+    ['uint64',  7, " "."\x07"],
+
+    ['sint32', -7, "("."\r"],
+    ['sint32',  7, "("."\x03"],
+    ['sint32', -2147483648, "("."\xff\xff\xff\xff\x0f"],
+
+    ['sint64', -7, "0"."\r"],
+    ['sint64',  7, "0"."\x03"],
+    ['sint64',  BI("-9223372036854775808"),
+     "0\xff\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     );
 
 foreach my $t (@tests) {
