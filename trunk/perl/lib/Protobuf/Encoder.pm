@@ -39,13 +39,7 @@ sub encode_varint {
     # unset the sign bit
     if ( $int < 0 ) {
         $neg = 1;
-        if ( ref $int ) {
-            use Data::Dumper;
-            #$int = Math::BigInt->new(2) ** 64 - $int;
-            $int &= Math::BigInt->new("0xffffffffffffffff");
-        } else {
-            $int &= ~( HAS_QUADS ? 1 << 63 : 1 << 31 );
-        }
+        $int = Math::BigInt->new("0xffffffffffffffff") & $int;
     }
 
     while ( $int > 127 ) {
