@@ -69,7 +69,7 @@ sub generate_default_methods {
 
             my $meta = Class::MOP::Class->initialize(ref $self);
 
-            # TODO(nothingmuch) generalize to allow IO
+            # TODO(nothingmuch): generalize to allow IO
             my $buf = '';
             my $e = Protobuf::Encoder->new;
             my $emit = sub {
@@ -137,11 +137,12 @@ sub generate_default_methods {
                     } else {
                         die "internal assert: expected a group or value from parse stream.";
                     }
-                } else {
-                    $value = $event->{'value'};
-                    # TODO(bradfitz): we need to convert values here, now that
-                    # we know their real type (not just their wire type).
-                    die "Expected value in non-aggregate" unless defined $value;
+                } else { 
+                    # We convert values now that we know their real
+                    # type (not just their wire type).
+                    die "internal assert: expected value in non-aggregate" unless
+                        defined $event->{value};
+                    $value = Protobuf::Decoder->decode_value($attr, $event->{value});
                 }
 
                 if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
