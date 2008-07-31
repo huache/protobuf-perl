@@ -81,15 +81,19 @@ sub decode_field_string {
     return $string;
 }
 
-sub decode_field_uint32 {
-    my ($self, $int) = @_;
-    return $int;
+sub _decode_field_no_xform_needed {
+    return $_[1];
 }
 
-sub decode_field_uint64 {
-    my ($self, $int) = @_;
-    return $int;
-}
+# The wire decoder has already converted these varints into
+# unsigned integers, so we don't need to do anything:
+*decode_field_uint32 = \&_decode_field_no_xform_needed;
+*decode_field_uint64 = \&_decode_field_no_xform_needed;
+
+# TODO(bradfitz): This is a lie: Enums can be negative, according to
+# the Python impl at least.  So we need to fix this in the future.
+# But I don't need negative enums for Perl App Engine at present.
+*decode_field_enum = \&_decode_field_no_xform_needed;
 
 my $sign_bit_64 = Math::BigInt->new("0x8000000000000000");
 
