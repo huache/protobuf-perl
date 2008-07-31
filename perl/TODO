@@ -3,6 +3,7 @@ rename perl_package options to be consistent with java.  same purposes exactly.
 make unittest.proto work
   -- extensions
   -- imports ("use" the perl_outer_package of the imported package)
+  -- negative enums are broken.  see t/wire-numbers.t
   -- use Math::BigInt on large default values.  currently:
          default_value => 18446744073709551615,
      #     Tried to use 'ProtobufTestBasic'.

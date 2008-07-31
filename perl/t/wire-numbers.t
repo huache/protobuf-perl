@@ -91,9 +91,18 @@ my @tests = (
 
     ['float', 1.0/3.0, "]"."\xab\xaa\xaa>"],
     ['double', 1.0/3.0, "a"."UUUUUU\xd5?"],
+
+    ['nested_enum', 2, "\xa8\x01\x02"],
+
+    # negative enums are allowed, I guess.  Python allows them.  Not zigzag, though.
+    # TODO(bradfitz): include this failing test:
+    # ['nested_enum', -2, "\xa8\x01\xfe\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
     );
 
 foreach my $t (@tests) {
+    # Note that $type is really just the field name, which is almost
+    # always the actual type in unittest.proto.  It's not for
+    # 'nested_enum' though.
     my ($type, $num, $expected_encoded) = @$t;
     next if $ENV{TEST_TYPE} && $type ne $ENV{TEST_TYPE};
 
