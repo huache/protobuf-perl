@@ -19,13 +19,18 @@ before _process_options => sub {
 
     my $type_constraint = $options->{type_constraint} = $class->field_to_type_constraint($options->{field});
 
+    # 
     if ( defined ( my $default = $field->default_value ) ) {
-        $options->{lazy} = 1;
         $options->{default} = $class->process_default($default, $type_constraint);
     } elsif ( $type_constraint->isa("Moose::Meta::TypeConstraint::Class") ) {
         my $class = $type_constraint->class;
         $options->{default} = sub { $class->new }; # FIXME only ->isa("Protobuf::Message")?
     }
+
+    # make sure predicate returns false even if we define a default. the predicate
+    # should really check that the field has been set by something other than the
+    # default
+    $options->{lazy} = 1 if exists $options->{default};
 
     if ( $type_constraint->is_a_type_of("Math::BigInt") ) {
         $options->{coerce} = 1;
