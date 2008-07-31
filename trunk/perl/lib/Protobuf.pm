@@ -45,6 +45,8 @@ sub class_name {
 
     # TODO(bradfitz): Hack. temporary:
     $name =~ s/^appengine_api\./AppEngine::Service::/;
+    $name =~ s/^appengine_datastore_v3\./AppEngine::Service::Datastore::/;
+    $name =~ s/^appengine_entity\./AppEngine::Service::Entity::/;
     $name =~ s/^protobuf_unittest\./ProtobufTestBasic::/;
 
     $name =~ s/\./::/g;
