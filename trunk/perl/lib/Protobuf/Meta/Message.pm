@@ -41,7 +41,16 @@ sub create_from_descriptor {
     $metaclass->create( $name,
         %args,
         superclasses => ['Protobuf::Message' ],
-        attributes   => \@attributes,
+        attributes   => [
+            @attributes,
+            # FIXME move _protobuf_extra_fields to base class?
+            Moose::Meta::Attribute->interpolate_class_and_new( "_protobuf_extra_fields" => (
+                init_arg => undef,
+                isa => "ArrayRef",
+                lazy => 1,
+                default => sub { [] },
+            )),
+        ],
         methods      => { $metaclass->generate_default_methods(%args, class => $name) },
     );
 
@@ -79,6 +88,14 @@ sub generate_default_methods {
 
             $meta->protobuf_emit($self, $emit);
 
+            my $extra = $meta->protobuf_extra_attribute;
+
+            if ( $extra->has_value($self) ) {
+                foreach my $event ( @{ $extra->get_value($self) } ) {
+                    $buf .= $e->encode_wire( $event->{fieldnum}, $event->{wire_format}, $event->{value} );
+                }
+            }
+
             return $buf;
         },
         parse_from_string => sub {
@@ -91,11 +108,7 @@ sub generate_default_methods {
             my $self = shift;
             my $meta = Class::MOP::Class->initialize(ref $self);
 
-            # TODO(bradfitz): is the grep really necessary?  I'm
-            # concerned that it's unnecessary and just slows this
-            # down.
-            for my $attr (grep { $_->does("Protobuf::Attribute::Field") }
-                          $meta->compute_all_applicable_attributes) {
+            for my $attr ($meta->protobuf_attributes, $meta->protobuf_extra_attribute ) {
                 $attr->clear_value($self);
             }
         },
@@ -111,45 +124,52 @@ sub generate_default_methods {
             my $meta = Class::MOP::Class->initialize(ref $self);
             my $attribute_by_number = $meta->attribute_by_number;
 
+            my @extra;
+
           EVENT:
             while (my $event = $iter->next) {
                 my $fieldnum = $event->{'fieldnum'} or
                     die "assert: expected field number.";
 
                 # skip unknown attributes.
-                my $attr = $attribute_by_number->{$fieldnum} or
-                    next;
+                if ( my $attr = $attribute_by_number->{$fieldnum} ) {
+                    my $value;
+                    if ($attr->field->is_aggregate) {
+                        my $class_name = $attr->field->message_type->class_name;
+                        $value = $class_name->new;
 
-                my $value;
-                if ($attr->field->is_aggregate) {
-                    my $class_name = $attr->field->message_type->class_name;
-                    $value = $class_name->new;
-
-                    if ( $event->{'type'} && $event->{'type'} eq "start_group") {
-                        # this returns an iterator which tracks nesting depth
-                        # and stops at the matching 'end_group'.  it also
-                        # keeps advancing the main iterator from which it came.
-                        my $groupiter = $iter->subgroup_iterator;
-                        $value->_merge_from_decode_iterator($groupiter);
-                    } elsif (defined $event->{'value'}) {
-                        # an embedded message
-                        $value->merge_from_string($event->{'value'});
-                    } else {
-                        die "internal assert: expected a group or value from parse stream.";
-                    }
-                } else { 
-                    # We convert values now that we know their real
-                    # type (not just their wire type).
-                    die "internal assert: expected value in non-aggregate" unless
+                        if ( $event->{'type'} && $event->{'type'} eq "start_group") {
+                            # this returns an iterator which tracks nesting depth
+                            # and stops at the matching 'end_group'.  it also
+                            # keeps advancing the main iterator from which it came.
+                            my $groupiter = $iter->subgroup_iterator;
+                            $value->_merge_from_decode_iterator($groupiter);
+                        } elsif (defined $event->{'value'}) {
+                            # an embedded message
+                            $value->merge_from_string($event->{'value'});
+                        } else {
+                            die "internal assert: expected a group or value from parse stream.";
+                        }
+                    } else { 
+                        # We convert values now that we know their real
+                        # type (not just their wire type).
+                        die "internal assert: expected value in non-aggregate" unless
                         defined $event->{value};
-                    $value = Protobuf::Decoder->decode_value($attr, $event->{value});
-                }
+                        $value = Protobuf::Decoder->decode_value($attr, $event->{value});
+                    }
 
-                if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
-                    $attr->set_value($self, $value);
+                    if ($attr->does('Protobuf::Attribute::Field::Scalar')) {
+                        $attr->set_value($self, $value);
+                    } else {
+                        $attr->push_value($self, $value);
+                    }
                 } else {
-                    $attr->push_value($self, $value);
+                    push @extra, $event;
                 }
+            }
+
+            if ( @extra ) {
+                push @{ $meta->protobuf_extra_attribute->get_value($self) }, @extra;
             }
         },
     );
@@ -175,6 +195,12 @@ sub protobuf_attributes {
     return sort { $a->field->number <=> $b->field->number }
         grep { $_->does("Protobuf::Attribute::Field") }
             $self->compute_all_applicable_attributes;
+}
+
+sub protobuf_extra_attribute {
+    my $self = shift;
+
+    $self->find_attribute_by_name("_protobuf_extra_fields")
 }
 
 sub protobuf_emit {
