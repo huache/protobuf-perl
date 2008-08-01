@@ -119,3 +119,36 @@ BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
     is($p->stats->misses, 8);
     is($p->stats->oldest_item_age, 257);
 }
+
+# unknown fields
+{
+    my $i1 = AppEngine::Service::MemcacheGetResponse::Item->new;
+    $i1->set_key("key1");
+    $i1->set_value("value1");
+    $i1->set_flags(123);
+
+    # a field not in the .proto
+    $i1->merge_from_string("(\x01");
+
+    is($i1->key, "key1", "key unchanged");
+    is($i1->value, "value1", "value unchanged");
+    is($i1->flags, 123, "flags unchanged");
+
+    my $meta = Class::MOP::Class->initialize(ref $i1);
+
+    my @attrs = $meta->protobuf_attributes;
+
+    ok(my $events = Protobuf::Decoder->decode($i1->serialize_to_string));
+
+    my %by_field = map { delete $_->{fieldnum} => $_ } @$events;
+    is( scalar keys %by_field, 4, "four events" );
+
+    is( @attrs, 3, "three attrs" );
+
+    foreach my $attr ( @attrs ) {
+        ok( $by_field{$attr->field->number}, "data for " . $attr->name . " exists in output" );
+    }
+
+    ok( $by_field{5}, "field 5 set" );
+}
+
