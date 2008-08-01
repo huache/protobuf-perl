@@ -21,7 +21,11 @@ BEGIN { use_ok("AppEngine::Service::MemcacheProto") };
     isa_ok( $meta, "Class::MOP::Class" );
     isa_ok( $meta, "Protobuf::Meta::Message" );
     isa_ok( $meta->descriptor, "Protobuf::Descriptor" );
-    ok( AppEngine::Service::MemcacheGetRequest->can("meta"), "'meta' method not injected" );
+
+    {
+        local $TODO = "Missing feature in Class::MOP::Class";
+        ok( !AppEngine::Service::MemcacheGetRequest->can("meta"), "'meta' method not injected" );
+    }
 }
 
 # build up a get request
