@@ -39,7 +39,9 @@ has 'name' => (is => 'rw', isa => 'Str');
 has 'full_name' => (is => 'rw', isa => 'Str');
 has 'fields' => (is => 'rw', isa => 'ArrayRef[Protobuf::FieldDescriptor]');
 
-sub class_name {
+has class_name => ( is => 'rw', isa => 'Str', lazy_build => 1 );
+
+sub _build_class_name {
     my $self = shift;
     my $name = $self->full_name;
 
