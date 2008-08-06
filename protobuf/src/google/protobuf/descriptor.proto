@@ -206,11 +206,14 @@ message FileOptions {
   // top-level extensions defined in the file.
   optional bool java_multiple_files = 10 [default=false];
 
-  // Controls both the target filename and the base package for messages.
-  // If foo.proto's perl_package is set to "Foo::Bar", generates file
-  // "Foo/Bar.pm".  A message "Baz" in foo.proto would create the Perl class
-  // (package) Foo::Bar::Baz (loaded via "use Foo::Bar" to get Foo/Bar.pm)
-  optional string perl_package = 11;
+  // If set to "Foo::Bar", "Foo/Bar.pm" will be generated.
+  optional string perl_file_package = 11;
+
+  // If set, all messages will be prefixed with this package name.
+  // Don't include "::" at the end.  If set to "Foo::Bar", message
+  // "Baz" will be in package "Foo::Bar::Baz" (in file Foo/Bar.pm if
+  // the option 'perl_file_package' above is set to "Foo::Bar")
+  optional string perl_message_package = 12;
 
   // Generated classes can be optimized for speed or code size.
   enum OptimizeMode {

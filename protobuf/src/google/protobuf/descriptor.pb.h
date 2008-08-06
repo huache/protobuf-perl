@@ -1197,13 +1197,21 @@ class LIBPROTOBUF_EXPORT FileOptions : public ::google::protobuf::Message {
   inline bool java_multiple_files() const;
   inline void set_java_multiple_files(bool value);
   
-  // optional string perl_package = 11;
-  inline bool has_perl_package() const;
-  inline void clear_perl_package();
-  inline const ::std::string& perl_package() const;
-  inline void set_perl_package(const ::std::string& value);
-  inline void set_perl_package(const char* value);
-  inline ::std::string* mutable_perl_package();
+  // optional string perl_file_package = 11;
+  inline bool has_perl_file_package() const;
+  inline void clear_perl_file_package();
+  inline const ::std::string& perl_file_package() const;
+  inline void set_perl_file_package(const ::std::string& value);
+  inline void set_perl_file_package(const char* value);
+  inline ::std::string* mutable_perl_file_package();
+  
+  // optional string perl_message_package = 12;
+  inline bool has_perl_message_package() const;
+  inline void clear_perl_message_package();
+  inline const ::std::string& perl_message_package() const;
+  inline void set_perl_message_package(const ::std::string& value);
+  inline void set_perl_message_package(const char* value);
+  inline ::std::string* mutable_perl_message_package();
   
   // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
   inline bool has_optimize_for() const;
@@ -1220,14 +1228,16 @@ class LIBPROTOBUF_EXPORT FileOptions : public ::google::protobuf::Message {
   ::std::string* java_outer_classname_;
   static const ::std::string _default_java_outer_classname_;
   bool java_multiple_files_;
-  ::std::string* perl_package_;
-  static const ::std::string _default_perl_package_;
+  ::std::string* perl_file_package_;
+  static const ::std::string _default_perl_file_package_;
+  ::std::string* perl_message_package_;
+  static const ::std::string _default_perl_message_package_;
   int optimize_for_;
   
   static const FileOptions default_instance_;
-  static const int _offsets_[5];
+  static const int _offsets_[6];
   
-  ::google::protobuf::uint32 _has_bits_[(5 + 31) / 32];
+  ::google::protobuf::uint32 _has_bits_[(6 + 31) / 32];
   
   // WHY DOES & HAVE LOWER PRECEDENCE THAN != !?
   inline bool _has_bit(int index) const {
@@ -2853,55 +2863,90 @@ inline void FileOptions::set_java_multiple_files(bool value) {
   java_multiple_files_ = value;
 }
 
-// optional string perl_package = 11;
-inline bool FileOptions::has_perl_package() const {
+// optional string perl_file_package = 11;
+inline bool FileOptions::has_perl_file_package() const {
   return _has_bit(3);
 }
-inline void FileOptions::clear_perl_package() {
-  if (perl_package_ != &_default_perl_package_) {
-    perl_package_->clear();
+inline void FileOptions::clear_perl_file_package() {
+  if (perl_file_package_ != &_default_perl_file_package_) {
+    perl_file_package_->clear();
   }
   _clear_bit(3);
 }
-inline const ::std::string& FileOptions::perl_package() const {
-  return *perl_package_;
+inline const ::std::string& FileOptions::perl_file_package() const {
+  return *perl_file_package_;
 }
-inline void FileOptions::set_perl_package(const ::std::string& value) {
+inline void FileOptions::set_perl_file_package(const ::std::string& value) {
   _set_bit(3);
-  if (perl_package_ == &_default_perl_package_) {
-    perl_package_ = new ::std::string;
+  if (perl_file_package_ == &_default_perl_file_package_) {
+    perl_file_package_ = new ::std::string;
   }
-  perl_package_->assign(value);
+  perl_file_package_->assign(value);
 }
-inline void FileOptions::set_perl_package(const char* value) {
+inline void FileOptions::set_perl_file_package(const char* value) {
   _set_bit(3);
-  if (perl_package_ == &_default_perl_package_) {
-    perl_package_ = new ::std::string;
+  if (perl_file_package_ == &_default_perl_file_package_) {
+    perl_file_package_ = new ::std::string;
   }
-  perl_package_->assign(value);
+  perl_file_package_->assign(value);
 }
-inline ::std::string* FileOptions::mutable_perl_package() {
+inline ::std::string* FileOptions::mutable_perl_file_package() {
   _set_bit(3);
-  if (perl_package_ == &_default_perl_package_) {
-    perl_package_ = new ::std::string;
+  if (perl_file_package_ == &_default_perl_file_package_) {
+    perl_file_package_ = new ::std::string;
   }
-  return perl_package_;
+  return perl_file_package_;
+}
+
+// optional string perl_message_package = 12;
+inline bool FileOptions::has_perl_message_package() const {
+  return _has_bit(4);
+}
+inline void FileOptions::clear_perl_message_package() {
+  if (perl_message_package_ != &_default_perl_message_package_) {
+    perl_message_package_->clear();
+  }
+  _clear_bit(4);
+}
+inline const ::std::string& FileOptions::perl_message_package() const {
+  return *perl_message_package_;
+}
+inline void FileOptions::set_perl_message_package(const ::std::string& value) {
+  _set_bit(4);
+  if (perl_message_package_ == &_default_perl_message_package_) {
+    perl_message_package_ = new ::std::string;
+  }
+  perl_message_package_->assign(value);
+}
+inline void FileOptions::set_perl_message_package(const char* value) {
+  _set_bit(4);
+  if (perl_message_package_ == &_default_perl_message_package_) {
+    perl_message_package_ = new ::std::string;
+  }
+  perl_message_package_->assign(value);
+}
+inline ::std::string* FileOptions::mutable_perl_message_package() {
+  _set_bit(4);
+  if (perl_message_package_ == &_default_perl_message_package_) {
+    perl_message_package_ = new ::std::string;
+  }
+  return perl_message_package_;
 }
 
 // optional .google.protobuf.FileOptions.OptimizeMode optimize_for = 9 [default = CODE_SIZE];
 inline bool FileOptions::has_optimize_for() const {
-  return _has_bit(4);
+  return _has_bit(5);
 }
 inline void FileOptions::clear_optimize_for() {
   optimize_for_ = 2;
-  _clear_bit(4);
+  _clear_bit(5);
 }
 inline ::google::protobuf::FileOptions_OptimizeMode FileOptions::optimize_for() const {
   return static_cast< ::google::protobuf::FileOptions_OptimizeMode >(optimize_for_);
 }
 inline void FileOptions::set_optimize_for(::google::protobuf::FileOptions_OptimizeMode value) {
   GOOGLE_DCHECK(::google::protobuf::FileOptions_OptimizeMode_IsValid(value));
-  _set_bit(4);
+  _set_bit(5);
   optimize_for_ = value;
 }
 
