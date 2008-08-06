@@ -42,11 +42,14 @@ string StripProto(const string& filename) {
 
 // Returns the Perl package name expected for a given .proto filename.
 static string PackageName(const FileDescriptor* file) {
-  if (file->options().has_perl_package()) {
-    const string& package = file->options().perl_package();
-    // TODO(bradfitz): sanity check it.
-    return package;
+  // Prefix:
+  if (file->options().has_perl_file_package()) {
+    // TODO(bradfitz): sanity check it first.  some regexp
+    // for case and characters.
+    return file->options().perl_file_package();
   }
+
+  // TODO(bradfitz): this is a pretty poor non-perl-ish mapping:
   const string& filename = file->name();
   string package = StripProto(filename);
   StripString(&package, "-", '_');
@@ -294,6 +297,12 @@ bool Generator::Generate(const FileDescriptor* file,
   PrintTopBoilerplate(printer_);
   printer_->Print("package `package_name`;\n\n",
                   "package_name", package_name);
+
+  if (file->options().has_perl_message_package()) {
+    printer_->Print("package `package_name`;\n\n",
+                    "package_name", file->options().perl_message_package());
+  }
+
   printer_->Print("\n"
                   "use constant TRUE => 1;\n"
                   "use constant FALSE => 0;\n");
