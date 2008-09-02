@@ -5,15 +5,16 @@ use strict;
 use warnings;
 use 5.6.1;
 use Protobuf;
+use Protobuf::Types;
 
 package AppEngine::Service::MemcacheProto;
 
 package AppEngine::Service;
 
+
 use constant TRUE => 1;
 use constant FALSE => 0;
 ## Top-level enums:
-
 ## Top-level extensions:
 
 ## All nested enums:
@@ -344,7 +345,7 @@ our $_MEMCACHEINCREMENTREQUEST = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'delta', index => 1, number => 2,
       type => 4, cpp_type => 4, label => 1,
-      default_value => 1,
+      default_value => Protobuf::Types::BI("1"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -373,7 +374,7 @@ our $_MEMCACHEINCREMENTRESPONSE = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'new_value', index => 0, number => 1,
       type => 4, cpp_type => 4, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
   ],
@@ -443,31 +444,31 @@ our $_MERGEDNAMESPACESTATS = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'hits', index => 0, number => 1,
       type => 4, cpp_type => 4, label => 2,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'misses', index => 1, number => 2,
       type => 4, cpp_type => 4, label => 2,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'byte_hits', index => 2, number => 3,
       type => 4, cpp_type => 4, label => 2,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'items', index => 3, number => 4,
       type => 4, cpp_type => 4, label => 2,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'bytes', index => 4, number => 5,
       type => 4, cpp_type => 4, label => 2,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(

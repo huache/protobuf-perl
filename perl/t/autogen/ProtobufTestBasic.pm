@@ -5,7 +5,7 @@ use strict;
 use warnings;
 use 5.6.1;
 use Protobuf;
-package ProtobufTestBasic;
+use Protobuf::Types;
 
 package ProtobufTestBasic;
 
@@ -62,7 +62,6 @@ $_TESTSPARSEENUM->values->[3]->set_type($_TESTSPARSEENUM);
 $_TESTSPARSEENUM->values->[4]->set_type($_TESTSPARSEENUM);
 $_TESTSPARSEENUM->values->[5]->set_type($_TESTSPARSEENUM);
 $_TESTSPARSEENUM->values->[6]->set_type($_TESTSPARSEENUM);
-
 
 
 ## Top-level extensions:
@@ -159,7 +158,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'optional_int64', index => 1, number => 2,
       type => 3, cpp_type => 2, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -171,7 +170,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'optional_uint64', index => 3, number => 4,
       type => 4, cpp_type => 4, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -183,7 +182,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'optional_sint64', index => 5, number => 6,
       type => 18, cpp_type => 2, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -195,7 +194,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'optional_fixed64', index => 7, number => 8,
       type => 6, cpp_type => 4, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -207,7 +206,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'optional_sfixed64', index => 9, number => 10,
       type => 16, cpp_type => 2, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -423,7 +422,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'default_int64', index => 45, number => 62,
       type => 3, cpp_type => 2, label => 1,
-      default_value => 42,
+      default_value => Protobuf::Types::BI("42"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -435,7 +434,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'default_uint64', index => 47, number => 64,
       type => 4, cpp_type => 4, label => 1,
-      default_value => 44,
+      default_value => Protobuf::Types::BI("44"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -447,7 +446,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'default_sint64', index => 49, number => 66,
       type => 18, cpp_type => 2, label => 1,
-      default_value => 46,
+      default_value => Protobuf::Types::BI("46"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -459,7 +458,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'default_fixed64', index => 51, number => 68,
       type => 6, cpp_type => 4, label => 1,
-      default_value => 48,
+      default_value => Protobuf::Types::BI("48"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -471,7 +470,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'default_sfixed64', index => 53, number => 70,
       type => 16, cpp_type => 2, label => 1,
-      default_value => -50,
+      default_value => Protobuf::Types::BI("-50"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -1181,7 +1180,7 @@ our $_TESTFIELDORDERINGS = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'my_int', index => 1, number => 1,
       type => 3, cpp_type => 2, label => 1,
-      default_value => 0,
+      default_value => Protobuf::Types::BI("0"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -1215,13 +1214,13 @@ our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'large_uint32', index => 1, number => 2,
       type => 13, cpp_type => 3, label => 1,
-      default_value => Math::BigInt->new("4294967295"),
+      default_value => 4294967295,
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
       name => 'large_uint64', index => 2, number => 3,
       type => 4, cpp_type => 4, label => 1,
-      default_value => Math::BigInt->new("18446744073709551615"),
+      default_value => Protobuf::Types::BI("18446744073709551615"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(
@@ -1233,7 +1232,7 @@ our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
     Protobuf::FieldDescriptor->new(
       name => 'small_int64', index => 4, number => 5,
       type => 3, cpp_type => 2, label => 1,
-      default_value => Math::BigInt->new("-9223372036854775807"),
+      default_value => Protobuf::Types::BI("-9223372036854775807"),
       message_type => undef, enum_type => undef, containing_type => undef,
       is_extension => FALSE, extension_scope => undef),
     Protobuf::FieldDescriptor->new(

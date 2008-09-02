@@ -28,6 +28,8 @@ sub encode_field_and_wire_type {
     $self->encode_varint( ( $field << 3 ) | $wire );
 }
 
+my $all_64_bits = BI("0xffffffffffffffff");
+
 sub encode_varint {
     my ( $self, $int ) = @_;
 
@@ -39,7 +41,7 @@ sub encode_varint {
     # unset the sign bit
     if ( $int < 0 ) {
         $neg = 1;
-        $int = Math::BigInt->new("0xffffffffffffffff") & $int;
+        $int = $all_64_bits & $int;
     }
 
     while ( $int > 127 ) {
@@ -171,14 +173,24 @@ sub encode_field_sint64 {
 # but hopefully somebody (me?) improves this later.
 sub encode_field_sfixed64 {
     my ( $self, $field, $num ) = @_;
-    $num = Math::BigInt->new($num) unless UNIVERSAL::isa($num, "Math::BigInt");
-    my $hex = $num->as_hex;
-    $hex =~ s/^\-//;
-    # pad it, skipping leading 0x
-    $hex = "0"x(18-length($hex)) . substr($hex, 2);
     my $buf;
-    for (0..7) {
-        $buf .= chr(hex(substr($hex, 2*(7-$_), 2)));
+    if (HAS_QUADS) {
+        if (QUAD_ENDIANESS == QUAD_LEB) {
+            $buf = pack("q", $num);
+        } elsif (QUAD_ENDIANESS == QUAD_BEB) {
+            $buf = reverse pack("q", $num);
+        } else {
+            die "endianess unknown";
+        }
+    } else {
+        $num = Math::BigInt->new($num) unless UNIVERSAL::isa($num, "Math::BigInt");
+        my $hex = $num->as_hex;
+        $hex =~ s/^\-//;
+        # pad it, skipping leading 0x
+        $hex = "0"x(18-length($hex)) . substr($hex, 2);
+        for (0..7) {
+            $buf .= chr(hex(substr($hex, 2*(7-$_), 2)));
+        }
     }
     $self->encode_wire_fixed64($field, $buf);
 }

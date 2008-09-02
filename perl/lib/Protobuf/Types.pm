@@ -23,7 +23,7 @@ use constant UQUAD_TYPE => join("::", __PACKAGE__,  HAS_QUADS ? "PositiveBigInt"
 
 our @EXPORT = qw(
     type_to_wire type_name wire_type_name type_constraint
-    HAS_QUADS SQUAD_TYPE UQUAD_TYPE QUAD_ENDIANESS QUAD_LEB QUAD_BEB
+    HAS_QUADS SQUAD_TYPE UQUAD_TYPE QUAD_ENDIANESS QUAD_LEB QUAD_BEB BI
 ); # and some exports
 
 use constant ();
@@ -158,6 +158,23 @@ sub wire_type_name {
 sub type_constraint {
     $type_constraint{type_name($_[0])};
 }
+
+# Helper function for initializing ints with strings
+sub BI {
+    my $v = $_[0];
+    if (HAS_QUADS) {
+        return 0+$v if $v =~ /^-?\d+$/;
+        if ($v =~ /^0x[0-9a-fA-F]{1,16}/) {
+            my ($high, $low) = unpack("NN", pack("H*", substr($v,2)));
+            return $high << 32 | $low;
+        } else {
+            die "unknown number format: $v";
+        }
+    } else {
+        return Math::BigInt->new($v);
+    }
+}
+
 
 __PACKAGE__
 

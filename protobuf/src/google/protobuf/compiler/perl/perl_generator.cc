@@ -81,7 +81,7 @@ string NamePrefixedWithNestedTypes(const DescriptorT& descriptor,
 const char kDescriptorKey[] = "DESCRIPTOR";
 
 
-// Prints the common boilerplate needed at the top of every .py
+// Prints the common boilerplate needed at the top of every .pm
 // file output by this generator.
 void PrintTopBoilerplate(io::Printer* printer) {
   printer->Print(
@@ -90,7 +90,8 @@ void PrintTopBoilerplate(io::Printer* printer) {
       "use strict;\n"
       "use warnings;\n"
       "use 5.6.1;\n"
-      "use Protobuf;"
+      "use Protobuf;\n"
+      "use Protobuf::Types;\n"
       "\n");
 }
 
@@ -108,6 +109,10 @@ string EnumValueDescriptorExpression(
                              descriptor.number());
 }
 
+// Use the BI helper function to set "big int" (64 bit) numeric fields
+string BI(const string& numeric_string) {
+    return "Protobuf::Types::BI(\"" + numeric_string + "\")";
+}
 
 // Returns a Perl literal giving the default value for a field.
 // If the field specifies no explicit default value, we'll return
@@ -125,9 +130,9 @@ string StringifyDefaultValue(const FieldDescriptor& field) {
     case FieldDescriptor::CPPTYPE_UINT32:
       return SimpleItoa(field.default_value_uint32());
     case FieldDescriptor::CPPTYPE_INT64:
-      return SimpleItoa(field.default_value_int64());
+      return BI(SimpleItoa(field.default_value_int64()));
     case FieldDescriptor::CPPTYPE_UINT64:
-      return SimpleItoa(field.default_value_uint64());
+      return BI(SimpleItoa(field.default_value_uint64()));
     case FieldDescriptor::CPPTYPE_DOUBLE:
       return SimpleDtoa(field.default_value_double());
     case FieldDescriptor::CPPTYPE_FLOAT:

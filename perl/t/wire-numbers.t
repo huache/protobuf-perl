@@ -56,7 +56,12 @@ my @tests = (
 
     ['int64',   7, "\x10"."\x07"],
     ['int64',  -7, "\x10"."\xf9\xff\xff\xff\xff\xff\xff\xff\xff\x01"],
-    ['int64', 0-(BI(2)**63), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
+    ['int64', BI("0x7fffffffffffffff"), "\x10"."\xff\xff\xff\xff\xff\xff\xff\xff\x7f"],
+    # This is a weird case, because it's a negative number whose
+    # corresponding positive number doesn't fit in 64 bits.
+    # 2**63 as a >64bit number is 0x8000000000000000, which when
+    # truncated to 64 bits and viewed as signed is -(2**63).
+    ['int64', int(0-(BI("0xffffffffffffffff") & BI(2)**63)), "\x10"."\x80\x80\x80\x80\x80\x80\x80\x80\x80\x01"],
 
     ['uint32',  $max_u32, "\x18"."\xff\xff\xff\xff\x0f"],
     ['uint32',  7, "\x18"."\x07"],

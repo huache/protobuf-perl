@@ -54,7 +54,7 @@ sub create_from_descriptor {
         methods      => { $metaclass->generate_default_methods(%args, class => $name) },
     );
 
-    # TODO(bradfitz): do this earlier, and pass is to
+    # TODO(bradfitz): do this earlier, and pass it to
     # generate_default_methods, so it can be captured by all the
     # methods, so they don't have to do it themselves?
     my $meta = Class::MOP::Class->initialize($name);
