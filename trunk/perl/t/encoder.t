@@ -8,6 +8,7 @@ use Test::More 'no_plan';
 use lib "t/lib";
 use Test::Protobuf;
 
+use Protobuf::Types qw(BI);
 
 use_ok("Protobuf::Encoder");
 

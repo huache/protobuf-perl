@@ -23,13 +23,24 @@ sub decode_field_sfixed32 {
 sub decode_field_sfixed64 {
     my ($class, $v) = @_;
     die "assert: length not 8 bytes" unless length($v) == 8;
-    my $is_neg = vec($v, 63, 1);
-    # TODO(bradfitz): sick of the pack manpage... this works for now.
-    my $hex = join('', sprintf("%02x"x8, reverse unpack("C16", $v)));
-    my $int = Math::BigInt->new("0x$hex");
-    if ($is_neg) {
-        $int->bnot;
-        $int->binc;
+    my $int;
+    if (HAS_QUADS) {
+        if (QUAD_ENDIANESS == QUAD_LEB) {
+            $int = unpack("q", $v);
+        } elsif (QUAD_ENDIANESS == QUAD_BEB) {
+            $int = unpack("q", reverse $v);
+        } else {
+            die "endianess unknown";
+        }
+    } else {
+        # TODO(bradfitz): sick of the pack manpage... this works for now.
+        my $hex = sprintf("%02x"x8, reverse unpack("C16", $v));
+        $int = Math::BigInt->new("0x$hex");
+        my $is_neg = vec($v, 63, 1);
+        if ($is_neg) {
+            $int->bnot;
+            $int->binc;
+        }
     }
     return $int;
 }
@@ -37,10 +48,20 @@ sub decode_field_sfixed64 {
 sub decode_field_fixed64 {
     my ($class, $v) = @_;
     die "assert: length not 8 bytes" unless length($v) == 8;
-    my $is_neg = vec($v, 63, 1);
-    # TODO(bradfitz): sick of the pack manpage... this works for now.
-    my $hex = join('', sprintf("%02x"x8, reverse unpack("C16", $v)));
-    my $int = Math::BigInt->new("0x$hex");
+    my $int;
+    if (HAS_QUADS) {
+        if (QUAD_ENDIANESS == QUAD_LEB) {
+            $int = unpack("Q", $v);
+        } elsif (QUAD_ENDIANESS == QUAD_BEB) {
+            $int = unpack("Q", reverse $v);
+        } else {
+            die "endianess unknown";
+        }
+    } else {
+        # TODO(bradfitz): sick of the pack manpage... this works for now.
+        my $hex = sprintf("%02x"x8, reverse unpack("C16", $v));
+        $int = Math::BigInt->new("0x$hex");
+    }
     return $int;
 }
 
@@ -95,15 +116,19 @@ sub _decode_field_no_xform_needed {
 # But I don't need negative enums for Perl App Engine at present.
 *decode_field_enum = \&_decode_field_no_xform_needed;
 
-my $sign_bit_64 = Math::BigInt->new("0x8000000000000000");
+my $sign_bit_64 = BI("0x8000000000000000");
+my $all_64_bits = BI("0xffffffffffffffff");
 
 sub decode_field_int64 {
     my ($self, $int) = @_;
     if (UNIVERSAL::isa($int, "Math::BigInt") && ($int & $sign_bit_64)) {
         # TODO(bradfitz): pairs of bnot works too.  benchmark which is faster.
         $int->bneg;
-        $int &= Math::BigInt->new("0xffffffffffffffff");
+        $int &= $all_64_bits;
         $int->bneg;
+    } elsif (HAS_QUADS && ($int & $sign_bit_64)) {
+        $int = (~$int + 1) & $all_64_bits;
+        $int = -$int;
     }
     return $int;
 }
@@ -114,13 +139,17 @@ sub decode_field_int32 {
         if ($int & $sign_bit_64) {
             # TODO(bradfitz): pairs of bnot works too.  benchmark which is faster.
             $int->bneg;
-            $int &= Math::BigInt->new("0xffffffffffffffff");
+            $int &= $all_64_bits;
             $int->bneg;
             $int = $int->numify;
             return $int;
         }
         # shouldn't get here, though?
         return $int->numify;
+    } elsif (HAS_QUADS && ($int & $sign_bit_64)) {
+        $int = (~$int + 1) & $all_64_bits;
+        $int = -$int;
+        return $int;
     }
     # If it was negative at all, it would've been a negative 64-bit
     # number (10 byte varint), so we know this is not a bigint and not

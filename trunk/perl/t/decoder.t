@@ -7,6 +7,7 @@ use Test::More tests => 52;
 
 use lib "t/lib";
 use Test::Protobuf;
+use Protobuf::Types qw(BI);
 
 use FindBin qw($Bin);
 use lib "$Bin/autogen";

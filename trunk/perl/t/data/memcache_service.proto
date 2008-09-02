@@ -13,7 +13,8 @@ package appengine_api;
 // Generates AppEngine/Service.pm with
 // AppEngine::Service::MemcacheGetRequest, etc all inside.  If
 // unspecified, defaults to mapping file_name.proto to FileName.pm
-option perl_package = "AppEngine::Service";
+option perl_message_package = "AppEngine::Service";
+option perl_file_package = "AppEngine::Service::MemcacheProto";
 
 message MemcacheServiceError { 
   enum ErrorCode { 

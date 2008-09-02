@@ -4,15 +4,6 @@ make unittest.proto work
   -- extensions
   -- imports ("use" the perl_outer_package of the imported package)
   -- negative enums are broken.  see t/wire-numbers.t
-  -- use Math::BigInt on large default values.  currently:
-         default_value => 18446744073709551615,
-     #     Tried to use 'ProtobufTestBasic'.
-     #     Error:  Validation failed for 'Protobuf::Types::PositiveInt' failed with
-     #     value 1.84467440737096e+19 at lib/Protobuf/Attribute/Field/Scalar.pm line 42.
-
-
--      default_value => 18446744073709551615,
-+      default_value => Math::BigInt->new("18446744073709551615"),
 
 This noise:
 Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::FOO redefined at lib/Protobuf/Attribute/Field.pm line 44.

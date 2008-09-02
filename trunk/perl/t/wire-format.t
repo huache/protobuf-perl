@@ -6,6 +6,8 @@ use Data::Dumper;
 use lib "t/lib";
 use Test::Protobuf;
 
+use Protobuf::Types qw(BI);
+
 use_ok("Protobuf::WireFormat");
 my $F;
 
