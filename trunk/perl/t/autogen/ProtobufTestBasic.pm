@@ -15,7 +15,7 @@ use constant FALSE => 0;
 ## Top-level enums:
 our $_FOREIGNENUM = Protobuf::EnumDescriptor->new(
   name => 'ForeignEnum',
-  full_name => 'protobuf_unittest.ForeignEnum',
+  full_name => 'ProtobufTestBasic::ForeignEnum',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'FOREIGN_FOO', index => 0, number => 4, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'FOREIGN_BAR', index => 1, number => 5, type => undef),
@@ -28,7 +28,7 @@ $_FOREIGNENUM->values->[2]->set_type($_FOREIGNENUM);
 
 our $_TESTENUMWITHDUPVALUE = Protobuf::EnumDescriptor->new(
   name => 'TestEnumWithDupValue',
-  full_name => 'protobuf_unittest.TestEnumWithDupValue',
+  full_name => 'ProtobufTestBasic::TestEnumWithDupValue',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'FOO1', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'BAR1', index => 1, number => 2, type => undef),
@@ -45,7 +45,7 @@ $_TESTENUMWITHDUPVALUE->values->[4]->set_type($_TESTENUMWITHDUPVALUE);
 
 our $_TESTSPARSEENUM = Protobuf::EnumDescriptor->new(
   name => 'TestSparseEnum',
-  full_name => 'protobuf_unittest.TestSparseEnum',
+  full_name => 'ProtobufTestBasic::TestSparseEnum',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'SPARSE_A', index => 0, number => 123, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'SPARSE_B', index => 1, number => 62374, type => undef),
@@ -69,7 +69,7 @@ $_TESTSPARSEENUM->values->[6]->set_type($_TESTSPARSEENUM);
 ## All nested enums:
 our $_TESTALLTYPES_NESTEDENUM = Protobuf::EnumDescriptor->new(
   name => 'NestedEnum',
-  full_name => 'protobuf_unittest.TestAllTypes.NestedEnum',
+  full_name => 'ProtobufTestBasic::NestedEnum',
   values => [
     Protobuf::EnumValueDescriptor->new(name => 'FOO', index => 0, number => 1, type => undef),
     Protobuf::EnumValueDescriptor->new(name => 'BAR', index => 1, number => 2, type => undef),
@@ -83,7 +83,7 @@ $_TESTALLTYPES_NESTEDENUM->values->[2]->set_type($_TESTALLTYPES_NESTEDENUM);
 
 our $_TESTALLTYPES_NESTEDMESSAGE = Protobuf::Descriptor->new(
   name => 'NestedMessage',
-  full_name => 'protobuf_unittest.TestAllTypes.NestedMessage',
+  full_name => 'ProtobufTestBasic::TestAllTypes.NestedMessage',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -104,7 +104,7 @@ our $_TESTALLTYPES_NESTEDMESSAGE = Protobuf::Descriptor->new(
 
 our $_TESTALLTYPES_OPTIONALGROUP = Protobuf::Descriptor->new(
   name => 'OptionalGroup',
-  full_name => 'protobuf_unittest.TestAllTypes.OptionalGroup',
+  full_name => 'ProtobufTestBasic::TestAllTypes.OptionalGroup',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -125,7 +125,7 @@ our $_TESTALLTYPES_OPTIONALGROUP = Protobuf::Descriptor->new(
 
 our $_TESTALLTYPES_REPEATEDGROUP = Protobuf::Descriptor->new(
   name => 'RepeatedGroup',
-  full_name => 'protobuf_unittest.TestAllTypes.RepeatedGroup',
+  full_name => 'ProtobufTestBasic::TestAllTypes.RepeatedGroup',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -146,7 +146,7 @@ our $_TESTALLTYPES_REPEATEDGROUP = Protobuf::Descriptor->new(
 
 our $_TESTALLTYPES = Protobuf::Descriptor->new(
   name => 'TestAllTypes',
-  full_name => 'protobuf_unittest.TestAllTypes',
+  full_name => 'ProtobufTestBasic::TestAllTypes',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -541,7 +541,7 @@ our $_TESTALLTYPES = Protobuf::Descriptor->new(
 
 our $_FOREIGNMESSAGE = Protobuf::Descriptor->new(
   name => 'ForeignMessage',
-  full_name => 'protobuf_unittest.ForeignMessage',
+  full_name => 'ProtobufTestBasic::ForeignMessage',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -563,7 +563,7 @@ our $_FOREIGNMESSAGE = Protobuf::Descriptor->new(
 
 our $_TESTREQUIRED = Protobuf::Descriptor->new(
   name => 'TestRequired',
-  full_name => 'protobuf_unittest.TestRequired',
+  full_name => 'ProtobufTestBasic::TestRequired',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -777,7 +777,7 @@ our $_TESTREQUIRED = Protobuf::Descriptor->new(
 
 our $_TESTREQUIREDFOREIGN = Protobuf::Descriptor->new(
   name => 'TestRequiredForeign',
-  full_name => 'protobuf_unittest.TestRequiredForeign',
+  full_name => 'ProtobufTestBasic::TestRequiredForeign',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -811,7 +811,7 @@ our $_TESTREQUIREDFOREIGN = Protobuf::Descriptor->new(
 
 our $_TESTFOREIGNNESTED = Protobuf::Descriptor->new(
   name => 'TestForeignNested',
-  full_name => 'protobuf_unittest.TestForeignNested',
+  full_name => 'ProtobufTestBasic::TestForeignNested',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -833,7 +833,7 @@ our $_TESTFOREIGNNESTED = Protobuf::Descriptor->new(
 
 our $_TESTEMPTYMESSAGE = Protobuf::Descriptor->new(
   name => 'TestEmptyMessage',
-  full_name => 'protobuf_unittest.TestEmptyMessage',
+  full_name => 'ProtobufTestBasic::TestEmptyMessage',
   containing_type => undef,
   fields => [
   ],
@@ -849,7 +849,7 @@ our $_TESTEMPTYMESSAGE = Protobuf::Descriptor->new(
 
 our $_TESTREALLYLARGETAGNUMBER = Protobuf::Descriptor->new(
   name => 'TestReallyLargeTagNumber',
-  full_name => 'protobuf_unittest.TestReallyLargeTagNumber',
+  full_name => 'ProtobufTestBasic::TestReallyLargeTagNumber',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -877,7 +877,7 @@ our $_TESTREALLYLARGETAGNUMBER = Protobuf::Descriptor->new(
 
 our $_TESTRECURSIVEMESSAGE = Protobuf::Descriptor->new(
   name => 'TestRecursiveMessage',
-  full_name => 'protobuf_unittest.TestRecursiveMessage',
+  full_name => 'ProtobufTestBasic::TestRecursiveMessage',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -905,7 +905,7 @@ our $_TESTRECURSIVEMESSAGE = Protobuf::Descriptor->new(
 
 our $_TESTMUTUALRECURSIONA = Protobuf::Descriptor->new(
   name => 'TestMutualRecursionA',
-  full_name => 'protobuf_unittest.TestMutualRecursionA',
+  full_name => 'ProtobufTestBasic::TestMutualRecursionA',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -927,7 +927,7 @@ our $_TESTMUTUALRECURSIONA = Protobuf::Descriptor->new(
 
 our $_TESTMUTUALRECURSIONB = Protobuf::Descriptor->new(
   name => 'TestMutualRecursionB',
-  full_name => 'protobuf_unittest.TestMutualRecursionB',
+  full_name => 'ProtobufTestBasic::TestMutualRecursionB',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -955,7 +955,7 @@ our $_TESTMUTUALRECURSIONB = Protobuf::Descriptor->new(
 
 our $_TESTDUPFIELDNUMBER_FOO = Protobuf::Descriptor->new(
   name => 'Foo',
-  full_name => 'protobuf_unittest.TestDupFieldNumber.Foo',
+  full_name => 'ProtobufTestBasic::TestDupFieldNumber.Foo',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -976,7 +976,7 @@ our $_TESTDUPFIELDNUMBER_FOO = Protobuf::Descriptor->new(
 
 our $_TESTDUPFIELDNUMBER_BAR = Protobuf::Descriptor->new(
   name => 'Bar',
-  full_name => 'protobuf_unittest.TestDupFieldNumber.Bar',
+  full_name => 'ProtobufTestBasic::TestDupFieldNumber.Bar',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -997,7 +997,7 @@ our $_TESTDUPFIELDNUMBER_BAR = Protobuf::Descriptor->new(
 
 our $_TESTDUPFIELDNUMBER = Protobuf::Descriptor->new(
   name => 'TestDupFieldNumber',
-  full_name => 'protobuf_unittest.TestDupFieldNumber',
+  full_name => 'ProtobufTestBasic::TestDupFieldNumber',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1031,7 +1031,7 @@ our $_TESTDUPFIELDNUMBER = Protobuf::Descriptor->new(
 
 our $_TESTNESTEDMESSAGEHASBITS_NESTEDMESSAGE = Protobuf::Descriptor->new(
   name => 'NestedMessage',
-  full_name => 'protobuf_unittest.TestNestedMessageHasBits.NestedMessage',
+  full_name => 'ProtobufTestBasic::TestNestedMessageHasBits.NestedMessage',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1058,7 +1058,7 @@ our $_TESTNESTEDMESSAGEHASBITS_NESTEDMESSAGE = Protobuf::Descriptor->new(
 
 our $_TESTNESTEDMESSAGEHASBITS = Protobuf::Descriptor->new(
   name => 'TestNestedMessageHasBits',
-  full_name => 'protobuf_unittest.TestNestedMessageHasBits',
+  full_name => 'ProtobufTestBasic::TestNestedMessageHasBits',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1080,7 +1080,7 @@ our $_TESTNESTEDMESSAGEHASBITS = Protobuf::Descriptor->new(
 
 our $_TESTCAMELCASEFIELDNAMES = Protobuf::Descriptor->new(
   name => 'TestCamelCaseFieldNames',
-  full_name => 'protobuf_unittest.TestCamelCaseFieldNames',
+  full_name => 'ProtobufTestBasic::TestCamelCaseFieldNames',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1168,7 +1168,7 @@ our $_TESTCAMELCASEFIELDNAMES = Protobuf::Descriptor->new(
 
 our $_TESTFIELDORDERINGS = Protobuf::Descriptor->new(
   name => 'TestFieldOrderings',
-  full_name => 'protobuf_unittest.TestFieldOrderings',
+  full_name => 'ProtobufTestBasic::TestFieldOrderings',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1202,7 +1202,7 @@ our $_TESTFIELDORDERINGS = Protobuf::Descriptor->new(
 
 our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
   name => 'TestExtremeDefaultValues',
-  full_name => 'protobuf_unittest.TestExtremeDefaultValues',
+  full_name => 'ProtobufTestBasic::TestExtremeDefaultValues',
   containing_type => undef,
   fields => [
     Protobuf::FieldDescriptor->new(
@@ -1254,7 +1254,7 @@ our $_TESTEXTREMEDEFAULTVALUES = Protobuf::Descriptor->new(
 
 our $_FOOREQUEST = Protobuf::Descriptor->new(
   name => 'FooRequest',
-  full_name => 'protobuf_unittest.FooRequest',
+  full_name => 'ProtobufTestBasic::FooRequest',
   containing_type => undef,
   fields => [
   ],
@@ -1270,7 +1270,7 @@ our $_FOOREQUEST = Protobuf::Descriptor->new(
 
 our $_FOORESPONSE = Protobuf::Descriptor->new(
   name => 'FooResponse',
-  full_name => 'protobuf_unittest.FooResponse',
+  full_name => 'ProtobufTestBasic::FooResponse',
   containing_type => undef,
   fields => [
   ],
@@ -1286,7 +1286,7 @@ our $_FOORESPONSE = Protobuf::Descriptor->new(
 
 our $_BARREQUEST = Protobuf::Descriptor->new(
   name => 'BarRequest',
-  full_name => 'protobuf_unittest.BarRequest',
+  full_name => 'ProtobufTestBasic::BarRequest',
   containing_type => undef,
   fields => [
   ],
@@ -1302,7 +1302,7 @@ our $_BARREQUEST = Protobuf::Descriptor->new(
 
 our $_BARRESPONSE = Protobuf::Descriptor->new(
   name => 'BarResponse',
-  full_name => 'protobuf_unittest.BarResponse',
+  full_name => 'ProtobufTestBasic::BarResponse',
   containing_type => undef,
   fields => [
   ],
@@ -1392,3 +1392,5 @@ Protobuf::Message->GenerateClass(__PACKAGE__ . '::BarResponse', $_BARRESPONSE);
 
 ## Fix foreign fields in extensions:
 ## Services:
+
+1;

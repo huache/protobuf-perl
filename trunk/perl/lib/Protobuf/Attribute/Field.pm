@@ -9,16 +9,15 @@ requires 'protobuf_emit';
 use namespace::clean -except => 'meta';
 
 has field => (
-	isa => "Protobuf::FieldDescriptor",
-	is  => "ro",
-	required => 1,
+    isa => "Protobuf::FieldDescriptor",
+    is  => "ro",
+    required => 1,
     handles => [qw(is_repeated message_type enum_type)],
 );
 
 has '+type_constraint' => (
     required => 1,
 );
-
 
 sub field_to_type_constraint {
     my ( $class, $field ) = @_;
@@ -32,6 +31,8 @@ sub field_to_type_constraint {
     return type_constraint($field->type);
 };
 
+our %generatedenumvalues = ();
+
 after 'install_accessors' => sub {
     my $self = shift;
 
@@ -39,9 +40,14 @@ after 'install_accessors' => sub {
         my $class_name = $self->associated_class->name;
         foreach my $value ( @{ $enum->values } ) {
             my $fqname = join("::", $class_name, $enum->name, $value->name);
-            my $number = $value->number;
-            no strict 'refs';
-            *$fqname = sub () { $number };
+            # failing to fully qualify generatedenumvalues causes a weird
+            # error message about dereferencing an unused scalar
+            if (! exists $__PACKAGE__::generatedenumvalues{$fqname}) {
+                my $number = $value->number;
+                no strict 'refs';
+                *$fqname = sub () { $number };
+                $__PACKAGE__::generatedenumvalues{$fqname} = 1;
+            }
         }
     }
 };

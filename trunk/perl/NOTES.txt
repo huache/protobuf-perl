@@ -97,3 +97,6 @@ message MemcacheSetResponse {
 >>> sres.SerializeToString()
 '\x08\x01\x08\x02\x08\x03\x08\xfa\x01'
 
+How to run all the test .proto files through protoc (from the perl directory):
+
+for i in t/data/*.proto ; do echo $i; protoc --perl_out=t/autogen -It/data $i; done
