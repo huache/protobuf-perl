@@ -9,7 +9,7 @@ use Moose::Policy 'Protobuf::AccessorNamingPolicy';
 use Moose;
 
 has 'name' => (is => 'rw', isa => 'Str');
-has 'fullname' => (is => 'rw', isa => 'Str');
+has 'full_name' => (is => 'rw', isa => 'Str');
 
 has 'values' => (is => 'rw', isa => 'ArrayRef[Protobuf::EnumValueDescriptor]' );
 
@@ -44,12 +44,6 @@ has class_name => ( is => 'rw', isa => 'Str', lazy_build => 1 );
 sub _build_class_name {
     my $self = shift;
     my $name = $self->full_name;
-
-    # TODO(bradfitz): Hack. temporary:
-    $name =~ s/^appengine_api\./AppEngine::Service::/;
-    $name =~ s/^appengine_datastore_v3\./AppEngine::Service::Datastore::/;
-    $name =~ s/^appengine_entity\./AppEngine::Service::Entity::/;
-    $name =~ s/^protobuf_unittest\./ProtobufTestBasic::/;
 
     $name =~ s/\./::/g;
     return $name;

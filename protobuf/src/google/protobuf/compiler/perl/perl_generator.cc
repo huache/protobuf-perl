@@ -304,8 +304,11 @@ bool Generator::Generate(const FileDescriptor* file,
                   "package_name", package_name);
 
   if (file->options().has_perl_message_package()) {
-    printer_->Print("package `package_name`;\n\n",
-                    "package_name", file->options().perl_message_package());
+    string message_package_name = file->options().perl_message_package();
+    if (message_package_name != package_name) {
+      printer_->Print("package `package_name`;\n\n",
+                      "package_name", file->options().perl_message_package());
+    }
   }
 
   printer_->Print("\n"
@@ -336,6 +339,7 @@ bool Generator::Generate(const FileDescriptor* file,
   FixForeignFieldsInExtensions();
   printer_->Print("## Services:\n");
   PrintServices();
+  printer_->Print("\n1;\n");
   return !printer.failed();
 }
 
@@ -352,25 +356,11 @@ void Generator::PrintImports() const {
 // Prints descriptors and module-level constants for all top-level
 // enums defined in |file|.
 void Generator::PrintTopLevelEnums() const {
-  vector<pair<string, int> > top_level_enum_values;
   for (int i = 0; i < file_->enum_type_count(); ++i) {
     const EnumDescriptor& enum_descriptor = *file_->enum_type(i);
     PrintEnum(enum_descriptor);
     printer_->Print("\n");
-
-    for (int j = 0; j < enum_descriptor.value_count(); ++j) {
-      const EnumValueDescriptor& value_descriptor = *enum_descriptor.value(j);
-      top_level_enum_values.push_back(
-          make_pair(value_descriptor.name(), value_descriptor.number()));
-    }
   }
-
-  for (int i = 0; i < top_level_enum_values.size(); ++i) {
-    printer_->Print("`name` = `value`;\n",
-                    "name", top_level_enum_values[i].first,
-                    "value", SimpleItoa(top_level_enum_values[i].second));
-  }
-  printer_->Print("\n");
 }
 
 // Prints all enums contained in all message types in |file|.
@@ -387,7 +377,12 @@ void Generator::PrintEnum(const EnumDescriptor& enum_descriptor) const {
   map<string, string> m;
   m["descriptor_name"] = ModuleLevelDescriptorName(enum_descriptor);
   m["name"] = enum_descriptor.name();
-  m["full_name"] = enum_descriptor.full_name();
+  if (enum_descriptor.file()->options().has_perl_message_package()) {
+    m["full_name"] = enum_descriptor.file()->options().perl_message_package()
+                   + "::" + enum_descriptor.name();
+  } else {
+    m["full_name"] = enum_descriptor.full_name();
+  }
   m["filename"] = enum_descriptor.name();
   const char enum_descriptor_template[] =
       "our $`descriptor_name` = Protobuf::EnumDescriptor->new(\n"
@@ -471,7 +466,12 @@ void Generator::PrintDescriptor(const Descriptor& message_descriptor) const {
   printer_->Indent();
   map<string, string> m;
   m["name"] = message_descriptor.name();
-  m["full_name"] = message_descriptor.full_name();
+  if (message_descriptor.file()->options().has_perl_message_package()) {
+    m["full_name"] = message_descriptor.file()->options().perl_message_package()
+                   + "::" + ModuleLevelMessageName(message_descriptor);
+  } else {
+    m["full_name"] = message_descriptor.full_name();
+  }
   m["filename"] = message_descriptor.file()->name();
   const char required_function_arguments[] =
       "name => '`name`',\n"
@@ -526,7 +526,7 @@ void Generator::PrintMessages() const {
 // to output a Perl version of the descriptors, which the metaclass in
 // Message.pm will use to construct the meat of the class itself.
 //
-// Mutually recursive with PrintNestedMessages().
+// Recursive.
 void Generator::PrintMessage(
     const string& class_prefix,
     const Descriptor& message_descriptor) const {
@@ -659,7 +659,7 @@ void Generator::FixForeignFieldsInExtension(
                                           extension_field,
                                           "extensions_by_name");
   printer_->Print(m,
-                  "# `extended_message_class`->RegisterExtension(`$field`);\n");
+                  "# `extended_message_class`->RegisterExtension($`field`);\n");
 }
 
 void Generator::FixForeignFieldsInNestedExtensions(

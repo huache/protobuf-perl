@@ -5,24 +5,12 @@ make unittest.proto work
   -- imports ("use" the perl_outer_package of the imported package)
   -- negative enums are broken.  see t/wire-numbers.t
 
-This noise:
-Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::FOO redefined at lib/Protobuf/Attribute/Field.pm line 44.
-Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::BAR redefined at lib/Protobuf/Attribute/Field.pm line 44.
-Constant subroutine ProtobufTestBasic::TestAllTypes::NestedEnum::BAZ redefined at lib/Protobuf/Attribute/Field.pm line 44.
+Use ../protobuf/src/google/protobuf/test_util.cc to verify parsing of
+unittest.proto?
 
-This is still Python:
--FOREIGN_FOO = 4;
--FOREIGN_BAR = 5;
--FOREIGN_BAZ = 6;
--FOO1 = 1;
--BAR1 = 2;
--BAZ = 3;
--FOO2 = 1;
--BAR2 = 2;
--SPARSE_A = 123;
--SPARSE_B = 62374;
--SPARSE_C = 12589234;
--SPARSE_D = -15;
--SPARSE_E = -53452;
--SPARSE_F = 0;
--SPARSE_G = 2;
+Are nested_types and enum_types needed?
+
+Implement services and methods.
+
+Enhance makefiles to run protoc on .proto files and remove generated Perl
+files from svn.

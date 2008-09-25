@@ -206,13 +206,14 @@ message FileOptions {
   // top-level extensions defined in the file.
   optional bool java_multiple_files = 10 [default=false];
 
-  // If set to "Foo::Bar", "Foo/Bar.pm" will be generated.
+  // Specifies Perl file to generate as a Perl package, e.g. if set to
+  // "Foo::Bletch" the Perl file will be Foo/Bletch.pm.
   optional string perl_file_package = 11;
 
-  // If set, all messages will be prefixed with this package name.
-  // Don't include "::" at the end.  If set to "Foo::Bar", message
-  // "Baz" will be in package "Foo::Bar::Baz" (in file Foo/Bar.pm if
-  // the option 'perl_file_package' above is set to "Foo::Bar")
+  // If set, all messages will be prefixed with this package name in the
+  // Perl generated code. Don't include "::" at the end.  If set to "Foo::Bar",
+  // message "Baz" will be in package "Foo::Bar::Baz" (in file Foo/Bletch.pm if
+  // the option 'perl_file_package' above is set to "Foo::Bletch")
   optional string perl_message_package = 12;
 
   // Generated classes can be optimized for speed or code size.
