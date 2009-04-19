@@ -110,6 +110,7 @@ sub _decode_field_no_xform_needed {
 # unsigned integers, so we don't need to do anything:
 *decode_field_uint32 = \&_decode_field_no_xform_needed;
 *decode_field_uint64 = \&_decode_field_no_xform_needed;
+*decode_field_bool   = \&_decode_field_no_xform_needed;
 
 # TODO(bradfitz): This is a lie: Enums can be negative, according to
 # the Python impl at least.  So we need to fix this in the future.

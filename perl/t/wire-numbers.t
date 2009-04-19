@@ -97,6 +97,9 @@ my @tests = (
     ['float', 1.0/3.0, "]"."\xab\xaa\xaa>"],
     ['double', 1.0/3.0, "a"."UUUUUU\xd5?"],
 
+    ['bool', 0, "h\x00"],
+    ['bool', 1, "h\x01"],
+
     ['nested_enum', 2, "\xa8\x01\x02"],
 
     # negative enums are allowed, I guess.  Python allows them.  Not zigzag, though.
