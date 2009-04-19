@@ -142,6 +142,11 @@ sub encode_field_enum {
     $self->encode_wire_varint($field, $int);
 }
 
+sub encode_field_bool {
+    my ( $self, $field, $bool ) = @_;
+    $self->encode_wire_varint($field, $bool);
+}
+
 sub encode_field_uint32 {
     my ( $self, $field, $int ) = @_;
     $self->encode_wire_varint($field, $int);
