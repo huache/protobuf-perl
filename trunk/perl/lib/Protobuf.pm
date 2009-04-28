@@ -121,7 +121,7 @@ sub GenerateClass {
         class      => $name,
     );
 
-    $c->make_immutable;
+    $c->make_immutable( inline_constructor => 0 );
 
     return $c;
 }

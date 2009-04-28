@@ -194,7 +194,7 @@ sub protobuf_attributes {
 
     return sort { $a->field->number <=> $b->field->number }
         grep { $_->does("Protobuf::Attribute::Field") }
-            $self->compute_all_applicable_attributes;
+            $self->get_all_attributes;
 }
 
 sub protobuf_extra_attribute {
