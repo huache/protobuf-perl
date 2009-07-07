@@ -45,6 +45,7 @@ sub create_from_descriptor {
             @attributes,
             # FIXME move _protobuf_extra_fields to base class?
             Moose::Meta::Attribute->interpolate_class_and_new( "_protobuf_extra_fields" => (
+                is => 'bare',
                 init_arg => undef,
                 isa => "ArrayRef",
                 lazy => 1,
